@@ -88,6 +88,7 @@ if __name__ == "__main__":
 
     bamfileparser = BamFileReadParser(bam_file, quality_score)
 
+    # reads hard coded for now, will change to command line arg in future
     data = bamfileparser.parse_reads(93201, 93400)
 
     matrix = bamfileparser.create_matrix(data)
