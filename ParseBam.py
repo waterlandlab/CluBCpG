@@ -78,6 +78,10 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("input_bam", help="bam file")
+    parser.add_argument("end_coordinate", help="Specifcy the final coordinate of the region you wish to extract, example"
+                                               " 500 would give you a region randing from bp window_size-500")
+    parser.add_argument("-w", "--window", help="Size of the region in bp you with you convert into a matrix",
+                        default=200)
     parser.add_argument("-q", "--quality", help="Minimum mapping quality for read to be considered default=20",
                         default=20)
 
@@ -85,11 +89,14 @@ if __name__ == "__main__":
 
     bam_file = args.input_bam
     quality_score = args.quality
+    window_size = args.window
+    stop_pos = int(args.end_coordinate)
+
 
     bamfileparser = BamFileReadParser(bam_file, quality_score)
 
     # reads hard coded for now, will change to command line arg in future
-    data = bamfileparser.parse_reads(93201, 93400)
+    data = bamfileparser.parse_reads(stop_pos-window_size, stop_pos)
 
     matrix = bamfileparser.create_matrix(data)
 
