@@ -9,7 +9,6 @@ from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_samples, silhouette_score
 
-logging.basicConfig(filename='AnalyzeBamBins.log',level=logging.DEBUG)
 
 # Adapted from Stackoverflow
 # https://stackoverflow.com/questions/35611465/python-scikit-learn-clustering-with-missing-data
@@ -68,6 +67,9 @@ bin_size = 100
 chromosome = 'chr19'
 matrix_read_req = 5
 matrix_cpg_req = 3
+
+logging.basicConfig(filename='AnalyzeBamBins_{}.log'.format(os.path.basename(input_bam_file)),level=logging.DEBUG)
+
 
 logging.info("Input file is {}".format(input_bam_file))
 logging.info("Input params, bin size: {}".format(bin_size))
