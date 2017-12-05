@@ -67,8 +67,11 @@ bin_size = 100
 chromosome = 'chr19'
 matrix_read_req = 5
 matrix_cpg_req = 3
+log_file = "AnalyzeBamBins.{}.log".format(os.path.basename(input_bam_file))
+output_filename = "AnalyzeBamBins.{}.csv".format(os.path.basename(input_bam_file))
+BASE_DIR = os.path.dirname(input_bam_file)
 
-logging.basicConfig(filename='AnalyzeBamBins_{}.log'.format(os.path.basename(input_bam_file)),level=logging.DEBUG)
+logging.basicConfig(filename=os.path.join(BASE_DIR, log_file), level=logging.DEBUG)
 
 
 logging.info("Input file is {}".format(input_bam_file))
@@ -81,7 +84,7 @@ parser = BamFileReadParser(input_bam_file, 20)
 chrom_lengths = dict(zip(parser.OpenBamFile.references, parser.OpenBamFile.lengths))
 
 # Open output file for writing
-output_file = open("AnalyzeBamBins_{}.csv".format(os.path.basename(input_bam_file)), 'w')
+output_file = open(os.path.join(BASE_DIR, output_filename), 'w')
 output_file.write("chrom,start,stop,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,reads,cpgs\n")
 
 # Start looping over the bam file
