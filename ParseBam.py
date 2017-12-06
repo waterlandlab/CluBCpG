@@ -39,7 +39,7 @@ class BamFileReadParser():
 
     def parse_reads(self, chromosome, start_pos, stop_pos):
         reads = []
-        for read in self.OpenBamFile.fetch(chromosome, start_pos, stop_pos):
+        for read in self.OpenBamFile.fetch(chromosome, start_pos, stop_pos, multiple_iterators=True):
             if read.mapping_quality < self.mapping_quality:
                 continue
             reads.append(read)
