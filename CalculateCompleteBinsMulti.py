@@ -2,7 +2,7 @@ from ParseBam import BamFileReadParser
 import sys
 import os
 import logging
-from multiprocessing import  Pool
+from multiprocessing import Pool
 import numpy as np
 import pandas as pd
 from sklearn.cluster import DBSCAN
@@ -15,8 +15,8 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 input_bam_file = sys.argv[1]
 bin_size = 100
 chromosome = 'chr19'
-log_file = "CalculateCompleteBins.{}.log".format(os.path.basename(input_bam_file))
-output_filename = "CalculateCompleteBins.{}.csv".format(os.path.basename(input_bam_file))
+log_file = "CalculateCompleteBinsMulti.{}.log".format(os.path.basename(input_bam_file))
+output_filename = "CalculateCompleteBinsMulti.{}.csv".format(os.path.basename(input_bam_file))
 BASE_DIR = os.path.dirname(input_bam_file)
 
 logging.basicConfig(filename=os.path.join(BASE_DIR, log_file), level=logging.DEBUG)
@@ -27,35 +27,40 @@ logging.info("Input params, bin size: {}".format(bin_size))
 logging.info("Chromosome: {}".format(chromosome))
 
 # Setup parser object on the bam file
-parser = BamFileReadParser(input_bam_file, 20)
-chrom_lengths = dict(zip(parser.OpenBamFile.references, parser.OpenBamFile.lengths))
+# parser = BamFileReadParser(input_bam_file, 20)
+# chrom_lengths = dict(zip(parser.OpenBamFile.references, parser.OpenBamFile.lengths))
 
-# Open output file for writing
-output_file = open(os.path.join(BASE_DIR, output_filename), 'w')
 
-# Start looping over the bam file
-current_bin = 0
-while current_bin <= chrom_lengths['chr19']:
-    current_bin = current_bin + bin_size
-    stop_pos = current_bin
-    start_pos = stop_pos - bin_size
+def get_matrix_size(bin_loc):
+    parser_b = BamFileReadParser(input_bam_file, 20)
+    start_pos = bin_loc - 100
+    stop_pos = bin_loc
     try:
-        reads = parser.parse_reads(chromosome, start_pos, stop_pos)
-        matrix = parser.create_matrix(reads)
+        reads = parser_b.parse_reads(chromosome, start_pos, stop_pos)
+        matrix = parser_b.create_matrix(reads)
     except ValueError:
-        # No reads in this window
-        logging.info("No reads found in the window of {} to {}".format(start_pos, stop_pos))
-        continue
+        # No reads present
+        return None
 
-    # Drop reads with empty values
     matrix = matrix.dropna()
 
-    output_file.write(chromosome + ",")
-    output_file.write(str(start_pos) + ",")
-    output_file.write(str(stop_pos) + ",")
-    output_file.write(str(matrix.shape[0]) + ",")
-    output_file.write(str(matrix.shape[1]) + "\n")
+    return matrix.shape
 
+pool = Pool(processes=2)
 
-output_file.close()
-logging.info("Complete")
+bins = pd.read_table("chr19_bins.txt")
+bins = np.array(bins)
+
+print("Getting results...")
+
+results = pool.map(get_matrix_size, bins)
+
+print("Got results")
+
+output = open("test.txt", 'w')
+
+for result in results:
+    output.write(str(result))
+    output.write("\n")
+
+output.close()
