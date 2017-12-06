@@ -27,27 +27,26 @@ logging.info("Input params, bin size: {}".format(bin_size))
 logging.info("Chromosome: {}".format(chromosome))
 
 # Setup parser object on the bam file
-parser = BamFileReadParser(input_bam_file, 20)
-chrom_lengths = dict(zip(parser.OpenBamFile.references, parser.OpenBamFile.lengths))
+# parser = BamFileReadParser(input_bam_file, 20)
+# chrom_lengths = dict(zip(parser.OpenBamFile.references, parser.OpenBamFile.lengths))
 
 
 def get_matrix_size(bin_loc):
-    parser = BamFileReadParser(input_bam_file, 20)
+    parser_b = BamFileReadParser(input_bam_file, 20)
     start_pos = bin_loc - 100
     stop_pos = bin_loc
     try:
-        reads = parser.parse_reads(chromosome, start_pos, stop_pos)
-        matrix = parser.create_matrix(reads)
+        reads = parser_b.parse_reads(chromosome, start_pos, stop_pos)
+        matrix = parser_b.create_matrix(reads)
     except ValueError:
         # No reads present
-        return 0
-
+        return None
 
     matrix = matrix.dropna()
 
     return matrix.shape
 
-pool = Pool(processes=3)
+pool = Pool(processes=2)
 
 bins = pd.read_table("chr19_bins.txt")
 bins = np.array(bins)
