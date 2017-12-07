@@ -13,7 +13,7 @@ chromosome = 'chr19'
 log_file = "CalcDBSCAN.{}.log".format(os.path.basename(input_bam_file))
 output_filename = "CalcDBSCAN.{}.csv".format(os.path.basename(input_bam_file))
 BASE_DIR = os.path.dirname(input_bam_file)
-bins_file = "partial.txt"
+bins_file = sys.argv[2]
 
 logging.basicConfig(filename=os.path.join(BASE_DIR, log_file), level=logging.DEBUG)
 
