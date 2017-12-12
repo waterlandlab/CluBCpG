@@ -9,6 +9,17 @@ from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_samples, silhouette_score
 
+#########################
+#
+# Use this script to read in a coordinate sorted bam file
+# and output a CSV file identifying the number of CpGs present
+# and how many reads cover all present CpGs.
+# Edit the input params to output the correct chromosome and bin size desired.
+#
+# CalculateCompleteBins.py input_file.bam
+#
+##########################
+
 
 # Input params
 input_bam_file = sys.argv[1]
@@ -31,6 +42,7 @@ chrom_lengths = dict(zip(parser.OpenBamFile.references, parser.OpenBamFile.lengt
 
 # Open output file for writing
 output_file = open(os.path.join(BASE_DIR, output_filename), 'w')
+output_file.write("chromosome,start,stop,full_reads,CpGs\n")
 
 # Start looping over the bam file
 current_bin = 0
