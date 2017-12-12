@@ -13,7 +13,7 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 #
 # Use this script to read in a coordinate sorted bam file (with its bai index present)
 # and output a CSV file identifying the number of CpGs present
-# and how many reads cover all present CpGs.
+# and how many reads cover ALL present CpGs.
 # Edit the input params to output the correct chromosome and bin size desired.
 #
 # CalculateCompleteBins.py input_file.bam
