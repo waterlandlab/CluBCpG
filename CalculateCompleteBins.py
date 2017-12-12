@@ -22,6 +22,7 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 
 
 # Input params
+# todo add these as command line args using argparse
 input_bam_file = sys.argv[1]
 bin_size = 100
 chromosome = 'chr19'
