@@ -47,7 +47,7 @@ output_file.write("chromosome,start,stop,full_reads,CpGs\n")
 
 # Start looping over the bam file
 current_bin = 0
-while current_bin <= chrom_lengths['chr19']:
+while current_bin <= chrom_lengths[chromosome]:
     current_bin = current_bin + bin_size
     stop_pos = current_bin
     start_pos = stop_pos - bin_size
