@@ -29,7 +29,7 @@ chrom_lengths = dict(zip(parser.OpenBamFile.references, parser.OpenBamFile.lengt
 
 # Open output file for writing
 output_file = open(os.path.join(BASE_DIR, output_filename), 'w')
-output_file.write("chromosome,stop_loc,DBSCAN_clusters\n")
+output_file.write("chromosome,stop_loc,DBSCAN_clusters,cluster_members\n")
 
 bins = []
 with open(bins_file, 'r') as f:
