@@ -1,4 +1,5 @@
 from sklearn.cluster import DBSCAN
+from collections import Counter
 import pandas as pd
 import numpy as np
 import sys
@@ -7,13 +8,14 @@ import os
 from ParseBam import BamFileReadParser
 
 # Input params
+# todo set this up as arg parser
 input_bam_file = sys.argv[1]
+bins_file = sys.argv[2]
 bin_size = 100
 chromosome = 'chr19'
 log_file = "CalcDBSCAN.{}.log".format(os.path.basename(input_bam_file))
 output_filename = "CalcDBSCAN.{}.csv".format(os.path.basename(input_bam_file))
 BASE_DIR = os.path.dirname(input_bam_file)
-bins_file = sys.argv[2]
 
 logging.basicConfig(filename=os.path.join(BASE_DIR, log_file), level=logging.DEBUG)
 
@@ -27,7 +29,7 @@ chrom_lengths = dict(zip(parser.OpenBamFile.references, parser.OpenBamFile.lengt
 
 # Open output file for writing
 output_file = open(os.path.join(BASE_DIR, output_filename), 'w')
-output_file.write("chromosome,stop_loc,DBSCAN_clusters\n") #todo write this line
+output_file.write("chromosome,stop_loc,DBSCAN_clusters\n")
 
 bins = []
 with open(bins_file, 'r') as f:
@@ -44,11 +46,19 @@ for bin in bins:
 
     scn = DBSCAN(min_samples=2)
     cluster_labels = scn.fit_predict(matrix)
+
+    # Count memebers of each cluster
+    counter = Counter(cluster_labels)
+    counts = list(counter.values())
+    counts = [str(x) for x in counts]
+
     clusters = len(set(cluster_labels))
 
     output_file.write(str(chromosome) + ",")
     output_file.write(str(bin) + ",")
-    output_file.write(str(clusters) + "\n")
+    output_file.write(str(clusters) + ",")
+    output_file.write(":".join(counts))
+    # todo write the disribution of cluster members
 
 output_file.close()
 
