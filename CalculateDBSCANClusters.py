@@ -58,7 +58,8 @@ for bin in bins:
     output_file.write(str(bin) + ",")
     output_file.write(str(clusters) + ",")
     output_file.write(":".join(counts))
-    # todo write the disribution of cluster members
+    output_file.write("\n")
+    output_file.flush()
 
 output_file.close()
 
