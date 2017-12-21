@@ -50,6 +50,7 @@ for bin in bins:
     # Count memebers of each cluster
     counter = Counter(cluster_labels)
     counts = list(counter.values())
+    counts.sort()
     counts = [str(x) for x in counts]
 
     clusters = len(set(cluster_labels))
