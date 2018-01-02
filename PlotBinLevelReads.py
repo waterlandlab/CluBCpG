@@ -78,6 +78,7 @@ if __name__ == "__main__":
 
         reads = bam_parser.parse_reads(chromosome, stop_pos-100, stop_pos)
         matrix = bam_parser.create_matrix(reads)
+        matrix = matrix.dropna()
 
         # plot the matrix
         plot_complete_bin_reads(matrix, chromosome, stop_pos-100, stop_pos, os.path.join(output_dir, "plots"))
