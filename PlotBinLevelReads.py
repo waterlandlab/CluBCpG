@@ -48,17 +48,19 @@ if __name__ == "__main__":
         output_dir = os.path.dirname(args.input_bam)
 
     print("Output directory set to {}".format(output_dir))
+    file_spec_path = os.path.join(output_dir, "plots_{}".format(os.path.basename(os.path.splitext(args.input_bam)[0])))
 
     # Create subdirectory for plots
-    if not os.path.exists(os.path.join(output_dir, "plots")):
-        print("Creating plots folder in output directory")
-        os.makedirs(os.path.join(output_dir, "plots"))
+    if not os.path.exists(file_spec_path):
+        print("Creating file specific plots folder in output directory")
+        os.makedirs(file_spec_path)
     else:
         print("plots folder already exists, saving there...")
 
     # write out inputs for reference
     print("Input bam file is: {}".format(args.input_bam))
     print("List of bins is: {}".format(args.bins_to_plot))
+    print("Plots being saved to {}".format(file_spec_path))
     sys.stdout.flush()
 
     # Load bins into memory
@@ -81,5 +83,5 @@ if __name__ == "__main__":
         matrix = matrix.dropna()
 
         # plot the matrix
-        plot_complete_bin_reads(matrix, chromosome, stop_pos-100, stop_pos, os.path.join(output_dir, "plots"))
+        plot_complete_bin_reads(matrix, chromosome, stop_pos-100, stop_pos, file_spec_path)
 
