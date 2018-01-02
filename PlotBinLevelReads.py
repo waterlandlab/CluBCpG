@@ -26,6 +26,7 @@ def plot_complete_bin_reads(matrix, chromosome: str, start_pos: int, stop_pos: i
     file_name = "{}_{}.png".format(chromosome, str(stop_pos))
     output_file = os.path.join(output_loc, file_name)
     plt.savefig(output_file)
+    plt.close()
 
 
 if __name__ == "__main__":
