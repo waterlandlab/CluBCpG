@@ -33,10 +33,14 @@ class TrackAndOutputStats:
         self.bin_name_for_average.append(bin_label)
         return
 
-    def write_avg_methylation(self):
+    def write_avg_methylation(self, file_name: str):
         # Take data stored in self, generate output file, write to disk
-        pass
-
+        with open(os.path.join(self.output_loc, "{}_bin_stats.csv".format(file_name)), 'w') as f:
+            f.write("bin_label,matrix_A_avg,matrix_B_avg\n")
+            for label, a, b in zip(self.bin_name_for_average, self.avg_methylation_matrix_A, self.avg_methylation_matrix_B):
+                f.write(",".join((label, str(a), str(b))))
+                f.write("\n")
+        return
 
 
 def plot_complete_bin_reads(matrix_A, matrix_B, chromosome: str, start_pos: int, stop_pos: int, output_loc: str):
@@ -108,6 +112,8 @@ if __name__ == "__main__":
     bam_parser_A = BamFileReadParser(args.input_bam_A, 20)
     bam_parser_B = BamFileReadParser(args.input_bam_B, 20)
 
+    # Create object for stats tracking
+    output_stats = TrackAndOutputStats(output_dir)
 
     # loop over bins generating a matrix for each
     for bin in bins:
@@ -126,3 +132,11 @@ if __name__ == "__main__":
         # plot the matrix
         plot_complete_bin_reads(matrix_A, matrix_B, chromosome, stop_pos-100, stop_pos, file_spec_path)
 
+        # store stats
+        output_stats.calculate_avg_methylation(matrix_A, matrix_B, chromosome, stop_pos)
+
+    # Loop done, write stats
+    output_stats.write_avg_methylation(os.path.basename(args.input_bam_A))
+
+
+    print("Done")
