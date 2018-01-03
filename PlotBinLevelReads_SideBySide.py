@@ -3,6 +3,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 import argparse
 import sys
 import os
@@ -22,9 +23,15 @@ class TrackAndOutputStats:
         self.avg_methylation_matrix_A = []
         self.avg_methylation_matrix_B = []
 
-    def calculate_avg_methylation(self, matrix_A, matrix_X, chromosome: str, stop_pos: int):
-        # Take matrixes, calculate avg methylation for each row, calculate total avg, store data
-        pass
+    def calculate_avg_methylation(self, matrix_A, matrix_B, chromosome: str, stop_pos: int):
+        # Take matrixes, calculate avg methylation, store data
+        avg_A = np.matrix(matrix_A).mean()
+        avg_B = np.matrix(matrix_B).mean()
+        self.avg_methylation_matrix_A.append(avg_A)
+        self.avg_methylation_matrix_B.append(avg_B)
+        bin_label = "_".join((chromosome, str(stop_pos)))
+        self.bin_name_for_average.append(bin_label)
+        return
 
     def write_avg_methylation(self):
         # Take data stored in self, generate output file, write to disk
