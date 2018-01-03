@@ -90,5 +90,5 @@ if __name__ == "__main__":
         matrix = matrix.dropna()
 
         # plot the matrix
-        plot_complete_bin_reads(matrix, chromosome, stop_pos-100, stop_pos, file_spec_path)
+        plot_complete_bin_reads(matrix, chromosome, stop_pos-100, stop_pos, file_spec_path, args.cluster)
 
