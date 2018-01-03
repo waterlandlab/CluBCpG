@@ -22,13 +22,13 @@ def plot_complete_bin_reads(matrix, chromosome: str, start_pos: int, stop_pos: i
     if cluster:
         g = sns.clustermap(matrix, vmax=1, vmin=0, cmap='coolwarm', linewidths=0.1, col_cluster=False)
         ax = g.ax_heatmap
-        ax.set_title("{} - {}: {}-{}".format("B\n", chromosome, start_pos, stop_pos))
+        ax.set_title("{}: {}-{}".format(chromosome, start_pos, stop_pos))
         ax.set_ylabel("reads")
         ax.set_xlabel("CpG site")
 
     else:
         g = sns.heatmap(matrix, vmax=1, vmin=0, cmap='coolwarm', linewidths=0.1)
-        g.set_title("{} {}: {}-{}".format("A\n", chromosome, start_pos, stop_pos))
+        g.set_title("{}: {}-{}".format(chromosome, start_pos, stop_pos))
         g.set_ylabel("reads")
         g.set_xlabel("CpG site")
 
