@@ -15,6 +15,17 @@ sns.set_context("talk")
 sns.set_style("darkgrid")
 
 
+def quick_jupyter_visualization(matrix, chromosome: str, start_pos: int, stop_pos: int, output_loc: str):
+    # Take a martix of CpG status and plot
+    # Visualze the reads from the bam file, 1=methylated, 0=unmethylated
+    plt.figure(figsize=(10, 6))
+    g = sns.heatmap(matrix, vmax=1, vmin=0, cmap='coolwarm', linewidths=0.1)
+    g.set_title("{}: {}-{}".format(chromosome, start_pos, stop_pos))
+    g.set_ylabel("reads")
+    g.set_xlabel("CpG site")
+    plt.show()
+
+
 def plot_complete_bin_reads(matrix, chromosome: str, start_pos: int, stop_pos: int, output_loc: str):
     # Take a martix of CpG status and plot
     # Visualze the reads from the bam file, 1=methylated, 0=unmethylated
