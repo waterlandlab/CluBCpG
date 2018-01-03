@@ -1,18 +1,35 @@
 from ParseBam import BamFileReadParser
-import  matplotlib
+import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
-import pandas as pd
-import matplotlib.cm as cm
 import argparse
-import logging
 import sys
 import os
 
 sns.set_context("talk")
 sns.set_style("darkgrid")
+
+
+class TrackAndOutputStats:
+    """This class should implement functions to be passed matrices, perform calculations, store these stats,
+    and finally implement a function to write the output of all this stored data to a file"""
+
+    def __init__(self, output_loc: str):
+        # empty lists to store the data calculated
+        self.output_loc = output_loc
+        self.bin_name_for_average= []
+        self.avg_methylation_matrix_A = []
+        self.avg_methylation_matrix_B = []
+
+    def calculate_avg_methylation(self, matrix_A, matrix_X, chromosome: str, stop_pos: int):
+        # Take matrixes, calculate avg methylation for each row, calculate total avg, store data
+        pass
+
+    def write_avg_methylation(self):
+        # Take data stored in self, generate output file, write to disk
+        pass
+
 
 
 def plot_complete_bin_reads(matrix_A, matrix_B, chromosome: str, start_pos: int, stop_pos: int, output_loc: str):
