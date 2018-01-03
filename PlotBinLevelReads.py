@@ -15,14 +15,19 @@ sns.set_context("talk")
 sns.set_style("darkgrid")
 
 
-def plot_complete_bin_reads(matrix, chromosome: str, start_pos: int, stop_pos: int, output_loc: str):
+def plot_complete_bin_reads(matrix, chromosome: str, start_pos: int, stop_pos: int, output_loc: str, cluster: bool):
     # Take a martix of CpG status and plot
     # Visualze the reads from the bam file, 1=methylated, 0=unmethylated
     plt.figure(figsize=(10, 6))
-    g = sns.heatmap(matrix, vmax=1, vmin=0, cmap='coolwarm', linewidths=0.1)
-    g.set_title("{}: {}-{}".format(chromosome, start_pos, stop_pos))
-    g.set_ylabel("reads")
-    g.set_xlabel("CpG site")
+    if cluster:
+        g = sns.clustermap(matrix, vmax=1, vmin=0, cmap='coolwarm', linewidths=0.1, col_cluster=False)
+    else:
+        g = sns.heatmap(matrix, vmax=1, vmin=0, cmap='coolwarm', linewidths=0.1)
+        ax = g.ax_heatmap
+        ax.set_title("{} - {}: {}-{}".format("B\n", chromosome, start_pos, stop_pos))
+        ax.set_ylabel("reads")
+        ax.set_xlabel("CpG site")
+
     file_name = "{}_{}.png".format(chromosome, str(stop_pos))
     output_file = os.path.join(output_loc, file_name)
     plt.savefig(output_file)
@@ -39,6 +44,7 @@ if __name__ == "__main__":
                             help="Input bam file, coordinate sorted with index present")
     arg_parser.add_argument("-o", "--output_dir",
                             help="Output directory to save figures, defaults to bam file loaction",)
+    arg_parser.add_argument("-c", "--cluster", help="produce clustermaps instead of heatmaps", action="store_true")
 
     args = arg_parser.parse_args()
 
