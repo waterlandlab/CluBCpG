@@ -10,14 +10,25 @@ import argparse
 import logging
 import sys
 import os
+from multiprocessing import Pool
 
 sns.set_context("talk")
 sns.set_style("darkgrid")
 
 
-def plot_complete_bin_reads(matrix, chromosome: str, start_pos: int, stop_pos: int, output_loc: str, cluster: bool):
+
+def plot_complete_bin_reads(bin):
     # Take a martix of CpG status and plot
     # Visualze the reads from the bam file, 1=methylated, 0=unmethylated
+    bin_chr = bin.split("_")
+    chromosome = bin_chr[0]
+    stop_pos = int(bin_chr[1])
+    start_pos = stop_pos - 100
+
+    reads = bam_parser.parse_reads(chromosome, stop_pos - 100, stop_pos)
+    matrix = bam_parser.create_matrix(reads)
+    matrix = matrix.dropna()
+
     plt.figure(figsize=(10, 6))
     if cluster:
         g = sns.clustermap(matrix, vmax=1, vmin=0, cmap='coolwarm', linewidths=0.1, col_cluster=False)
@@ -81,19 +92,13 @@ if __name__ == "__main__":
         for line in f:
             bins.append(line.strip())
 
+    # Get cluster arg for plotting
+    cluster = args.cluster
+
     # Create bam file parser object
     bam_parser = BamFileReadParser(args.input_bam, 20)
 
-    # loop over bins generating a matrix for each
-    for bin in bins:
-        bin_chr = bin.split("_")
-        chromosome = bin_chr[0]
-        stop_pos = int(bin_chr[1])
 
-        reads = bam_parser.parse_reads(chromosome, stop_pos-100, stop_pos)
-        matrix = bam_parser.create_matrix(reads)
-        matrix = matrix.dropna()
 
-        # plot the matrix
-        plot_complete_bin_reads(matrix, chromosome, stop_pos-100, stop_pos, file_spec_path, args.cluster)
+
 
