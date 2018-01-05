@@ -161,3 +161,7 @@ fabric.properties
 *.csv
 *.gz
 *.txt
+
+
+# Dont add shell files
+*.sh
