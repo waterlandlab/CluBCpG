@@ -45,7 +45,7 @@ def plot_complete_bin_reads(bin):
 
 
     file_name = "{}_{}.png".format(chromosome, str(stop_pos))
-    output_file = os.path.join(output_loc, file_name)
+    output_file = os.path.join(file_spec_path, file_name)
     plt.savefig(output_file)
     plt.close()
 
@@ -97,6 +97,12 @@ if __name__ == "__main__":
 
     # Create bam file parser object
     bam_parser = BamFileReadParser(args.input_bam, 20)
+
+    # Start multiprocessing
+    pool = Pool(processes=3)
+    print("Starting plotting using multiple processors")
+    pool.map(plot_complete_bin_reads, bins)
+    print("Done")
 
 
 
