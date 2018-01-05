@@ -33,7 +33,7 @@ def plot_complete_bin_reads(bin):
     matrix = bam_parser.create_matrix(reads)
     matrix = matrix.dropna()
 
-    plt.figure(figsize=(10, 6))
+    fig = plt.figure(figsize=(10, 6))
     if cluster:
         g = sns.clustermap(matrix, vmax=1, vmin=0, cmap='coolwarm', linewidths=0.1, col_cluster=False)
         ax = g.ax_heatmap
@@ -51,7 +51,7 @@ def plot_complete_bin_reads(bin):
     file_name = "{}_{}.png".format(chromosome, str(stop_pos))
     output_file = os.path.join(file_spec_path, file_name)
     plt.savefig(output_file)
-    plt.close()
+    plt.close(fig)
 
 
 if __name__ == "__main__":
@@ -103,6 +103,7 @@ if __name__ == "__main__":
     # Start multiprocessing
     pool = Pool(processes=24) #24 for Shere
     print("Starting plotting using multiple processors")
+    sys.stdout.flush()
     pool.map(plot_complete_bin_reads, bins)
     print("Done")
 
