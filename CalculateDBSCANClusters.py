@@ -17,6 +17,9 @@ log_file = "CalcDBSCAN.{}.log".format(os.path.basename(input_bam_file))
 output_filename = "CalcDBSCAN.{}.csv".format(os.path.basename(input_bam_file))
 BASE_DIR = os.path.dirname(input_bam_file)
 
+# Cluster Params
+min_samples = 2
+
 logging.basicConfig(filename=os.path.join(BASE_DIR, log_file), level=logging.DEBUG)
 
 logging.info("Input file is {}".format(input_bam_file))
@@ -29,7 +32,9 @@ chrom_lengths = dict(zip(parser.OpenBamFile.references, parser.OpenBamFile.lengt
 
 # Open output file for writing
 output_file = open(os.path.join(BASE_DIR, output_filename), 'w')
+output_file.write("#Params: bins_file: {}, bin_size: {}, DBSCAN min_samples: {}".format(bins_file, bin_size, min_samples))
 output_file.write("chromosome,stop_loc,DBSCAN_clusters,cluster_members\n")
+output_file.flush()
 
 bins = []
 with open(bins_file, 'r') as f:
@@ -44,7 +49,7 @@ for bin in bins:
     matrix = parser.create_matrix(reads)
     matrix = matrix.dropna()
 
-    scn = DBSCAN(min_samples=2)
+    scn = DBSCAN(min_samples=min_samples)
     cluster_labels = scn.fit_predict(matrix)
 
     # Count memebers of each cluster
