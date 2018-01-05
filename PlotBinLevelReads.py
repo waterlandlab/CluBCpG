@@ -25,6 +25,10 @@ def plot_complete_bin_reads(bin):
     stop_pos = int(bin_chr[1])
     start_pos = stop_pos - 100
 
+    # Create bam file parser object
+    bam_parser = BamFileReadParser(args.input_bam, 20)
+
+
     reads = bam_parser.parse_reads(chromosome, stop_pos - 100, stop_pos)
     matrix = bam_parser.create_matrix(reads)
     matrix = matrix.dropna()
@@ -95,11 +99,9 @@ if __name__ == "__main__":
     # Get cluster arg for plotting
     cluster = args.cluster
 
-    # Create bam file parser object
-    bam_parser = BamFileReadParser(args.input_bam, 20)
 
     # Start multiprocessing
-    pool = Pool(processes=3)
+    pool = Pool(processes=24) #24 for Shere
     print("Starting plotting using multiple processors")
     pool.map(plot_complete_bin_reads, bins)
     print("Done")
