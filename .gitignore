@@ -165,3 +165,6 @@ fabric.properties
 
 # Dont add shell files
 *.sh
+
+# data for testing during dev
+test_data/*
