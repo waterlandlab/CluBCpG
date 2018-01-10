@@ -139,6 +139,7 @@ if __name__ == "__main__":
     results = pool.map(process_bins, bins)
 
     with open(os.path.join(output_dir, "CombinedClusterCompare_output_all.csv"), 'w') as out:
+        out.write("bin,total_clusters,A_clusters,B_clusters,unique_clusters\n")
         for line in results:
             if line:
                 out.write(line + "\n")
