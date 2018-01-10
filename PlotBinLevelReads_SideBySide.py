@@ -70,7 +70,7 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("bins_to_plot",
                             help="File with each line being one bin to extract and plot, "
-                                 "bins should be in format: chr19:3333333")
+                                 "bins should be in format: chr19_3333333")
     arg_parser.add_argument("-a", "--input_bam_A",
                             help="First Input bam file, coordinate sorted with index present")
     arg_parser.add_argument("-b", "--input_bam_B",
