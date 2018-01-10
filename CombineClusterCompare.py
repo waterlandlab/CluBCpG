@@ -119,19 +119,20 @@ if __name__ == "__main__":
 
         # Filter out any clusters with less than a minimum
         full_matrix = filter_data_frame(full_matrix, cluster_min)
-        total_clusters = len(full_matrix['class'].unique()) # for output
+        total_clusters = len(full_matrix['class'].unique())  # for output
 
         # Calculate clusters for A and B
-        A_clusters = len(full_matrix[full_matrix['input'] == 'A']['class'].unique()) # for output
-        B_clusters = len(full_matrix[full_matrix['input'] == 'B']['class'].unique()) # for output
+        A_clusters = len(full_matrix[full_matrix['input'] == 'A']['class'].unique())  # for output
+        B_clusters = len(full_matrix[full_matrix['input'] == 'B']['class'].unique())  # for output
 
         # todo fix a bug here where unique always equals total
         # Calculate how many clusters are unique to A or B
         num_unique_classes = 0 # for output
+        # print(full_matrix.sort_values('class'))
         for label in full_matrix['class'].unique():
             df = full_matrix[full_matrix['class'] == label]
-            # This cluser is unique to only one input
-            if len(df['input'].unique() == 1):
+            # This cluster is unique to only one input
+            if len(df['input'].unique()) == 1:
                 num_unique_classes += 1
 
         # Write this data for an output
