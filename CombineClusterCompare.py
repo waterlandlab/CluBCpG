@@ -85,7 +85,6 @@ if __name__ == "__main__":
 
     # Go through and cluster reads from each bin
     for bin in bins:
-        print(bin)
         chromosome, bin_loc = bin.split("_")
         bin_loc = int(bin_loc)
 
@@ -100,7 +99,7 @@ if __name__ == "__main__":
 
         # if read depths are still not a minimum, skip
         if matrix_A.shape[0] < read_depth_req or matrix_B.shape[0] < read_depth_req:
-            print("{}: Failed read req".format(bin))
+            print("{}: Failed read req with out {} reads in one file".format(bin, str(matrix_B.shape[0])))
             continue
 
         # create labels and add to dataframe
