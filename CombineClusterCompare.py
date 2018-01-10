@@ -13,7 +13,7 @@ def filter_data_frame(matrix: pd.DataFrame, cluster_memeber_min):
     output = matrix.copy()
     for cluster in output['class'].unique():
         df = output[output['class'] == cluster]
-        if len(df) < cluster_memeber_min
+        if len(df) < cluster_memeber_min:
             indexes = df.index
             output.drop(indexes, inplace=True)
 
@@ -37,26 +37,34 @@ if __name__ == "__main__":
     arg_parser.add_argument("-m", "--cluster_member_minimum",
                             help="Minimum number of members a cluster should have for it to be considered, default=4",
                             default=4)
-    arg_parser.add_argument("-o", "--output_dir",
-                            help="Output directory to write files, default=bam_A file locaiton")
+    arg_parser.add_argument("-r", "--read_depth",
+                            help="Minium number of reads covering all CpGs that the bins should have to analyze, default=20",
+                            default=20)
 
     args = arg_parser.parse_args()
 
     input_bam_a = args.input_bam_A
     input_bam_b = args.input_bam_B
     bins_file = args.bins
-    bin_size = args.bin_size
-    cluster_min = args.cluster_member_minimum
-    output_dir = args.output_dir
+    bin_size = int(args.bin_size)
+    cluster_min = int(args.cluster_member_minimum)
+    read_depth_req = int(args.read_depth)
+
+
+    # Check all inputs are supplied
+    if not input_bam_a or not input_bam_b or not bins_file:
+        raise FileNotFoundError("Please make sure all required input files are supplied")
+
 
     if args.output_dir:
         output_dir = args.output_dir
     else:
         output_dir = os.path.dirname(input_bam_a)
 
-    # Check all inputs are supplied
-    if not input_bam_a or not input_bam_b or not bins_file:
-        raise FileNotFoundError("Please make sure all required input files are supplied")
+    # Create output dir if it doesnt exist
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
 
     bam_parser_A = BamFileReadParser(input_bam_a, 20)
     bam_parser_B = BamFileReadParser(input_bam_b, 20)
@@ -72,12 +80,14 @@ if __name__ == "__main__":
     bins_with_unique_clusters = []
 
     # Open output file for writing all data and unique data
-    output_all = open(os.path.join(output_dir, "CombineClusterCompare_output_all.csv", 'w'))
-    output_unique = open(os.path.join(output_dir, "CombinedClusterCompare_outout_unique.csv"), 'w')
+    output_all = open(os.path.join(output_dir, "CombinedClusterCompare_output_all.csv"), 'w')
+    output_unique = open(os.path.join(output_dir, "CombinedClusterCompare_output_unique.csv"), 'w')
 
     # Go through and cluster reads from each bin
     for bin in bins:
+        print(bin)
         chromosome, bin_loc = bin.split("_")
+        bin_loc = int(bin_loc)
 
         reads_A = bam_parser_A.parse_reads(chromosome, bin_loc-bin_size, bin_loc)
         reads_B = bam_parser_B.parse_reads(chromosome, bin_loc-bin_size, bin_loc)
@@ -87,6 +97,11 @@ if __name__ == "__main__":
         # drop reads without full coverage of CpGs
         matrix_A = matrix_A.dropna()
         matrix_B = matrix_B.dropna()
+
+        # if read depths are still not a minimum, skip
+        if matrix_A.shape[0] < read_depth_req or matrix_B.shape[0] < read_depth_req:
+            print("{}: Failed read req".format(bin))
+            continue
 
         # create labels and add to dataframe
         labels_A = ['A'] * len(matrix_A)
@@ -110,6 +125,7 @@ if __name__ == "__main__":
         A_clusters = len(full_matrix[full_matrix['input'] == 'A']['class'].unique()) # for output
         B_clusters = len(full_matrix[full_matrix['input'] == 'B']['class'].unique()) # for output
 
+        # todo fix a bug here where unique always equals total
         # Calculate how many clusters are unique to A or B
         num_unique_classes = 0 # for output
         for label in full_matrix['class'].unique():
@@ -119,10 +135,12 @@ if __name__ == "__main__":
                 num_unique_classes += 1
 
         # Write this data for an output
-        output_line = ",".join([bin, str(total_clusters), str(A_clusters), str(B_clusters), str(num_unique_classes),'\n'])
-        output_all.write(output_line)
+        output_line = ",".join([bin, str(total_clusters), str(A_clusters), str(B_clusters), str(num_unique_classes)])
+        output_all.write(output_line + "\n")
+        output_all.flush()
         if num_unique_classes > 0:
-            output_unique.write(output_line)
+            output_unique.write(output_line + "\n")
+            output_unique.flush()
 
     output_all.close()
     output_unique.close()
