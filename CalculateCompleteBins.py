@@ -71,7 +71,7 @@ bins = ["{}_".format(chromosome) + str(x) for x in bins]
     results = pool.map(CalculateBinCoverage, bins)
 
     for result in results:
-        # todo bin must be linked with matrix output maybe create dict above
+        # todo bin must be linked with matrix output maybe use temp files and merge
         output_file.write(chromosome + ",")
         output_file.write(str(start_pos) + ",")
         output_file.write(str(stop_pos) + ",")
