@@ -20,6 +20,7 @@ def filter_data_frame(matrix: pd.DataFrame, cluster_memeber_min):
 
     return output
 
+# Function to execute in parallel using Pool
 def process_bins(bin):
 
     bam_parser_A = BamFileReadParser(input_bam_a, 20)
@@ -64,7 +65,6 @@ def process_bins(bin):
     A_clusters = len(full_matrix[full_matrix['input'] == 'A']['class'].unique())  # for output
     B_clusters = len(full_matrix[full_matrix['input'] == 'B']['class'].unique())  # for output
 
-    # todo fix a bug here where unique always equals total
     # Calculate how many clusters are unique to A or B
     num_unique_classes = 0  # for output
     # print(full_matrix.sort_values('class'))
@@ -78,8 +78,10 @@ def process_bins(bin):
     output_line = ",".join([bin, str(total_clusters), str(A_clusters), str(B_clusters), str(num_unique_classes)])
     return output_line
 
+
 if __name__ == "__main__":
 
+    # Set command line arguments
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("-a", "--input_bam_A",
                             help="First Input bam file, coordinate sorted with index present")
@@ -100,9 +102,9 @@ if __name__ == "__main__":
     arg_parser.add_argument("-n", "--num_processors",
                             help="Number of processors to use for analysis, default=1",
                             default=1)
-
     args = arg_parser.parse_args()
 
+    # Assign arg parser vars to new variables
     input_bam_a = args.input_bam_A
     input_bam_b = args.input_bam_B
     bins_file = args.bins
@@ -110,7 +112,6 @@ if __name__ == "__main__":
     cluster_min = int(args.cluster_member_minimum)
     read_depth_req = int(args.read_depth)
     num_processors = int(args.num_processors)
-
 
     # Check all inputs are supplied
     if not input_bam_a or not input_bam_b or not bins_file:
@@ -132,7 +133,6 @@ if __name__ == "__main__":
         for line in f:
             data = line.strip().split(",")
             bins.append("_".join([data[0], data[2]]))
-
 
     pool = Pool(processes=num_processors)
     print("Starting working pool, using {} processors".format(num_processors))
