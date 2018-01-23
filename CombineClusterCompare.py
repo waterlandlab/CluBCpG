@@ -1,15 +1,18 @@
 from sklearn.cluster import DBSCAN
 from collections import Counter
 import pandas as pd
+import pickle
 import numpy as np
 import sys
 import logging
 import os
 from ParseBam import BamFileReadParser
+from OutputComparisonResults import OutputComparisonResults
 import argparse
+import datetime
 from multiprocessing import Pool
 
-
+# Remove clusters with less than n members
 def filter_data_frame(matrix: pd.DataFrame, cluster_memeber_min):
     output = matrix.copy()
     for cluster in output['class'].unique():
@@ -20,7 +23,77 @@ def filter_data_frame(matrix: pd.DataFrame, cluster_memeber_min):
 
     return output
 
+
+# Get only the matrices made up of reads from A or B
+def get_unique_matrices(filtered_matrix):
+    unique_dfs = []
+    for label in filtered_matrix['class'].unique():
+        df = filtered_matrix[filtered_matrix['class'] == label]
+        if len(df['input'].unique()) == 1:
+            unique_dfs.append(df)
+
+    return unique_dfs
+
+
+# Get matrices with reads made up of A and B
+def get_common_matrices(filtered_matrix):
+    shared_dfs = []
+    for label in filtered_matrix['class'].unique():
+        df = filtered_matrix[filtered_matrix['class'] == label]
+        if len(df['input'].unique()) > 1:
+            shared_dfs.append(df)
+
+    return shared_dfs
+
+# Get the means for all unique matrices
+def get_unique_means(filtered_matrix):
+    output = []
+    for matrix in get_unique_matrices(filtered_matrix):
+        input_file = matrix['input'].unique()[0]
+        matrix_mean = np.array(matrix)[:, :-2].mean()
+        output.append((input_file, matrix_mean))
+
+    return output
+
+# Get the means for all common matrices
+def get_common_means(filtered_matrix):
+    output = []
+    for matrix in get_common_matrices(filtered_matrix):
+        matrix_mean = np.array(matrix)[:, :-2].mean()
+        output.append(matrix_mean)
+
+    return output
+
+# Generate a string label for each bin
+def make_bin_label(chromosome, stop_loc):
+    return "_".join([chromosome, str(stop_loc)])
+
+#
+def generate_output_data(filtered_matrix, chromosome, bin_loc):
+    # Individual comparisons data
+    lines = []
+    unique_groups = get_unique_means(filtered_matrix)
+    common_groups = get_common_means(filtered_matrix)
+    bin_label = make_bin_label(chromosome, bin_loc)
+
+    for group in unique_groups:
+        file_input = group[0]
+        mean = group[1]
+        for common_group in common_groups:
+            diff = mean - common_group
+            line = ",".join([bin_label, file_input, str(mean), str(common_group), str(diff)])
+            lines.append(line)
+
+    # Bin summary data:
+    num_unique = len(unique_groups)
+    num_common = len(common_groups)
+    num_total = num_unique + num_common
+    summary_line = ",".join([bin_label, str(num_unique), str(num_common), str(num_total)])
+
+    return summary_line, lines
+
 # Function to execute in parallel using Pool
+# bin should be passed as "chr19_33444"
 def process_bins(bin):
 
     bam_parser_A = BamFileReadParser(input_bam_a, 20)
@@ -41,6 +114,7 @@ def process_bins(bin):
     # if read depths are still not a minimum, skip
     if matrix_A.shape[0] < read_depth_req or matrix_B.shape[0] < read_depth_req:
         print("{}: Failed read req with out {} reads in one file".format(bin, str(matrix_B.shape[0])))
+        sys.stdout.flush()
         return None
 
     # create labels and add to dataframe
@@ -54,32 +128,29 @@ def process_bins(bin):
 
     # Create DBSCAN classifier and cluster add cluster classes to df
     clf = DBSCAN(min_samples=2)
-    labels = clf.fit_predict(data_to_cluster)
+    try:
+        labels = clf.fit_predict(data_to_cluster)
+    except ValueError as e:
+        # log error
+        logging.error("Error: \n")
+        logging.error(e)
+        logging.debug("Occured on bin: {}".format(bin))
+        logging.debug("Dumping data_to_cluster matrix:")
+        logging.debug(data_to_cluster)
+        logging.error("Continuning after error")
+        return None
+
     full_matrix['class'] = labels
 
     # Filter out any clusters with less than a minimum
-    full_matrix = filter_data_frame(full_matrix, cluster_min)
-    total_clusters = len(full_matrix['class'].unique())  # for output
+    filtered_matrix = filter_data_frame(full_matrix, cluster_min)
 
-    # Calculate clusters for A and B
-    A_clusters = len(full_matrix[full_matrix['input'] == 'A']['class'].unique())  # for output
-    B_clusters = len(full_matrix[full_matrix['input'] == 'B']['class'].unique())  # for output
+    return generate_output_data(filtered_matrix, chromosome, bin_loc)
 
-    # Calculate how many clusters are unique to A or B
-    num_unique_classes = 0  # for output
-    # print(full_matrix.sort_values('class'))
-    for label in full_matrix['class'].unique():
-        df = full_matrix[full_matrix['class'] == label]
-        # This cluster is unique to only one input
-        if len(df['input'].unique()) == 1:
-            num_unique_classes += 1
-
-    # Write this data for an output
-    output_line = ",".join([bin, str(total_clusters), str(A_clusters), str(B_clusters), str(num_unique_classes)])
-    return output_line
 
 
 if __name__ == "__main__":
+
 
     # Set command line arguments
     arg_parser = argparse.ArgumentParser()
@@ -113,9 +184,13 @@ if __name__ == "__main__":
     read_depth_req = int(args.read_depth)
     num_processors = int(args.num_processors)
 
+    # todo write input params to log_file
+
     # Check all inputs are supplied
     if not input_bam_a or not input_bam_b or not bins_file:
-        raise FileNotFoundError("Please make sure all required input files are supplied")
+        print("Please make sure all required input files are supplied")
+        logging.error("All required input files were not supplied. Exiting error code 1.")
+        sys.exit(1)
 
 
     if args.output_dir:
@@ -127,6 +202,11 @@ if __name__ == "__main__":
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
+    # Set up logging
+    start_time = datetime.datetime.now().strftime("%y-%m-%d_%H-%M-%S")
+    log_file = os.path.join(output_dir, "{}.log".format(start_time))
+    logging.basicConfig(filename=os.path.join(output_dir, log_file), level=logging.DEBUG) #todo adjust this with a -v imput param
+
     # Read in bins
     bins=[]
     with open(bins_file, 'r') as f:
@@ -135,13 +215,12 @@ if __name__ == "__main__":
             bins.append("_".join([data[0], data[2]]))
 
     pool = Pool(processes=num_processors)
-    print("Starting working pool, using {} processors".format(num_processors))
+    logging.info("Starting workers pool, using {} processors".format(num_processors))
     results = pool.map(process_bins, bins)
 
-    with open(os.path.join(output_dir, "CombinedClusterCompare_output_all.csv"), 'w') as out:
-        out.write("bin,total_clusters,A_clusters,B_clusters,unique_clusters\n")
-        for line in results:
-            if line:
-                out.write(line + "\n")
+    # Convert the results into two output csv files for human analysis
+    output = OutputComparisonResults(results)
+    output.write_to_output(output_dir, start_time)
 
-    print("Done")
+
+    logging.info("Done")
