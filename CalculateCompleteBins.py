@@ -4,11 +4,6 @@ import os
 import logging
 from multiprocessing import Pool
 import numpy as np
-import pandas as pd
-from sklearn.cluster import DBSCAN
-from sklearn.datasets import make_blobs
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_samples, silhouette_score
 
 #########################
 #
@@ -21,6 +16,53 @@ from sklearn.metrics import silhouette_samples, silhouette_score
 #
 ##########################
 
+class CalculateComplteBins:
+
+    def __init__(self, input_bam_file, bin_size: int, number_of_processors=1):
+        """
+        This class is initialized with a path to a bam file and a bin size
+        :param input_bam_file: One of the BAM files for analysis to be performed
+        :param bin_size: Size of the bins for the analysis, integer
+        :number_of_processors: How many CPUs to use for parallel computation, default=1
+        """
+        self.input_bam_file = input_bam_file
+        self.bin_size = bin_size
+        self.number_of_processors = number_of_processors
+
+    def CalculateBinCoverate(self, bin):
+        """
+        Take a single bin, return a matrix
+        :param bin: Bin should be passed as "Chr19_4343343"
+        :return: pd.DataFrame with rows containing NaNs dropped
+        """
+
+        # Get reads from bam file
+        parser = BamFileReadParser(self.input_bam_file, 20)
+        # Split bin into parts
+        chromosome, bin_location = bin.split("_")
+        try:
+            reads = parser.parse_reads(chromosome, int(bin_location)-self.bin_size, int(bin_location))
+        except ValueError:
+            # No reads are within this window, do nothing
+            logging.info("No reads found in the window of {}:{}-{}".format(chromosome, str(int(bin_location-100)), bin_location))
+            return None
+
+        # convert to data_frame of 1s and 0s, drop rows with NaN
+        matrix = parser.create_matrix(reads)
+        matrix = matrix.dropna()
+
+        return matrix
+
+    def GetChromosomeLenghts(self):
+        """
+        Get dictionary containing lengths of the chromosomes. Uses bam file for reference
+        :return: Dictionary of chromosome lengths, ex: {"chrX": 222222}
+        """
+        parser = BamFileReadParser(self.input_bam_file, 20)
+        return dict(zip(parser.OpenBamFile.references, parser.OpenBamFile.lengths))
+
+
+
 
 def CalculateBinCoverage(bin):
     parser = BamFileReadParser(input_bam_file, 20)
@@ -30,11 +72,12 @@ def CalculateBinCoverage(bin):
     except ValueError:
         # No reads in this window
         logging.info("No reads found in the window of {} to {}".format(start_pos, stop_pos))
-        continue
 
     matrix = matrix.dropna()
 
     return matrix
+
+
 
 
 if __name__ == "__main__":
@@ -69,16 +112,16 @@ if __name__ == "__main__":
     bins = ["{}_".format(chromosome) + str(x) for x in bins]
 
     # Start looping over the bam file
-        pool = Pool(processes=4)
-        results = pool.map(CalculateBinCoverage, bins)
+    pool = Pool(processes=4)
+    results = pool.map(CalculateBinCoverage, bins)
 
-        for result in results:
-            # todo bin must be linked with matrix output maybe use temp files and merge
-            output_file.write(chromosome + ",")
-            output_file.write(str(start_pos) + ",")
-            output_file.write(str(stop_pos) + ",")
-            output_file.write(str(result.shape[0]) + ",")
-            output_file.write(str(result.shape[1]) + "\n")
+    for result in results:
+        # todo bin must be linked with matrix output maybe use temp files and merge
+        output_file.write(chromosome + ",")
+        output_file.write(str(start_pos) + ",")
+        output_file.write(str(stop_pos) + ",")
+        output_file.write(str(result.shape[0]) + ",")
+        output_file.write(str(result.shape[1]) + "\n")
 
 
     output_file.close()
