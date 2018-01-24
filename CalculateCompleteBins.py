@@ -107,9 +107,10 @@ class CalculateCompleteBins:
 
         with open(output_file, "w") as out:
             for result in results:
-                out.write(result[0] + ",")
-                out.write(str(result[1].shape[0]) + ",")
-                out.write(str(result[1].shape[1]) + "\n")
+                if result:
+                    out.write(result[0] + ",")
+                    out.write(str(result[1].shape[0]) + ",")
+                    out.write(str(result[1].shape[1]) + "\n")
 
         logging.info("Full read coverage analysis complete!")
 
