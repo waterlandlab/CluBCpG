@@ -8,7 +8,7 @@ import numpy as np
 
 class CalculateCompleteBins:
 
-    def __init__(self, input_bam_file, bin_size: int, output_directory: str, number_of_processors=1):
+    def __init__(self, input_bam_file: str, bin_size: int, output_directory: str, number_of_processors=1):
         """
         This class is initialized with a path to a bam file and a bin size
         :param input_bam_file: One of the BAM files for analysis to be performed
@@ -16,8 +16,8 @@ class CalculateCompleteBins:
         :number_of_processors: How many CPUs to use for parallel computation, default=1
         """
         self.input_bam_file = input_bam_file
-        self.bin_size = bin_size
-        self.number_of_processors = number_of_processors
+        self.bin_size = int(bin_size)
+        self.number_of_processors = int(number_of_processors)
         self.output_directory = output_directory
 
     def calculate_bin_coverage(self, bin):
@@ -32,19 +32,21 @@ class CalculateCompleteBins:
         # Split bin into parts
         chromosome, bin_location = bin.split("_")
         try:
-            reads = parser.parse_reads(chromosome, int(bin_location)-self.bin_size, int(bin_location))
+            reads = parser.parse_reads(chromosome, (int(bin_location)-self.bin_size), int(bin_location))
+            matrix = parser.create_matrix(reads)
+
         except ValueError:
             # No reads are within this window, do nothing
-            logging.info("No reads found in the window of {}:{}-{}".format(chromosome, str(int(bin_location-100)), bin_location))
+            logging.info("No reads found for bin {}".format(bin))
             return None
 
         # convert to data_frame of 1s and 0s, drop rows with NaN
-        matrix = parser.create_matrix(reads)
         matrix = matrix.dropna()
+        logging.debug(bin, matrix)
 
-        return matrix
+        return bin, matrix
 
-    def get_chromosome_lenghts(self):
+    def get_chromosome_lengths(self):
         """
         Get dictionary containing lengths of the chromosomes. Uses bam file for reference
         :return: Dictionary of chromosome lengths, ex: {"chrX": 222222}
@@ -74,29 +76,35 @@ class CalculateCompleteBins:
         all_bins = []
         for key, value in chromosome_len_dict.items():
             print(key)
-            bins = list(np.arange(bin_size, value + bin_size, bin_size))
+            bins = list(np.arange(self.bin_size, value + self.bin_size, self.bin_size))
             bins = ["_".join([key, str(x)]) for x in bins]
             all_bins.extend(bins)
 
         return all_bins
 
+    def analyze_bins(self):
+        # Get and clean dict of chromosome lenghts, convert to list of bins
+        chromosome_lenghts = self.get_chromosome_lengths()
+        chromosome_lenghts = self.remove_scaffolds(chromosome_lenghts)
+        bins_to_analyze = self.generate_bins_list(chromosome_lenghts)
 
+        # Set up for multiprocessing
+        logging.info("Beginning analysis of bins using {} processors".format(self.number_of_processors))
+        pool = Pool(processes=self.number_of_processors)
+        results = pool.map(self.calculate_bin_coverage, bins_to_analyze)
+        print("After results line")
+        logging.info("Analysis complete")
 
-def CalculateBinCoverage(bin):
-    parser = BamFileReadParser(input_bam_file, 20)
-    try:
-        reads = parser.parse_reads(chromosome, start_pos, stop_pos)
-        matrix = parser.create_matrix(reads)
-    except ValueError:
-        # No reads in this window
-        logging.info("No reads found in the window of {} to {}".format(start_pos, stop_pos))
+        # Write to output file
+        output_file = os.path.join(self.output_directory, "CalculateCompleteBins_{}.csv".format(os.path.basename(self.input_bam_file)))
 
-    matrix = matrix.dropna()
+        with open(output_file, "w") as out:
+            for result in results:
+                out.write(result[0] + ",")
+                out.write(str(result[1].shape[0]) + ",")
+                out.write(str(result[1].shape[1]) + "\n")
 
-    return matrix
-
-
-
+        logging.info("Full read coverage anaysis complete!")
 
 
 if __name__ == "__main__":
@@ -104,45 +112,42 @@ if __name__ == "__main__":
     # Input params
     # todo add these as command line args using argparse
     input_bam_file = sys.argv[1]
-    bin_size = 100
-    chromosome = 'chr19'
+    num_of_processors = sys.argv[2]
+    if not num_of_processors:
+        num_of_processors = 1
+
     log_file = "CalculateCompleteBins.{}.log".format(os.path.basename(input_bam_file))
-    output_filename = "CalculateCompleteBins.{}.csv".format(os.path.basename(input_bam_file))
     BASE_DIR = os.path.dirname(input_bam_file)
 
     logging.basicConfig(filename=os.path.join(BASE_DIR, log_file), level=logging.DEBUG)
 
+    calc = CalculateCompleteBins(input_bam_file, 100, BASE_DIR, num_of_processors)
 
-    logging.info("Input file is {}".format(input_bam_file))
-    logging.info("Input params, bin size: {}".format(bin_size))
-    logging.info("Chromosome: {}".format(chromosome))
+    calc.analyze_bins()
 
-    # Setup parser object on the bam file
-    chrom_lengths = dict(zip(parser.OpenBamFile.references, parser.OpenBamFile.lengths))
+    ###############################
+    # chromosome_lenghts = calc.get_chromosome_lengths()
+    # chromosome_lenghts = calc.remove_scaffolds(chromosome_lenghts)
+    # bins_to_analyze = calc.generate_bins_list(chromosome_lenghts)
+    #
+    # # Set up for multiprocessing
+    # logging.info("Beginning analysis of bins using {} processors".format(calc.number_of_processors))
+    # pool = Pool(processes=calc.number_of_processors)
+    # results = pool.map(calc.calculate_bin_coverage, bins_to_analyze)
+    # print("After results line")
+    # logging.info("Analysis complete")
+    #
+    # # Write to output file
+    # output_file = os.path.join(calc.output_directory,
+    #                            "CalculateCompleteBins_{}.csv".format(os.path.basename(calc.input_bam_file)))
+    #
+    # with open(output_file, "w") as out:
+    #     for result in results:
+    #         out.write(result[0] + ",")
+    #         out.write(str(result[1].shape[0]) + ",")
+    #         out.write(str(result[1].shape[1]) + "\n")
+    #
+    # logging.info("Full read coverage anaysis complete!")
 
-    # Open output file for writing
-    output_file = open(os.path.join(BASE_DIR, output_filename), 'w')
-    #output_file.write("chromosome,start,stop,full_reads,CpGs\n")
-
-
-    # generate all bins for chromosome
-    bins = list(np.arange(bin_size, chrom_lengths[chromosome] + bin_size, bin_size))
-    # convert to input format
-    bins = ["{}_".format(chromosome) + str(x) for x in bins]
-
-    # Start looping over the bam file
-    pool = Pool(processes=4)
-    results = pool.map(CalculateBinCoverage, bins)
-
-    for result in results:
-        # todo bin must be linked with matrix output maybe use temp files and merge
-        output_file.write(chromosome + ",")
-        output_file.write(str(start_pos) + ",")
-        output_file.write(str(stop_pos) + ",")
-        output_file.write(str(result.shape[0]) + ",")
-        output_file.write(str(result.shape[1]) + "\n")
-
-
-    output_file.close()
-    logging.info("Complete")
+    ###################################
 
