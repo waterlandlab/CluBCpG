@@ -43,7 +43,6 @@ class CalculateCompleteBins:
 
         # convert to data_frame of 1s and 0s, drop rows with NaN
         matrix = matrix.dropna()
-        logging.debug(bin, matrix)
 
         return bin, matrix
 
