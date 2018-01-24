@@ -81,14 +81,20 @@ class CalculateCompleteBins:
 
         return all_bins
 
-    def analyze_bins(self):
+    def analyze_bins(self, individual_chrom=None):
         # Get and clean dict of chromosome lenghts, convert to list of bins
-
         print("Getting Chromosome lengths from bam files...")
-        chromosome_lenghts = self.get_chromosome_lengths()
-        chromosome_lenghts = self.remove_scaffolds(chromosome_lenghts)
+        chromosome_lengths = self.get_chromosome_lengths()
+        chromosome_lengths = self.remove_scaffolds(chromosome_lengths)
+
+        # If one chromosome was specified use only that chromosome
+        if individual_chrom:
+            new = dict()
+            new[individual_chrom] = chromosome_lengths[individual_chrom]
+            chromosome_lengths = new
+
         print("Generating bins for the entire genome...")
-        bins_to_analyze = self.generate_bins_list(chromosome_lenghts)
+        bins_to_analyze = self.generate_bins_list(chromosome_lengths)
 
         # Set up for multiprocessing
         print("Beginning analysis of bins using {} processors".format(self.number_of_processors))
@@ -105,7 +111,7 @@ class CalculateCompleteBins:
                 out.write(str(result[1].shape[0]) + ",")
                 out.write(str(result[1].shape[1]) + "\n")
 
-        logging.info("Full read coverage anaysis complete!")
+        logging.info("Full read coverage analysis complete!")
 
 
 if __name__ == "__main__":
@@ -117,6 +123,9 @@ if __name__ == "__main__":
     if not num_of_processors:
         num_of_processors = 1
 
+    # temp chromosome override for testing todo set this as an input arg
+    chrom_of_interest = "chr19"
+
     log_file = "CalculateCompleteBins.{}.log".format(os.path.basename(input_bam_file))
     BASE_DIR = os.path.dirname(input_bam_file)
 
@@ -124,7 +133,7 @@ if __name__ == "__main__":
 
     calc = CalculateCompleteBins(input_bam_file, 100, BASE_DIR, num_of_processors)
 
-    calc.analyze_bins()
+    calc.analyze_bins(chrom_of_interest)
 
     ###############################
     # chromosome_lenghts = calc.get_chromosome_lengths()
