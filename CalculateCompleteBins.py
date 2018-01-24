@@ -8,14 +8,14 @@ import numpy as np
 
 class CalculateCompleteBins:
 
-    def __init__(self, input_bam_file: str, bin_size: int, output_directory: str, number_of_processors=1):
+    def __init__(self, bam_file: str, bin_size: int, output_directory: str, number_of_processors=1):
         """
         This class is initialized with a path to a bam file and a bin size
-        :param input_bam_file: One of the BAM files for analysis to be performed
+        :param bam_file: One of the BAM files for analysis to be performed
         :param bin_size: Size of the bins for the analysis, integer
         :number_of_processors: How many CPUs to use for parallel computation, default=1
         """
-        self.input_bam_file = input_bam_file
+        self.input_bam_file = bam_file
         self.bin_size = int(bin_size)
         self.number_of_processors = int(number_of_processors)
         self.output_directory = output_directory
@@ -134,30 +134,4 @@ if __name__ == "__main__":
     calc = CalculateCompleteBins(input_bam_file, 100, BASE_DIR, num_of_processors)
 
     calc.analyze_bins(chrom_of_interest)
-
-    ###############################
-    # chromosome_lenghts = calc.get_chromosome_lengths()
-    # chromosome_lenghts = calc.remove_scaffolds(chromosome_lenghts)
-    # bins_to_analyze = calc.generate_bins_list(chromosome_lenghts)
-    #
-    # # Set up for multiprocessing
-    # logging.info("Beginning analysis of bins using {} processors".format(calc.number_of_processors))
-    # pool = Pool(processes=calc.number_of_processors)
-    # results = pool.map(calc.calculate_bin_coverage, bins_to_analyze)
-    # print("After results line")
-    # logging.info("Analysis complete")
-    #
-    # # Write to output file
-    # output_file = os.path.join(calc.output_directory,
-    #                            "CalculateCompleteBins_{}.csv".format(os.path.basename(calc.input_bam_file)))
-    #
-    # with open(output_file, "w") as out:
-    #     for result in results:
-    #         out.write(result[0] + ",")
-    #         out.write(str(result[1].shape[0]) + ",")
-    #         out.write(str(result[1].shape[1]) + "\n")
-    #
-    # logging.info("Full read coverage anaysis complete!")
-
-    ###################################
 
