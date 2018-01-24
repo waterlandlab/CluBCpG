@@ -31,8 +31,9 @@ class CalculateCompleteBins:
         parser = BamFileReadParser(self.input_bam_file, 20)
         # Split bin into parts
         chromosome, bin_location = bin.split("_")
+        bin_location = int(bin_location)
         try:
-            reads = parser.parse_reads(chromosome, (int(bin_location)-self.bin_size), int(bin_location))
+            reads = parser.parse_reads(chromosome, (bin_location-self.bin_size), bin_location)
             matrix = parser.create_matrix(reads)
 
         except ValueError:
@@ -75,7 +76,6 @@ class CalculateCompleteBins:
         """
         all_bins = []
         for key, value in chromosome_len_dict.items():
-            print(key)
             bins = list(np.arange(self.bin_size, value + self.bin_size, self.bin_size))
             bins = ["_".join([key, str(x)]) for x in bins]
             all_bins.extend(bins)
@@ -84,15 +84,17 @@ class CalculateCompleteBins:
 
     def analyze_bins(self):
         # Get and clean dict of chromosome lenghts, convert to list of bins
+
+        print("Getting Chromosome lengths from bam files...")
         chromosome_lenghts = self.get_chromosome_lengths()
         chromosome_lenghts = self.remove_scaffolds(chromosome_lenghts)
+        print("Generating bins for the entire genome...")
         bins_to_analyze = self.generate_bins_list(chromosome_lenghts)
 
         # Set up for multiprocessing
-        logging.info("Beginning analysis of bins using {} processors".format(self.number_of_processors))
+        print("Beginning analysis of bins using {} processors".format(self.number_of_processors))
         pool = Pool(processes=self.number_of_processors)
         results = pool.map(self.calculate_bin_coverage, bins_to_analyze)
-        print("After results line")
         logging.info("Analysis complete")
 
         # Write to output file
