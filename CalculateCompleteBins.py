@@ -33,7 +33,7 @@ class CalculateCompleteBins:
         chromosome, bin_location = bin.split("_")
         bin_location = int(bin_location)
         try:
-            reads = parser.parse_reads(chromosome, (bin_location-self.bin_size), bin_location)
+            reads = parser.parse_reads(chromosome, bin_location-self.bin_size, bin_location)
             matrix = parser.create_matrix(reads)
 
         except ValueError:
@@ -121,8 +121,6 @@ if __name__ == "__main__":
     # todo add these as command line args using argparse
     input_bam_file = sys.argv[1]
     num_of_processors = sys.argv[2]
-    if not num_of_processors:
-        num_of_processors = 1
 
     # temp chromosome override for testing todo set this as an input arg
     chrom_of_interest = "chr19"
