@@ -137,8 +137,8 @@ def process_bins(bin):
 
     # if read depths are still not a minimum, skip
     if matrix_A.shape[0] < read_depth_req or matrix_B.shape[0] < read_depth_req:
-        print("{}: Failed read req with out {} reads in one file".format(bin, str(matrix_B.shape[0])))
-        sys.stdout.flush()
+        # print("{}: Failed read req with out {} reads in one file".format(bin, str(matrix_B.shape[0])))
+        # sys.stdout.flush()
         return None
 
     # create labels and add to dataframe
@@ -161,7 +161,7 @@ def process_bins(bin):
         logging.debug("Occured on bin: {}".format(bin))
         logging.debug("Dumping data_to_cluster matrix:")
         logging.debug(data_to_cluster)
-        logging.error("Continuning after error")
+        logging.error("Continuing after error")
         return None
 
     full_matrix['class'] = labels
