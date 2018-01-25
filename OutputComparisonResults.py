@@ -63,7 +63,8 @@ class OutputIndividualMatrixData:
 
             for result in self.results:
                 if result:
-                    output_comparisons.write(result + "\n")
+                    for line in result:
+                        output_comparisons.write(line + "\n")
                 else:
                     continue
 
