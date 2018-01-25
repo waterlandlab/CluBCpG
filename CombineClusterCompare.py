@@ -7,7 +7,7 @@ import sys
 import logging
 import os
 from ParseBam import BamFileReadParser
-from OutputComparisonResults import OutputComparisonResults
+from OutputComparisonResults import OutputComparisonResults, OutputIndividualMatrixData
 import argparse
 import datetime
 from multiprocessing import Pool
@@ -169,7 +169,8 @@ def process_bins(bin):
     # Filter out any clusters with less than a minimum
     filtered_matrix = filter_data_frame(full_matrix, cluster_min)
 
-    return generate_output_data(filtered_matrix, chromosome, bin_loc)
+    # return generate_output_data(filtered_matrix, chromosome, bin_loc)
+    return generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc)
 
 
 
@@ -243,7 +244,8 @@ if __name__ == "__main__":
     results = pool.map(process_bins, bins)
 
     # Convert the results into two output csv files for human analysis
-    output = OutputComparisonResults(results)
+    # output = OutputComparisonResults(results)
+    output = OutputIndividualMatrixData(results)
     output.write_to_output(output_dir, start_time)
 
 
