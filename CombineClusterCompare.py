@@ -92,6 +92,30 @@ def generate_output_data(filtered_matrix, chromosome, bin_loc):
 
     return summary_line, lines
 
+def generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc):
+    # Individual comparisons data
+    lines = []
+    unique_groups = get_unique_matrices(filtered_matrix)
+    common_groups = get_common_matrices(filtered_matrix)
+    bin_label = make_bin_label(chromosome, bin_loc)
+
+    for matrix in unique_groups:
+        m_mean = np.matrix(matrix.drop(['class', 'input'], axis=1)).mean()
+        input_label = matrix['input'].unique()[0]
+        class_label = matrix['class'].unique()[0]
+        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label)])
+        lines.append(out_line)
+
+    for matrix in common_groups:
+        m_mean = np.matrix(matrix.drop(['class', 'input'], axis=1)).mean()
+        input_label = 'AB'
+        class_label = matrix['class'].unique()[0]
+        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label)])
+        lines.append(out_line)
+
+    return lines
+
+
 # Function to execute in parallel using Pool
 # bin should be passed as "chr19_33444"
 def process_bins(bin):
