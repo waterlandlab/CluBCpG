@@ -31,6 +31,8 @@ class CalculateCompleteBins:
         :return: pd.DataFrame with rows containing NaNs dropped
         """
 
+        logging.debug("Calculating bin {}".format(bin))
+
         # Get reads from bam file
         parser = BamFileReadParser(self.input_bam_file, 20)
         # Split bin into parts
