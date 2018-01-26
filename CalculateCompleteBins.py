@@ -1,10 +1,11 @@
-from ParseBam import BamFileReadParser
+from .ParseBam import BamFileReadParser
 import sys
 import os
 import logging
 from multiprocessing import Pool
 import numpy as np
-
+import argparse
+from collections import defaultdict
 
 class CalculateCompleteBins:
 
@@ -73,15 +74,15 @@ class CalculateCompleteBins:
 
     def generate_bins_list(self, chromosome_len_dict: dict):
         """
-        Get a list of all bins according to desired bin size for all chromosomes in the passed dict
+        Get a dict of lists of all bins according to desired bin size for all chromosomes in the passed dict
         :param chromosome_len_dict: A dict of chromosome length sizes from get_chromosome_lenghts, cleaned up by remove_scaffolds() if desired
-        :return: list of all bins
+        :return: dict with each key being a chromosome. ex: chr1
         """
-        all_bins = []
+        all_bins = defaultdict(list)
         for key, value in chromosome_len_dict.items():
             bins = list(np.arange(self.bin_size, value + self.bin_size, self.bin_size))
             bins = ["_".join([key, str(x)]) for x in bins]
-            all_bins.extend(bins)
+            all_bins[key].extend(bins)
 
         return all_bins
 
@@ -103,9 +104,18 @@ class CalculateCompleteBins:
         # Set up for multiprocessing
         print("Beginning analysis of bins using {} processors.".format(self.number_of_processors))
         print("This will take awhile.....")
-        pool = Pool(processes=self.number_of_processors)
-        results = pool.map(self.calculate_bin_coverage, bins_to_analyze)
+
+        # Loop over bin dict and pool.map them individually
+        final_results = []
+        for key in bins_to_analyze.keys():
+            print("Analyzing chromosome {}".format(key))
+            pool = Pool(processes=self.number_of_processors)
+            results = pool.map(self.calculate_bin_coverage, bins_to_analyze[key])
+            final_results.extend(results)
+            print("Finished chromosome {}".format(key))
+
         logging.info("Analysis complete")
+
         print("Complete.")
         print("Found {} bins without reads".format(self.bins_no_reads))
         print("Found {} bins with reads. Writing these to a file.".format(len(results)))
@@ -126,12 +136,36 @@ class CalculateCompleteBins:
 if __name__ == "__main__":
 
     # Input params
-    # todo add these as command line args using argparse
-    input_bam_file = sys.argv[1]
-    num_of_processors = sys.argv[2]
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument("-a", "--input_bam_A",
+                            help="First Input bam file, coordinate sorted with index present")
+    arg_parser.add_argument("-o", "--output_dir",
+                            help="Output directory to save figures, defaults to bam file loaction")
+    arg_parser.add_argument("-bin_size", help="Size of bins to extract and analyze, default=100", default=100)
+    arg_parser.add_argument("-m", "--cluster_member_minimum",
+                            help="Minimum number of members a cluster should have for it to be considered, default=4",
+                            default=4)
+    arg_parser.add_argument("-r", "--read_depth",
+                            help="Minium number of reads covering all CpGs that the bins should have to analyze, default=20",
+                            default=10)
+    arg_parser.add_argument("-n", "--num_processors",
+                            help="Number of processors to use for analysis, default=1",
+                            default=1)
+    arg_parser.add_argument("-chr", "--chromosome",
+                            help="Chromosome to analyze, example: 'chr19', not required but encouraged, default=all chromosomes")
+    args = arg_parser.parse_args()
 
-    # temp chromosome override for testing todo set this as an input arg
-    chrom_of_interest = "chr19"
+    # todo add these as command line args using argparse
+    input_bam_file = args.input_bam_A
+    num_of_processors = int(args.num_processors)
+    bin_size = int(args.bin_size)
+    min_cluster_members = int(args.cluster_member_minimum)
+    read_depth_req = int(args.read_depth)
+
+    if args.chromosome:
+        chrom_of_interest = args.chromosome
+    else:
+        chrom_of_interest = None
 
     log_file = "CalculateCompleteBins.{}.log".format(os.path.basename(input_bam_file))
     BASE_DIR = os.path.dirname(input_bam_file)
@@ -140,5 +174,5 @@ if __name__ == "__main__":
 
     calc = CalculateCompleteBins(input_bam_file, 100, BASE_DIR, num_of_processors)
 
-    calc.analyze_bins()
+    calc.analyze_bins(chrom_of_interest)
 
