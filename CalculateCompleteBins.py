@@ -173,8 +173,7 @@ if __name__ == "__main__":
     else:
         BASE_DIR = os.path.dirname(input_bam_file)
 
-    log_file = "CalculateCompleteBins.{}.log".format(os.path.basename(input_bam_file))
-    BASE_DIR = os.path.dirname(input_bam_file)
+    log_file = os.path.join(BASE_DIR, "CalculateCompleteBins.{}.log".format(os.path.basename(input_bam_file)))
 
     logging.basicConfig(filename=os.path.join(BASE_DIR, log_file), level=logging.DEBUG)
 
