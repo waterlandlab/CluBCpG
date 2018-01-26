@@ -7,6 +7,7 @@ import numpy as np
 import argparse
 from collections import defaultdict
 
+
 class CalculateCompleteBins:
 
     def __init__(self, bam_file: str, bin_size: int, output_directory: str, number_of_processors=1):
@@ -146,7 +147,7 @@ if __name__ == "__main__":
                             help="Minimum number of members a cluster should have for it to be considered, default=4",
                             default=4)
     arg_parser.add_argument("-r", "--read_depth",
-                            help="Minium number of reads covering all CpGs that the bins should have to analyze, default=20",
+                            help="Minium number of reads covering all CpGs that the bins should have to analyze, default=10",
                             default=10)
     arg_parser.add_argument("-n", "--num_processors",
                             help="Number of processors to use for analysis, default=1",
@@ -166,6 +167,11 @@ if __name__ == "__main__":
         chrom_of_interest = args.chromosome
     else:
         chrom_of_interest = None
+
+    if args.output_dir:
+        BASE_DIR = args.output_dir
+    else:
+        BASE_DIR = os.path.dirname(input_bam_file)
 
     log_file = "CalculateCompleteBins.{}.log".format(os.path.basename(input_bam_file))
     BASE_DIR = os.path.dirname(input_bam_file)
