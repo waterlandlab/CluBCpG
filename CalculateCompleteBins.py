@@ -116,17 +116,16 @@ class CalculateCompleteBins:
             print("Finished chromosome {}".format(key))
 
         logging.info("Analysis complete")
-        logging.debug(str(results))
 
         print("Complete.")
         print("Found {} bins without reads".format(self.bins_no_reads))
-        print("Found {} bins with reads. Writing these to a file.".format(len(results)))
+        print("Found {} bins with reads. Writing these to a file.".format(len(final_results)))
 
         # Write to output file
         output_file = os.path.join(self.output_directory, "CalculateCompleteBins_{}.csv".format(os.path.basename(self.input_bam_file)))
 
         with open(output_file, "w") as out:
-            for result in results:
+            for result in final_results:
                 if result:
                     out.write(result[0] + ",")
                     out.write(str(result[1].shape[0]) + ",")
