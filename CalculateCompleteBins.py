@@ -1,4 +1,4 @@
-from .ParseBam import BamFileReadParser
+from ParseBam import BamFileReadParser
 import sys
 import os
 import logging
