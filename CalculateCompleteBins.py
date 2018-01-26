@@ -116,6 +116,7 @@ class CalculateCompleteBins:
             print("Finished chromosome {}".format(key))
 
         logging.info("Analysis complete")
+        logging.debug(str(results))
 
         print("Complete.")
         print("Found {} bins without reads".format(self.bins_no_reads))
