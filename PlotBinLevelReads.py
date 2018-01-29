@@ -31,7 +31,8 @@ def plot_complete_bin_reads(bin):
 
     reads = bam_parser.parse_reads(chromosome, stop_pos - 100, stop_pos)
     matrix = bam_parser.create_matrix(reads)
-    matrix = matrix.dropna()
+    if drop_na:
+        matrix = matrix.dropna()
 
     fig = plt.figure(figsize=(10, 6))
     if cluster:
@@ -67,6 +68,9 @@ if __name__ == "__main__":
     arg_parser.add_argument("-c", "--cluster", help="produce clustermaps instead of heatmaps", action="store_true")
     arg_parser.add_argument("-n", "--number_of_processors",
                             help="Number of processors to use, default=1", default=1)
+    arg_parser.add_argument("-na", "--drop_na",
+                            help="Drop reads which do not span all CpGs from the clustering, default=False", default=False)
+
 
     args = arg_parser.parse_args()
 
@@ -101,6 +105,8 @@ if __name__ == "__main__":
     # Get cluster arg for plotting
     cluster = args.cluster
     num_processors = int(args.number_of_processors)
+    drop_na = args.drop_na
+
 
 
     # Start multiprocessing
