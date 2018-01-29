@@ -118,7 +118,7 @@ class CalculateCompleteBins:
         logging.info("Analysis complete")
 
         print("Complete.")
-        print("Found {} bins without reads".format(self.bins_no_reads))
+        print("Found {} bins without reads".format(self.bins_no_reads)) #todo idk if this works
         print("Found {} bins with reads. Writing these to a file.".format(len(final_results)))
 
         # Write to output file
