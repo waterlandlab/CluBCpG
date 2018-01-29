@@ -65,6 +65,8 @@ if __name__ == "__main__":
     arg_parser.add_argument("-o", "--output_dir",
                             help="Output directory to save figures, defaults to bam file loaction",)
     arg_parser.add_argument("-c", "--cluster", help="produce clustermaps instead of heatmaps", action="store_true")
+    arg_parser.add_argument("-n", "--number_of_processors",
+                            help="Number of processors to use, default=1", default=1)
 
     args = arg_parser.parse_args()
 
@@ -101,8 +103,8 @@ if __name__ == "__main__":
 
 
     # Start multiprocessing
-    pool = Pool(processes=24) #24 for Shere
-    print("Starting plotting using multiple processors")
+    pool = Pool(processes=args.number_of_processors)
+    print("Starting plotting using {} processors".format(args.number_of_processors))
     sys.stdout.flush()
     pool.map(plot_complete_bin_reads, bins)
     print("Done")
