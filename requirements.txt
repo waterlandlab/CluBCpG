@@ -2,7 +2,6 @@ cycler==0.10.0
 matplotlib==2.1.2
 numpy==1.14.0
 pandas==0.22.0
-pkg-resources==0.0.0
 pyparsing==2.2.0
 pysam==0.13
 python-dateutil==2.6.1
