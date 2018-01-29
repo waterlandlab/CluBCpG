@@ -100,11 +100,12 @@ if __name__ == "__main__":
 
     # Get cluster arg for plotting
     cluster = args.cluster
+    num_processors = int(args.number_of_processors)
 
 
     # Start multiprocessing
-    pool = Pool(processes=args.number_of_processors)
-    print("Starting plotting using {} processors".format(args.number_of_processors))
+    pool = Pool(processes=num_processors)
+    print("Starting plotting using {} processors".format(num_processors))
     sys.stdout.flush()
     pool.map(plot_complete_bin_reads, bins)
     print("Done")
