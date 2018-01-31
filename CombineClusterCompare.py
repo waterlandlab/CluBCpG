@@ -92,6 +92,7 @@ def generate_output_data(filtered_matrix, chromosome, bin_loc):
 
     return summary_line, lines
 
+# Takes the output of process_bins() and converts it into list of lines of data for output
 def generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc):
     # Individual comparisons data
     lines = []
@@ -101,16 +102,18 @@ def generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc):
 
     for matrix in unique_groups:
         m_mean = np.matrix(matrix.drop(['class', 'input'], axis=1)).mean()
+        read_number = len(m_mean)
         input_label = matrix['input'].unique()[0]
         class_label = matrix['class'].unique()[0]
-        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label)])
+        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number)])
         lines.append(out_line)
 
     for matrix in common_groups:
         m_mean = np.matrix(matrix.drop(['class', 'input'], axis=1)).mean()
+        read_number = len(m_mean)
         input_label = 'AB'
         class_label = matrix['class'].unique()[0]
-        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label)])
+        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number)])
         lines.append(out_line)
 
     return lines
@@ -173,9 +176,7 @@ def process_bins(bin):
     return generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc)
 
 
-
 if __name__ == "__main__":
-
 
     # Set command line arguments
     arg_parser = argparse.ArgumentParser()
@@ -241,6 +242,7 @@ if __name__ == "__main__":
 
     pool = Pool(processes=num_processors)
     logging.info("Starting workers pool, using {} processors".format(num_processors))
+    # Results is a list of lists
     results = pool.map(process_bins, bins)
 
     # Convert the results into two output csv files for human analysis
