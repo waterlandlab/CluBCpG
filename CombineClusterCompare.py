@@ -137,7 +137,7 @@ def process_bins(bin):
         matrix_A = bam_parser_A.create_matrix(reads_A)
         matrix_B = bam_parser_B.create_matrix(reads_B)
     except ValueError as e:
-        logging.error("Value error at bin {}. Stack trace will be below if log level=DEBUG".format(bin))
+        logging.error("ValueError when creating matrix at bin {}. Stack trace will be below if log level=DEBUG".format(bin))
         logging.debug(str(e))
         return None
 
@@ -166,12 +166,8 @@ def process_bins(bin):
         labels = clf.fit_predict(data_to_cluster)
     except ValueError as e:
         # log error
-        logging.error("Error: \n")
-        logging.error(e)
-        logging.debug("Occured on bin: {}".format(bin))
-        logging.debug("Dumping data_to_cluster matrix:")
-        logging.debug(data_to_cluster)
-        logging.error("Continuing after error")
+        logging.error("ValueError when trying to cluster bin {}".format(bin))
+        logging.debug(str(e))
         return None
 
     full_matrix['class'] = labels
