@@ -133,8 +133,13 @@ def process_bins(bin):
 
     reads_A = bam_parser_A.parse_reads(chromosome, bin_loc - bin_size, bin_loc)
     reads_B = bam_parser_B.parse_reads(chromosome, bin_loc - bin_size, bin_loc)
-    matrix_A = bam_parser_A.create_matrix(reads_A)
-    matrix_B = bam_parser_B.create_matrix(reads_B)
+    try:
+        matrix_A = bam_parser_A.create_matrix(reads_A)
+        matrix_B = bam_parser_B.create_matrix(reads_B)
+    except ValueError as e:
+        logging.error("Value error at bin {}. Stack trace will be below if log level=DEBUG".format(bin))
+        logging.debug(str(e))
+        return None
 
     # drop reads without full coverage of CpGs
     matrix_A = matrix_A.dropna()
