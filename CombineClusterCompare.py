@@ -109,11 +109,13 @@ def generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc):
         lines.append(out_line)
 
     for matrix in common_groups:
-        m_mean = np.matrix(matrix.drop(['class', 'input'], axis=1)).mean()
+        cpg_matrix = np.matrix(matrix.drop(['class', 'input'], axis=1))
+        m_mean = cpg_matrix.mean()
         read_number = len(m_mean)
+        num_cpgs = cpg_matrix.shape[1]
         input_label = 'AB'
         class_label = matrix['class'].unique()[0]
-        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number)])
+        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number), str(num_cpgs)])
         lines.append(out_line)
 
     return lines
@@ -242,6 +244,7 @@ if __name__ == "__main__":
 
     pool = Pool(processes=num_processors)
     logging.info("Starting workers pool, using {} processors".format(num_processors))
+
     # Results is a list of lists
     results = pool.map(process_bins, bins)
 

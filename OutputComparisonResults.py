@@ -60,7 +60,7 @@ class OutputIndividualMatrixData:
         if prefix and filepath:
             output_comparisons = open("{}_matrix_data.csv".format(os.path.join(filepath, prefix)), "w")
 
-            output_comparisons.write("bin,input_label,methylation,class_label,read_number\n")
+            output_comparisons.write("bin,input_label,methylation,class_label,read_number,cpg_number\n")
 
             for result in self.results:
                 if result:
