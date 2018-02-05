@@ -199,8 +199,8 @@ if __name__ == "__main__":
                             help="Minimum number of members a cluster should have for it to be considered, default=4",
                             default=4)
     arg_parser.add_argument("-r", "--read_depth",
-                            help="Minium number of reads covering all CpGs that the bins should have to analyze, default=20",
-                            default=20)
+                            help="Minium number of reads covering all CpGs that the bins should have to analyze, default=10",
+                            default=10)
     arg_parser.add_argument("-n", "--num_processors",
                             help="Number of processors to use for analysis, default=1",
                             default=1)
