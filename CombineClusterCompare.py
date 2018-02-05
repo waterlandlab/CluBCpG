@@ -101,11 +101,13 @@ def generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc):
     bin_label = make_bin_label(chromosome, bin_loc)
 
     for matrix in unique_groups:
-        m_mean = np.matrix(matrix.drop(['class', 'input'], axis=1)).mean()
+        cpg_matrix = np.matrix(matrix.drop(['class', 'input'], axis=1))
+        m_mean = cpg_matrix.mean()
+        num_cpgs = cpg_matrix.shape[1]
         read_number = len(matrix)
         input_label = matrix['input'].unique()[0]
         class_label = matrix['class'].unique()[0]
-        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number)])
+        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number), str(num_cpgs)])
         lines.append(out_line)
 
     for matrix in common_groups:
