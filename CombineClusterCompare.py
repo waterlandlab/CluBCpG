@@ -240,7 +240,8 @@ if __name__ == "__main__":
     with open(bins_file, 'r') as f:
         for line in f:
             data = line.strip().split(",")
-            bins.append("_".join([data[0], data[2]]))
+            # bins.append("_".join([data[0], data[2]]))
+            bins.append(data[0])
 
     pool = Pool(processes=num_processors)
     logging.info("Starting workers pool, using {} processors".format(num_processors))
