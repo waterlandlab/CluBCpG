@@ -113,9 +113,18 @@ class BamFileReadParser():
 
         for read in working_reads:
             if read.is_read1:
-                read.set_tag('XM', read.get_tag('XM')[self.read1_5:-self.read1_3])
+                # This try/except prevents a TypeError if a 3prime mbias ignore value is None
+                try:
+                    mbias_3prime = -self.read1_3
+                except TypeError:
+                    mbias_3prime = None
+                read.set_tag('XM', read.get_tag('XM')[self.read1_5:mbias_3prime])
             if read.is_read2:
-                read.set_tag('XM', read.get_tag('XM')[self.read2_5:-self.read2_3])
+                try:
+                    mbias_3prime = -self.read2_3
+                except TypeError:
+                    mbias_3prime = None
+                read.set_tag('XM', read.get_tag('XM')[self.read2_5:mbias_3prime])
 
             new_ref = read.get_reference_positions()[self.read1_5:-self.read1_3]
             new_references.append(new_ref)
