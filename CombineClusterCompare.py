@@ -227,8 +227,10 @@ if __name__ == "__main__":
         mbias_read1_3 = args.read1_3
         mbias_read2_5 = args.read2_5
         mbias_read2_3 = args.read2_3
+        mbias_on = True
     else:
         mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3 = (None, None, None, None)
+        mbias_on = False
 
     # todo write input params to log_file for record keeping
 
@@ -263,6 +265,9 @@ if __name__ == "__main__":
 
     pool = Pool(processes=num_processors)
     logging.info("Starting workers pool, using {} processors".format(num_processors))
+    if mbias_on:
+        logging.info("M bias inputs received, ignoring the following:\nread 1 5': {}bp\n"
+                     "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
 
     # Results is a list of lists
     results = pool.map(process_bins, bins)
@@ -271,6 +276,5 @@ if __name__ == "__main__":
     # output = OutputComparisonResults(results)
     output = OutputIndividualMatrixData(results)
     output.write_to_output(output_dir, start_time)
-
 
     logging.info("Done")
