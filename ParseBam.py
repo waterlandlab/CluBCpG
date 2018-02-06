@@ -66,7 +66,7 @@ class BamFileReadParser():
                 pos = reference
                 if read.flag == 99 or read.flag == 147:
                     pos = list(np.array(pos) + 1)
-                pos_tags = self.merge_pos_tags(tag, pos, start_pos, stop_pos) #todo DEBUG THIS STEP
+                pos_tags = self.merge_pos_tags(tag, pos, start_pos, stop_pos)
                 cpgs = self.extract_cpgs(pos_tags)
                 reads_cpgs.append(cpgs)
 
