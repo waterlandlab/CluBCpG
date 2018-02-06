@@ -206,10 +206,10 @@ if __name__ == "__main__":
     arg_parser.add_argument("-n", "--num_processors",
                             help="Number of processors to use for analysis, default=1",
                             default=1)
-    arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=None", default=None)
-    arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=None", default=None)
-    arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=None", default=None)
-    arg_parser.add_argument("--read2_3", help="integer, read2 3' m-bias ignore bp, default=None", default=None)
+    arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=0", default=0)
+    arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
+    arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
+    arg_parser.add_argument("--read2_3", help="integer, read2 3' m-bias ignore bp, default=0", default=0)
 
     args = arg_parser.parse_args()
 
@@ -222,14 +222,24 @@ if __name__ == "__main__":
     read_depth_req = int(args.read_depth)
     num_processors = int(args.num_processors)
 
-    if args.read1_5 or args.read1_3 or args.read2_5 or args.read2_3:
-        mbias_read1_5 = args.read1_5
-        mbias_read1_3 = args.read1_3
-        mbias_read2_5 = args.read2_5
-        mbias_read2_3 = args.read2_3
+    # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
+    mbias_read1_5 = int(args.read1_5)
+    mbias_read1_3 = int(args.read1_3)
+    mbias_read2_5 = int(args.read2_5)
+    mbias_read2_3 = int(args.read2_3)
+
+    if mbias_read1_5 == 0:
+        mbias_read1_5 = None
+    if mbias_read1_3 == 0:
+        mbias_read1_3 = None
+    if mbias_read2_5 == 0:
+        mbias_read2_5 = None
+    if mbias_read2_3 == 0:
+        mbias_read2_3 = None
+
+    if mbias_read1_5 or mbias_read1_3 or mbias_read2_5 or mbias_read2_3:
         mbias_on = True
     else:
-        mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3 = (None, None, None, None)
         mbias_on = False
 
     # todo write input params to log_file for record keeping
