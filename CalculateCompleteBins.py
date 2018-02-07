@@ -181,20 +181,6 @@ if __name__ == "__main__":
     mbias_read2_5 = int(args.read2_5)
     mbias_read2_3 = int(args.read2_3)
 
-    if mbias_read1_5 == 0:
-        mbias_read1_5 = None
-    if mbias_read1_3 == 0:
-        mbias_read1_3 = None
-    if mbias_read2_5 == 0:
-        mbias_read2_5 = None
-    if mbias_read2_3 == 0:
-        mbias_read2_3 = None
-
-    if mbias_read1_5 or mbias_read1_3 or mbias_read2_5 or mbias_read2_3:
-        mbias_on = True
-    else:
-        mbias_on = False
-
 
     if args.chromosome:
         chrom_of_interest = args.chromosome
@@ -211,9 +197,9 @@ if __name__ == "__main__":
     logging.basicConfig(filename=os.path.join(BASE_DIR, log_file), level=logging.DEBUG)
 
     calc = CalculateCompleteBins(input_bam_file, 100, BASE_DIR, num_of_processors, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
-    if mbias_on:
-        logging.info("M bias inputs received, ignoring the following:\nread 1 5': {}bp\n"
-                     "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
+
+    logging.info("M bias inputs ignoring the following:\nread 1 5': {}bp\n"
+                 "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
 
     calc.analyze_bins(chrom_of_interest)
 
