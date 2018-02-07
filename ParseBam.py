@@ -64,25 +64,21 @@ class BamFileReadParser():
             for read, reference in zip(reads, references):
                 tag = read.get_tag('XM')
                 pos = reference
-                if read.flag == 99 or read.flag == 147:
-                    pos = list(np.array(pos) + 1)
                 pos_tags = self.merge_pos_tags(tag, pos, start_pos, stop_pos)
                 cpgs = self.extract_cpgs(pos_tags)
                 reads_cpgs.append(cpgs)
 
-            return reads_cpgs
+            return self.adjust_cpg_positions(reads_cpgs)
 
         else:
             for read in reads:
                 tags = self.get_metylation_tags(read)
                 pos = read.get_reference_positions()
-                if read.flag == 99 or read.flag == 147:
-                    pos = list(np.array(pos) + 1)
                 pos_tags = self.merge_pos_tags(tags, pos, start_pos, stop_pos)
                 cpgs = self.extract_cpgs(pos_tags)
                 reads_cpgs.append(cpgs)
 
-            return reads_cpgs
+            return self.adjust_cpg_positions(reads_cpgs)
 
 
     def create_matrix(self, read_cpgs):
@@ -133,6 +129,35 @@ class BamFileReadParser():
             trimmed_reads.append(read)
 
         return trimmed_reads, new_references
+
+    def adjust_cpg_positions(self, parsed_reads):
+        """Adjust the parse reads output to make all CpG sites on the same base position"""
+        lowest = np.inf
+        new_output = []
+        # Search all reads and find the lowest start site (the C)
+        for value in parsed_reads:
+            try:
+                if value[0][0] < lowest:
+                    lowest = value[0][0]
+            except IndexError:
+                pass
+        print(lowest)
+
+        for value in parsed_reads:
+            try:
+                if value[0][0] != lowest:
+                    new_value = []
+                    for item in value:
+                        loc = item[0] - 1
+                        meth_state = item[1]
+                        new_value.append((loc, meth_state))
+                    new_output.append(new_value)
+                else:
+                    new_output.append(value)
+            except IndexError:
+                new_output.append(value)
+
+        return new_output
 
 
 if __name__ == "__main__":
