@@ -121,8 +121,8 @@ class BamFileReadParser():
 
                 read.set_tag('XM', read.get_tag('XM')[mbias_5prime:mbias_3prime])
             if read.is_read2:
-                mbias_5prime = self.read1_5
-                mbias_3prime = -self.read1_3
+                mbias_5prime = self.read2_5
+                mbias_3prime = -self.read2_3
                 if mbias_3prime == 0:
                     mbias_3prime = None
 
