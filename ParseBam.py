@@ -68,7 +68,7 @@ class BamFileReadParser():
                 cpgs = self.extract_cpgs(pos_tags)
                 reads_cpgs.append(cpgs)
 
-            return self.adjust_cpg_positions(reads_cpgs)
+            return reads_cpgs
 
         else:
             for read in reads:
@@ -78,7 +78,7 @@ class BamFileReadParser():
                 cpgs = self.extract_cpgs(pos_tags)
                 reads_cpgs.append(cpgs)
 
-            return self.adjust_cpg_positions(reads_cpgs)
+            return reads_cpgs
 
 
     def create_matrix(self, read_cpgs):
@@ -124,7 +124,7 @@ class BamFileReadParser():
 
                 read.set_tag('XM', read.get_tag('XM')[mbias_5prime:mbias_3prime])
 
-            new_ref = read.get_reference_positions()[self.read1_5:-self.read1_3]
+            new_ref = read.get_reference_positions()[mbias_5prime:mbias_3prime]
             new_references.append(new_ref)
             trimmed_reads.append(read)
 
