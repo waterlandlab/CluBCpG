@@ -61,10 +61,13 @@ class BamFileReadParser():
                 reduced_read = []
                 # Join EVERY XM tag with its aligned_pair location
                 for pair, tag in zip(read.get_aligned_pairs(), read.get_tag('XM')):
-                    if read.flag == 83 or read.flag == 163:
-                        reduced_read.append((pair[1] - 1, tag))
+                    if pair[1]:
+                        if read.flag == 83 or read.flag == 163:
+                            reduced_read.append((pair[1] - 1, tag))
+                        else:
+                            reduced_read.append((pair[1], tag))
                     else:
-                        reduced_read.append((pair[1], tag))
+                        continue
 
                 # if mbias was set slice the joined list
                 if self.mbias_filtering:
