@@ -3,6 +3,7 @@ import argparse
 import copy
 import pandas as pd
 import numpy as np
+from collections import defaultdict
 
 
 class BamFileReadParser():
@@ -117,7 +118,7 @@ class BamFileReadParser():
             combined.append((read, state))
 
         # Get names of all the reads present
-        query_names = [x.query_name for x in parser.full_reads]
+        query_names = [x.query_name for x in full_reads]
 
         # Match paired reads by query_name
         tally = defaultdict(list)
