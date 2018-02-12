@@ -22,31 +22,6 @@ class BamFileReadParser():
 
         self.OpenBamFile = pysam.AlignmentFile(bamfile, 'rb')
 
-    # Take an AlignmentSegment extract the XM tag, and return the values
-    def get_metylation_tags(self, read):
-        tags = read.get_tags()
-        for tag in tags:
-            if tag[0] == 'XM':
-                return tag[1]
-
-    # Take a list of tags and positions, return tuples consisting of (position, tag)
-    def merge_pos_tags(self, tags, positions, start_pos, stop_pos):
-        output = []
-        for pos, status in list(zip(positions, tags)):
-            if pos >= start_pos and pos <= stop_pos:
-                output.append((pos,status))
-
-        return output
-
-    # Take a list of tuples (pos, tag) and reduce it to only CpG sites
-    def extract_cpgs(self, pos_tags):
-        read_cpgs = []
-        for item in pos_tags:
-            if item[1] is 'Z' or item[1] is 'z':
-                read_cpgs.append(item)
-
-        return read_cpgs
-
     # Get reads from the bam file, extract methylation state
     def parse_reads(self, chromosome, start, stop):
         reads = []
@@ -69,7 +44,7 @@ class BamFileReadParser():
                     else:
                         continue
 
-                # if mbias was set slice the joined list
+                # if MBIAS was set, slice the joined list
                 if self.mbias_filtering:
                     if read.is_read1:
                         mbias_5_prime = self.read1_5
@@ -113,35 +88,6 @@ class BamFileReadParser():
 
         return matrix.T
 
-
-    def adjust_cpg_positions(self, parsed_reads):
-        """Adjust the parse reads output to make all CpG sites on the same base position"""
-        lowest = np.inf
-        new_output = []
-        # Search all reads and find the lowest start site (the C)
-        for value in parsed_reads:
-            try:
-                if value[0][0] < lowest:
-                    lowest = value[0][0]
-            except IndexError:
-                pass
-        print(lowest)
-
-        for value in parsed_reads:
-            try:
-                if value[0][0] != lowest:
-                    new_value = []
-                    for item in value:
-                        loc = item[0] - 1
-                        meth_state = item[1]
-                        new_value.append((loc, meth_state))
-                    new_output.append(new_value)
-                else:
-                    new_output.append(value)
-            except IndexError:
-                new_output.append(value)
-
-        return new_output
 
 
 if __name__ == "__main__":
