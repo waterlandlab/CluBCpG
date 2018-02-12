@@ -137,7 +137,7 @@ class BamFileReadParser():
                     read1 = combined[value[1]]
                     read2 = combined[value[0]]
                 else:
-                    raise AttributeError("Read 1 and 2 could not be determined")
+                    print("could not get read1/2\t{}\t{}".format(key, value))
 
                 # Find amount of overlap
                 amount_overlap = 0
