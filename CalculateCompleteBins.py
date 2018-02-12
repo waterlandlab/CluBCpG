@@ -38,7 +38,8 @@ class CalculateCompleteBins:
         """
 
         # Get reads from bam file
-        parser = BamFileReadParser(self.input_bam_file, 20, self.mbias_read1_5, self.mbias_read1_3, self.mbias_read2_5, self.mbias_read2_3)
+        parser = BamFileReadParser(self.input_bam_file, 20, self.mbias_read1_5, self.mbias_read1_3,
+                                   self.mbias_read2_5, self.mbias_read2_3, no_overlap)
         # Split bin into parts
         chromosome, bin_location = bin.split("_")
         bin_location = int(bin_location)
@@ -142,6 +143,14 @@ class CalculateCompleteBins:
 
 if __name__ == "__main__":
 
+    def str2bool(v):
+        if v.lower() == 'true':
+            return True
+        elif v.lower() == 'false':
+            return False
+        else:
+            raise argparse.ArgumentTypeError("Boolean value expected.")
+
     # Input params
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("-a", "--input_bam_A",
@@ -165,15 +174,18 @@ if __name__ == "__main__":
     arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read2_3", help="integer, read2 3' m-bias ignore bp, default=0", default=0)
+    arg_parser.add_argument("--no_overlap", help="bool, remove any overlap between paired reads and stitch"
+                                                 " reads together when possible, default=True",
+                            type=str2bool, const=True, default='True', nargs='?')
 
     args = arg_parser.parse_args()
 
-    # todo add these as command line args using argparse
     input_bam_file = args.input_bam_A
     num_of_processors = int(args.num_processors)
     bin_size = int(args.bin_size)
     min_cluster_members = int(args.cluster_member_minimum)
     read_depth_req = int(args.read_depth)
+    no_overlap = args.no_overlap
 
     # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
     mbias_read1_5 = int(args.read1_5)
@@ -200,7 +212,8 @@ if __name__ == "__main__":
 
     logging.basicConfig(filename=os.path.join(BASE_DIR, log_file), level=logging.DEBUG)
 
-    calc = CalculateCompleteBins(input_bam_file, 100, BASE_DIR, num_of_processors, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
+    calc = CalculateCompleteBins(input_bam_file, 100, BASE_DIR, num_of_processors,
+                                 mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
 
     logging.info("M bias inputs ignoring the following:\nread 1 5': {}bp\n"
                  "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
