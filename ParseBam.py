@@ -7,13 +7,18 @@ import numpy as np
 
 class BamFileReadParser():
 
-    def __init__(self, bamfile, quality_score, read1_5=None, read1_3=None, read2_5=None, read2_3=None):
+    def __init__(self, bamfile, quality_score, read1_5=None, read1_3=None,
+                 read2_5=None, read2_3=None, no_overlap=True):
+
         self.mapping_quality = quality_score
         self.bamfile = bamfile
         self.read1_5 = read1_5
         self.read1_3 = read1_3
         self.read2_5 = read2_5
         self.read2_3 = read2_3
+        self.full_reads = []
+        self.read_cpgs = []
+        self.no_overlap = no_overlap
 
         if read1_5 or read2_5 or read1_3 or read2_3:
             self.mbias_filtering = True
@@ -61,6 +66,13 @@ class BamFileReadParser():
 
                 read_cpgs.append(reduced_read)
 
+        self.full_reads = reads
+        self.read_cpgs = read_cpgs
+
+        # Correct overlapping paired reads if set, this is default behavior
+        if self.no_overlap:
+            read_cpgs = self.fix_read_overlap(reads, read_cpgs)
+
         # Filter the list for positions between start-stop and CpG (Z/z) tags
         output = []
         for read_cpg in read_cpgs:
@@ -88,6 +100,68 @@ class BamFileReadParser():
 
         return matrix.T
 
+    def fix_read_overlap(self, full_reads, read_cpgs):
+        """
+        Takes pysam reads and read_cpgs generated during parse reads and removes any
+        overlap between read1 and read2. If possible it also stitches read1 and read2 together to create
+        a super read.
+        :param full_reads:
+        :param read_cpgs:
+        :return: A list in the same format as read_cpgs input, but corrected for paired read overlap
+        """
+        # data for return
+        fixed_read_cpgs = []
+        # Combine raw reads and extracted tags
+        combined = []
+        for read, state in zip(full_reads, read_cpgs):
+            combined.append((read, state))
+
+        # Get names of all the reads present
+        query_names = [x.query_name for x in parser.full_reads]
+
+        # Match paired reads by query_name
+        tally = defaultdict(list)
+        for i, item in enumerate(query_names):
+            tally[item].append(i)
+
+        for key, value in tally.items():
+            # A pair exists, process it
+            if len(value) == 2:
+                # Set read1 and read2 correctly
+                if combined[value[0]][0].is_read1:
+                    read1 = combined[value[0]]
+                    read2 = combined[value[1]]
+
+                elif combined[value[1]][0].is_read1:
+                    read1 = combined[value[1]]
+                    read2 = combined[value[0]]
+                else:
+                    raise AttributeError("Read 1 and 2 could not be determined")
+
+                # Find amount of overlap
+                amount_overlap = 0
+                r1_bps = [x[0] for x in read1[1]]
+                for bp in [x[0] for x in read2[1]]:
+                    if bp and bp in r1_bps:
+                        amount_overlap += 1
+
+                # remove the overlap by trimming or discarding
+                if amount_overlap == len(read2[1]):
+                    # discard read 2, only append read 1
+                    fixed_read_cpgs.append(read1[1])
+                else:
+                    # trim overlap
+                    new_read2_cpgs = read2[1][amount_overlap:]
+                    # stitch together read1 and read2
+                    read1[1].extend(new_read2_cpgs)
+                    fixed_read_cpgs.append(read1[1])
+
+
+            elif len(value) == 1:
+                # No pair, add to output
+                fixed_read_cpgs.append(read_cpgs[value[0]])
+
+        return fixed_read_cpgs
 
 
 if __name__ == "__main__":
