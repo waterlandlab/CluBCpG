@@ -127,8 +127,10 @@ def generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc):
 # bin should be passed as "chr19_33444"
 def process_bins(bin):
 
-    bam_parser_A = BamFileReadParser(input_bam_a, 20)
-    bam_parser_B = BamFileReadParser(input_bam_b, 20)
+    bam_parser_A = BamFileReadParser(input_bam_a, 20, read1_5=mbias_read1_5, read1_3=mbias_read1_3,
+                                     read2_5=mbias_read2_5, read2_3=mbias_read2_3)
+    bam_parser_B = BamFileReadParser(input_bam_b, 20, read1_5=mbias_read1_5, read1_3=mbias_read1_3,
+                                     read2_5=mbias_read2_5, read2_3=mbias_read2_3)
 
     chromosome, bin_loc = bin.split("_")
     bin_loc = int(bin_loc)
@@ -204,6 +206,11 @@ if __name__ == "__main__":
     arg_parser.add_argument("-n", "--num_processors",
                             help="Number of processors to use for analysis, default=1",
                             default=1)
+    arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=0", default=0)
+    arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
+    arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
+    arg_parser.add_argument("--read2_3", help="integer, read2 3' m-bias ignore bp, default=0", default=0)
+
     args = arg_parser.parse_args()
 
     # Assign arg parser vars to new variables
@@ -215,7 +222,14 @@ if __name__ == "__main__":
     read_depth_req = int(args.read_depth)
     num_processors = int(args.num_processors)
 
-    # todo write input params to log_file
+    # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
+    mbias_read1_5 = int(args.read1_5)
+    mbias_read1_3 = int(args.read1_3)
+    mbias_read2_5 = int(args.read2_5)
+    mbias_read2_3 = int(args.read2_3)
+
+
+    # todo write input params to log_file for record keeping
 
     # Check all inputs are supplied
     if not input_bam_a or not input_bam_b or not bins_file:
@@ -248,6 +262,8 @@ if __name__ == "__main__":
 
     pool = Pool(processes=num_processors)
     logging.info("Starting workers pool, using {} processors".format(num_processors))
+    logging.info("M bias inputs received, ignoring the following:\nread 1 5': {}bp\n"
+                 "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
 
     # Results is a list of lists
     results = pool.map(process_bins, bins)
@@ -256,6 +272,5 @@ if __name__ == "__main__":
     # output = OutputComparisonResults(results)
     output = OutputIndividualMatrixData(results)
     output.write_to_output(output_dir, start_time)
-
 
     logging.info("Done")

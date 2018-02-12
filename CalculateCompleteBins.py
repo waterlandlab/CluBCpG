@@ -10,7 +10,8 @@ from collections import defaultdict
 
 class CalculateCompleteBins:
 
-    def __init__(self, bam_file: str, bin_size: int, output_directory: str, number_of_processors=1):
+    def __init__(self, bam_file: str, bin_size: int, output_directory: str, number_of_processors=1, mbias_read1_5=None, mbias_read1_3=None,
+                 mbias_read2_5= None, mbias_read2_3=None):
         """
         This class is initialized with a path to a bam file and a bin size
         :param bam_file: One of the BAM files for analysis to be performed
@@ -24,6 +25,11 @@ class CalculateCompleteBins:
         self.bins_no_reads = 0
         self.bins_yes_reads = 0
 
+        self.mbias_read1_5 = mbias_read1_5
+        self.mbias_read1_3 = mbias_read1_3
+        self.mbias_read2_5 = mbias_read2_5
+        self.mbias_read2_3 = mbias_read2_3
+
     def calculate_bin_coverage(self, bin):
         """
         Take a single bin, return a matrix
@@ -32,7 +38,7 @@ class CalculateCompleteBins:
         """
 
         # Get reads from bam file
-        parser = BamFileReadParser(self.input_bam_file, 20)
+        parser = BamFileReadParser(self.input_bam_file, 20, self.mbias_read1_5, self.mbias_read1_3, self.mbias_read2_5, self.mbias_read2_3)
         # Split bin into parts
         chromosome, bin_location = bin.split("_")
         bin_location = int(bin_location)
@@ -154,6 +160,12 @@ if __name__ == "__main__":
                             default=1)
     arg_parser.add_argument("-chr", "--chromosome",
                             help="Chromosome to analyze, example: 'chr19', not required but encouraged, default=all chromosomes")
+
+    arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=0", default=0)
+    arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
+    arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
+    arg_parser.add_argument("--read2_3", help="integer, read2 3' m-bias ignore bp, default=0", default=0)
+
     args = arg_parser.parse_args()
 
     # todo add these as command line args using argparse
@@ -162,6 +174,13 @@ if __name__ == "__main__":
     bin_size = int(args.bin_size)
     min_cluster_members = int(args.cluster_member_minimum)
     read_depth_req = int(args.read_depth)
+
+    # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
+    mbias_read1_5 = int(args.read1_5)
+    mbias_read1_3 = int(args.read1_3)
+    mbias_read2_5 = int(args.read2_5)
+    mbias_read2_3 = int(args.read2_3)
+
 
     if args.chromosome:
         chrom_of_interest = args.chromosome
@@ -173,11 +192,18 @@ if __name__ == "__main__":
     else:
         BASE_DIR = os.path.dirname(input_bam_file)
 
+    # Create output dir if it doesnt exist
+    if not os.path.exists(BASE_DIR):
+        os.makedirs(BASE_DIR)
+
     log_file = os.path.join(BASE_DIR, "CalculateCompleteBins.{}.log".format(os.path.basename(input_bam_file)))
 
     logging.basicConfig(filename=os.path.join(BASE_DIR, log_file), level=logging.DEBUG)
 
-    calc = CalculateCompleteBins(input_bam_file, 100, BASE_DIR, num_of_processors)
+    calc = CalculateCompleteBins(input_bam_file, 100, BASE_DIR, num_of_processors, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
+
+    logging.info("M bias inputs ignoring the following:\nread 1 5': {}bp\n"
+                 "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
 
     calc.analyze_bins(chrom_of_interest)
 
