@@ -3,6 +3,7 @@ import argparse
 import copy
 import pandas as pd
 import numpy as np
+import sys
 from collections import defaultdict
 
 
@@ -138,6 +139,7 @@ class BamFileReadParser():
                     read2 = combined[value[0]]
                 else:
                     print("could not get read1/2\t{}\t{}".format(key, value))
+                    sys.stdout.flush()
 
                 # Find amount of overlap
                 amount_overlap = 0
