@@ -53,7 +53,8 @@ class CalculateCompleteBins:
             self.bins_no_reads += 1
             return None
         except:
-            print("Another failure: {}".format(bin))
+            logging.error("Unknown error: {}".format(bin))
+            return None
 
         # convert to data_frame of 1s and 0s, drop rows with NaN
         matrix = matrix.dropna()
