@@ -128,9 +128,9 @@ def generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc):
 def process_bins(bin):
 
     bam_parser_A = BamFileReadParser(input_bam_a, 20, read1_5=mbias_read1_5, read1_3=mbias_read1_3,
-                                     read2_5=mbias_read2_5, read2_3=mbias_read2_3)
+                                     read2_5=mbias_read2_5, read2_3=mbias_read2_3, no_overlap=no_overlap)
     bam_parser_B = BamFileReadParser(input_bam_b, 20, read1_5=mbias_read1_5, read1_3=mbias_read1_3,
-                                     read2_5=mbias_read2_5, read2_3=mbias_read2_3)
+                                     read2_5=mbias_read2_5, read2_3=mbias_read2_3, no_overlap=no_overlap)
 
     chromosome, bin_loc = bin.split("_")
     bin_loc = int(bin_loc)
@@ -185,6 +185,15 @@ def process_bins(bin):
 
 if __name__ == "__main__":
 
+    def str2bool(v):
+        if v.lower() == 'true':
+            return True
+        elif v.lower() == 'false':
+            return False
+        else:
+            raise argparse.ArgumentTypeError("Boolean value expected.")
+
+
     # Set command line arguments
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("-a", "--input_bam_A",
@@ -210,6 +219,9 @@ if __name__ == "__main__":
     arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read2_3", help="integer, read2 3' m-bias ignore bp, default=0", default=0)
+    arg_parser.add_argument("--no_overlap", help="bool, remove any overlap between paired reads and stitch"
+                                                 " reads together when possible, default=True",
+                            type=str2bool, const=True, default='True', nargs='?')
 
     args = arg_parser.parse_args()
 
@@ -221,6 +233,8 @@ if __name__ == "__main__":
     cluster_min = int(args.cluster_member_minimum)
     read_depth_req = int(args.read_depth)
     num_processors = int(args.num_processors)
+    no_overlap = args.no_overlap
+
 
     # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
     mbias_read1_5 = int(args.read1_5)
