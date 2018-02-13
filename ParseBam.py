@@ -98,7 +98,6 @@ class BamFileReadParser():
                 positions.append(pos)
                 statues.append(status)
             series.append(pd.Series(statues, positions))
-
         matrix = pd.concat(series, axis=1)
         matrix = matrix.replace('Z', 1)
         matrix = matrix.replace('z', 0)
@@ -129,7 +128,7 @@ class BamFileReadParser():
         for i, item in enumerate(query_names):
             tally[item].append(i)
 
-        for key, value in sorted(tally.items()):
+        for key, value in tally.items():
             # A pair exists, process it
             if len(value) == 2:
                 # Set read1 and read2 correctly
@@ -142,7 +141,6 @@ class BamFileReadParser():
                     read2 = combined[value[0]]
                 else:
                     print("could not get read1/2\t{}\t{}".format(key, value))
-                    print(combined)
                     sys.stdout.flush()
                     raise AttributeError("Could not determine read 1 or read 2")
 
@@ -164,10 +162,9 @@ class BamFileReadParser():
                     read1[1].extend(new_read2_cpgs)
                     fixed_read_cpgs.append(read1[1])
 
-
             elif len(value) == 1:
                 # No pair, add to output
-                fixed_read_cpgs.append(read_cpgs[value[0]])
+                fixed_read_cpgs.append(combined[value[0]][1])
 
         return fixed_read_cpgs
 
