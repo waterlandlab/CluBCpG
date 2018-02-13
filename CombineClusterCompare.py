@@ -161,7 +161,13 @@ def process_bins(bin):
     matrix_A['input'] = labels_A
     matrix_B['input'] = labels_B
 
-    full_matrix = pd.concat([matrix_A, matrix_B])
+    try:
+        full_matrix = pd.concat([matrix_A, matrix_B])
+    except ValueError as e:
+        logging.error("Matrix concat error in bin {}".format(bin))
+        # logging.debug(str(e))
+        return None
+
     data_to_cluster = np.matrix(full_matrix)[:, :-1]
 
     # Create DBSCAN classifier and cluster add cluster classes to df
