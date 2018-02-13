@@ -76,7 +76,7 @@ class BamFileReadParser():
             try:
                 read_cpgs = self.fix_read_overlap(reads, read_cpgs)
             except AttributeError:
-                print("{}:{}-{}".format(chromosome, start, stop))
+                print("Could not determine read 1 or 2. {}:{}-{}".format(chromosome, start, stop))
 
         # Filter the list for positions between start-stop and CpG (Z/z) tags
         output = []
@@ -140,8 +140,6 @@ class BamFileReadParser():
                     read1 = combined[value[1]]
                     read2 = combined[value[0]]
                 else:
-                    print("could not get read1/2\t{}\t{}".format(key, value))
-                    sys.stdout.flush()
                     raise AttributeError("Could not determine read 1 or read 2")
 
                 # Find amount of overlap
