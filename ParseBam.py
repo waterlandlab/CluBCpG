@@ -73,7 +73,10 @@ class BamFileReadParser():
 
         # Correct overlapping paired reads if set, this is default behavior
         if self.no_overlap:
-            read_cpgs = self.fix_read_overlap(reads, read_cpgs)
+            try:
+                read_cpgs = self.fix_read_overlap(reads, read_cpgs)
+            except AttributeError:
+                print("{}:{}-{}".format(chromosome, start, stop))
 
         # Filter the list for positions between start-stop and CpG (Z/z) tags
         output = []
@@ -141,6 +144,7 @@ class BamFileReadParser():
                     print("could not get read1/2\t{}\t{}".format(key, value))
                     print(combined)
                     sys.stdout.flush()
+                    raise AttributeError("Could not determine read 1 or read 2")
 
                 # Find amount of overlap
                 amount_overlap = 0
