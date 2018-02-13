@@ -126,7 +126,7 @@ class BamFileReadParser():
         for i, item in enumerate(query_names):
             tally[item].append(i)
 
-        for key, value in tally.items():
+        for key, value in sorted(tally.items()):
             # A pair exists, process it
             if len(value) == 2:
                 # Set read1 and read2 correctly
@@ -139,6 +139,7 @@ class BamFileReadParser():
                     read2 = combined[value[0]]
                 else:
                     print("could not get read1/2\t{}\t{}".format(key, value))
+                    print(combined)
                     sys.stdout.flush()
 
                 # Find amount of overlap
