@@ -128,7 +128,7 @@ class BamFileReadParser():
         for i, item in enumerate(query_names):
             tally[item].append(i)
 
-        for key, value in tally.items():
+        for key, value in sorted(tally.items()):
             # A pair exists, process it
             if len(value) == 2:
                 # Set read1 and read2 correctly
@@ -147,9 +147,19 @@ class BamFileReadParser():
                 # Find amount of overlap
                 amount_overlap = 0
                 r1_bps = [x[0] for x in read1[1]]
-                for bp in [x[0] for x in read2[1]]:
-                    if bp and bp in r1_bps:
-                        amount_overlap += 1
+                r2_bps = [x[0] for x in read2[1]]
+
+                if min(r1_bps) < min(r2_bps):
+                    trim_direction = 5
+                    for bp in r2_bps:
+                        if bp and bp in r1_bps:
+                            amount_overlap += 1
+                else:
+                    trim_direction = 3
+                    for bp in r1_bps:
+                        if bp and bp in r2_bps:
+                            amount_overlap += 1
+
 
                 # remove the overlap by trimming or discarding
                 if amount_overlap == len(read2[1]):
@@ -157,7 +167,10 @@ class BamFileReadParser():
                     fixed_read_cpgs.append(read1[1])
                 else:
                     # trim overlap
-                    new_read2_cpgs = read2[1][amount_overlap:]
+                    if trim_direction == 5:
+                        new_read2_cpgs = read2[1][amount_overlap:]
+                    elif trim_direction == 3:
+                        new_read2_cpgs = read2[1][:-amount_overlap]
                     # stitch together read1 and read2
                     read1[1].extend(new_read2_cpgs)
                     fixed_read_cpgs.append(read1[1])
