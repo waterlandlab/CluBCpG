@@ -291,6 +291,6 @@ if __name__ == "__main__":
     # Convert the results into two output csv files for human analysis
     # output = OutputComparisonResults(results)
     output = OutputIndividualMatrixData(results)
-    output.write_to_output(output_dir, "Clustering.{}.{}.log".format(os.path.basename(input_bam_a), start_time))
+    output.write_to_output(output_dir, "Clustering.{}.{}".format(os.path.basename(input_bam_a), start_time))
 
     logging.info("Done")
