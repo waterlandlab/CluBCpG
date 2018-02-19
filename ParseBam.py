@@ -140,6 +140,14 @@ class BamFileReadParser():
                 elif combined[value[1]][0].is_read1:
                     read1 = combined[value[1]]
                     read2 = combined[value[0]]
+
+                # both reads have same value, this shouldn't be. Drop one completely, dont
+                # bother with overlap
+                elif combined[value[0]][0].is_read1 == combined[value[1]][0].is_read1:
+                    fixed_read_cpgs.append(combined[value[0]][1])
+                    continue
+
+
                 else:
                     raise AttributeError("Could not determine read 1 or read 2")
 
