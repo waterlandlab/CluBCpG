@@ -3,17 +3,24 @@ import argparse
 import copy
 import pandas as pd
 import numpy as np
+import sys
+from collections import defaultdict
 
 
 class BamFileReadParser():
 
-    def __init__(self, bamfile, quality_score, read1_5=None, read1_3=None, read2_5=None, read2_3=None):
+    def __init__(self, bamfile, quality_score, read1_5=None, read1_3=None,
+                 read2_5=None, read2_3=None, no_overlap=True):
+
         self.mapping_quality = quality_score
         self.bamfile = bamfile
         self.read1_5 = read1_5
         self.read1_3 = read1_3
         self.read2_5 = read2_5
         self.read2_3 = read2_3
+        self.full_reads = []
+        self.read_cpgs = []
+        self.no_overlap = no_overlap
 
         if read1_5 or read2_5 or read1_3 or read2_3:
             self.mbias_filtering = True
@@ -21,31 +28,6 @@ class BamFileReadParser():
             self.mbias_filtering = False
 
         self.OpenBamFile = pysam.AlignmentFile(bamfile, 'rb')
-
-    # Take an AlignmentSegment extract the XM tag, and return the values
-    def get_metylation_tags(self, read):
-        tags = read.get_tags()
-        for tag in tags:
-            if tag[0] == 'XM':
-                return tag[1]
-
-    # Take a list of tags and positions, return tuples consisting of (position, tag)
-    def merge_pos_tags(self, tags, positions, start_pos, stop_pos):
-        output = []
-        for pos, status in list(zip(positions, tags)):
-            if pos >= start_pos and pos <= stop_pos:
-                output.append((pos,status))
-
-        return output
-
-    # Take a list of tuples (pos, tag) and reduce it to only CpG sites
-    def extract_cpgs(self, pos_tags):
-        read_cpgs = []
-        for item in pos_tags:
-            if item[1] is 'Z' or item[1] is 'z':
-                read_cpgs.append(item)
-
-        return read_cpgs
 
     # Get reads from the bam file, extract methylation state
     def parse_reads(self, chromosome, start, stop):
@@ -69,7 +51,7 @@ class BamFileReadParser():
                     else:
                         continue
 
-                # if mbias was set slice the joined list
+                # if MBIAS was set, slice the joined list
                 if self.mbias_filtering:
                     if read.is_read1:
                         mbias_5_prime = self.read1_5
@@ -85,6 +67,17 @@ class BamFileReadParser():
                         reduced_read = reduced_read[mbias_5_prime:mbias_3_prime]
 
                 read_cpgs.append(reduced_read)
+
+        self.full_reads = reads
+        self.read_cpgs = read_cpgs
+
+        # Correct overlapping paired reads if set, this is default behavior
+        if self.no_overlap:
+            try:
+                read_cpgs = self.fix_read_overlap(reads, read_cpgs)
+            except AttributeError:
+                print("Could not determine read 1 or 2. {}:{}-{}".format(chromosome, start, stop))
+                sys.stdout.flush()
 
         # Filter the list for positions between start-stop and CpG (Z/z) tags
         output = []
@@ -106,42 +99,94 @@ class BamFileReadParser():
                 positions.append(pos)
                 statues.append(status)
             series.append(pd.Series(statues, positions))
-
         matrix = pd.concat(series, axis=1)
         matrix = matrix.replace('Z', 1)
         matrix = matrix.replace('z', 0)
 
         return matrix.T
 
+    def fix_read_overlap(self, full_reads, read_cpgs):
+        """
+        Takes pysam reads and read_cpgs generated during parse reads and removes any
+        overlap between read1 and read2. If possible it also stitches read1 and read2 together to create
+        a super read.
+        :param full_reads:
+        :param read_cpgs:
+        :return: A list in the same format as read_cpgs input, but corrected for paired read overlap
+        """
+        # data for return
+        fixed_read_cpgs = []
+        # Combine raw reads and extracted tags
+        combined = []
+        for read, state in zip(full_reads, read_cpgs):
+            combined.append((read, state))
 
-    def adjust_cpg_positions(self, parsed_reads):
-        """Adjust the parse reads output to make all CpG sites on the same base position"""
-        lowest = np.inf
-        new_output = []
-        # Search all reads and find the lowest start site (the C)
-        for value in parsed_reads:
-            try:
-                if value[0][0] < lowest:
-                    lowest = value[0][0]
-            except IndexError:
-                pass
-        print(lowest)
+        # Get names of all the reads present
+        query_names = [x.query_name for x in full_reads]
 
-        for value in parsed_reads:
-            try:
-                if value[0][0] != lowest:
-                    new_value = []
-                    for item in value:
-                        loc = item[0] - 1
-                        meth_state = item[1]
-                        new_value.append((loc, meth_state))
-                    new_output.append(new_value)
+        # Match paired reads by query_name
+        tally = defaultdict(list)
+        for i, item in enumerate(query_names):
+            tally[item].append(i)
+
+        for key, value in sorted(tally.items()):
+            # A pair exists, process it
+            if len(value) == 2:
+                # Set read1 and read2 correctly
+                if combined[value[0]][0].is_read1:
+                    read1 = combined[value[0]]
+                    read2 = combined[value[1]]
+
+                elif combined[value[1]][0].is_read1:
+                    read1 = combined[value[1]]
+                    read2 = combined[value[0]]
+
+                # both reads have same value, this shouldn't be. Drop one completely, dont
+                # bother with overlap
+                elif combined[value[0]][0].is_read1 == combined[value[1]][0].is_read1:
+                    fixed_read_cpgs.append(combined[value[0]][1])
+                    continue
+
+
                 else:
-                    new_output.append(value)
-            except IndexError:
-                new_output.append(value)
+                    raise AttributeError("Could not determine read 1 or read 2")
 
-        return new_output
+                # Find amount of overlap
+                amount_overlap = 0
+                r1_bps = [x[0] for x in read1[1]]
+                r2_bps = [x[0] for x in read2[1]]
+
+                if min(r1_bps) < min(r2_bps):
+                    trim_direction = 5
+                    for bp in r2_bps:
+                        if bp and bp in r1_bps:
+                            amount_overlap += 1
+                else:
+                    trim_direction = 3
+                    for bp in r1_bps:
+                        if bp and bp in r2_bps:
+                            amount_overlap += 1
+
+
+                # remove the overlap by trimming or discarding
+                if amount_overlap == len(read2[1]):
+                    # discard read 2, only append read 1
+                    fixed_read_cpgs.append(read1[1])
+                else:
+                    # trim overlap
+                    if trim_direction == 5:
+                        new_read2_cpgs = read2[1][amount_overlap:]
+                    elif trim_direction == 3:
+                        new_read2_cpgs = read2[1][:-amount_overlap]
+                    # stitch together read1 and read2
+                    read1[1].extend(new_read2_cpgs)
+                    fixed_read_cpgs.append(read1[1])
+
+            elif len(value) == 1:
+                # No pair, add to output
+                fixed_read_cpgs.append(combined[value[0]][1])
+
+        return fixed_read_cpgs
 
 
 if __name__ == "__main__":

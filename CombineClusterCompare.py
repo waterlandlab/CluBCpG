@@ -1,7 +1,7 @@
 from sklearn.cluster import DBSCAN
 from collections import Counter
 import pandas as pd
-import pickle
+from pandas.core.indexes.base import InvalidIndexError
 import numpy as np
 import sys
 import logging
@@ -11,6 +11,8 @@ from OutputComparisonResults import OutputComparisonResults, OutputIndividualMat
 import argparse
 import datetime
 from multiprocessing import Pool
+
+# HELPER METHODS
 
 # Remove clusters with less than n members
 def filter_data_frame(matrix: pd.DataFrame, cluster_memeber_min):
@@ -68,29 +70,6 @@ def get_common_means(filtered_matrix):
 def make_bin_label(chromosome, stop_loc):
     return "_".join([chromosome, str(stop_loc)])
 
-#
-def generate_output_data(filtered_matrix, chromosome, bin_loc):
-    # Individual comparisons data
-    lines = []
-    unique_groups = get_unique_means(filtered_matrix)
-    common_groups = get_common_means(filtered_matrix)
-    bin_label = make_bin_label(chromosome, bin_loc)
-
-    for group in unique_groups:
-        file_input = group[0]
-        mean = group[1]
-        for common_group in common_groups:
-            diff = mean - common_group
-            line = ",".join([bin_label, file_input, str(mean), str(common_group), str(diff)])
-            lines.append(line)
-
-    # Bin summary data:
-    num_unique = len(unique_groups)
-    num_common = len(common_groups)
-    num_total = num_unique + num_common
-    summary_line = ",".join([bin_label, str(num_unique), str(num_common), str(num_total)])
-
-    return summary_line, lines
 
 # Takes the output of process_bins() and converts it into list of lines of data for output
 def generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc):
@@ -123,25 +102,39 @@ def generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc):
     return lines
 
 
-# Function to execute in parallel using Pool
-# bin should be passed as "chr19_33444"
+# MAIN METHOD
+
 def process_bins(bin):
+    """
+    This is the main method and should be called using Pool.map It takes one bin location and uses the other helper
+    functions to get the reads, form the matrix, cluster it with DBSCAN, and output the cluster data as text lines
+    ready to writing to a file.
+    :param bin: string in this format: "chr19_55555"
+    :return: a list of lines representing the cluster data from that bin
+    """
 
     bam_parser_A = BamFileReadParser(input_bam_a, 20, read1_5=mbias_read1_5, read1_3=mbias_read1_3,
-                                     read2_5=mbias_read2_5, read2_3=mbias_read2_3)
+                                     read2_5=mbias_read2_5, read2_3=mbias_read2_3, no_overlap=no_overlap)
     bam_parser_B = BamFileReadParser(input_bam_b, 20, read1_5=mbias_read1_5, read1_3=mbias_read1_3,
-                                     read2_5=mbias_read2_5, read2_3=mbias_read2_3)
+                                     read2_5=mbias_read2_5, read2_3=mbias_read2_3, no_overlap=no_overlap)
 
     chromosome, bin_loc = bin.split("_")
     bin_loc = int(bin_loc)
 
     reads_A = bam_parser_A.parse_reads(chromosome, bin_loc - bin_size, bin_loc)
     reads_B = bam_parser_B.parse_reads(chromosome, bin_loc - bin_size, bin_loc)
+
+    # This try/catch block returns None for a bin any discrepancies in the data format of the bins are detected.
+    # The Nones are filtered out during the output of the data
     try:
         matrix_A = bam_parser_A.create_matrix(reads_A)
         matrix_B = bam_parser_B.create_matrix(reads_B)
     except ValueError as e:
         logging.error("ValueError when creating matrix at bin {}. Stack trace will be below if log level=DEBUG".format(bin))
+        logging.debug(str(e))
+        return None
+    except InvalidIndexError as e:
+        logging.error("Invalid Index error when creating matrices at bin {}".format(bin))
         logging.debug(str(e))
         return None
 
@@ -161,7 +154,13 @@ def process_bins(bin):
     matrix_A['input'] = labels_A
     matrix_B['input'] = labels_B
 
-    full_matrix = pd.concat([matrix_A, matrix_B])
+    try:
+        full_matrix = pd.concat([matrix_A, matrix_B])
+    except ValueError as e:
+        logging.error("Matrix concat error in bin {}".format(bin))
+        # logging.debug(str(e))
+        return None
+
     data_to_cluster = np.matrix(full_matrix)[:, :-1]
 
     # Create DBSCAN classifier and cluster add cluster classes to df
@@ -184,6 +183,15 @@ def process_bins(bin):
 
 
 if __name__ == "__main__":
+
+    def str2bool(v):
+        if v.lower() == 'true':
+            return True
+        elif v.lower() == 'false':
+            return False
+        else:
+            raise argparse.ArgumentTypeError("Boolean value expected.")
+
 
     # Set command line arguments
     arg_parser = argparse.ArgumentParser()
@@ -210,10 +218,13 @@ if __name__ == "__main__":
     arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read2_3", help="integer, read2 3' m-bias ignore bp, default=0", default=0)
+    arg_parser.add_argument("--no_overlap", help="bool, remove any overlap between paired reads and stitch"
+                                                 " reads together when possible, default=True",
+                            type=str2bool, const=True, default='True', nargs='?')
 
     args = arg_parser.parse_args()
 
-    # Assign arg parser vars to new variables
+    # Assign arg parser vars to new variables, not necesary, but I like it
     input_bam_a = args.input_bam_A
     input_bam_b = args.input_bam_B
     bins_file = args.bins
@@ -221,8 +232,7 @@ if __name__ == "__main__":
     cluster_min = int(args.cluster_member_minimum)
     read_depth_req = int(args.read_depth)
     num_processors = int(args.num_processors)
-
-    # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
+    no_overlap = args.no_overlap
     mbias_read1_5 = int(args.read1_5)
     mbias_read1_3 = int(args.read1_3)
     mbias_read2_5 = int(args.read2_5)
@@ -248,9 +258,11 @@ if __name__ == "__main__":
         os.makedirs(output_dir)
 
     # Set up logging
-    start_time = datetime.datetime.now().strftime("%y-%m-%d_%H-%M-%S")
-    log_file = os.path.join(output_dir, "{}.log".format(start_time))
-    logging.basicConfig(filename=os.path.join(output_dir, log_file), level=logging.DEBUG) #todo adjust this with a -v imput param
+    start_time = datetime.datetime.now().strftime("%y-%m-%d")
+    log_file = os.path.join(output_dir, "Clustering.{}.{}.log".format(os.path.basename(input_bam_a), start_time))
+
+    # todo adjust this with a -v imput param
+    logging.basicConfig(filename=os.path.join(output_dir, log_file), level=logging.DEBUG)
 
     # Read in bins
     bins=[]
@@ -269,8 +281,7 @@ if __name__ == "__main__":
     results = pool.map(process_bins, bins)
 
     # Convert the results into two output csv files for human analysis
-    # output = OutputComparisonResults(results)
     output = OutputIndividualMatrixData(results)
-    output.write_to_output(output_dir, start_time)
+    output.write_to_output(output_dir, "Clustering.{}.{}".format(os.path.basename(input_bam_a), start_time))
 
     logging.info("Done")
