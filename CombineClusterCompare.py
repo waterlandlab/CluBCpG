@@ -7,7 +7,7 @@ import sys
 import logging
 import os
 from ParseBam import BamFileReadParser
-from OutputComparisonResults import OutputComparisonResults, OutputIndividualMatrixData
+from OutputComparisonResults import OutputIndividualMatrixData
 import argparse
 import datetime
 from multiprocessing import Pool
