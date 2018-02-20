@@ -1,7 +1,7 @@
 from sklearn.cluster import DBSCAN
 from collections import Counter
 import pandas as pd
-import pickle
+from pandas.core.indexes.base import InvalidIndexError
 import numpy as np
 import sys
 import logging
@@ -142,6 +142,10 @@ def process_bins(bin):
         matrix_B = bam_parser_B.create_matrix(reads_B)
     except ValueError as e:
         logging.error("ValueError when creating matrix at bin {}. Stack trace will be below if log level=DEBUG".format(bin))
+        logging.debug(str(e))
+        return None
+    except InvalidIndexError as e:
+        logging.error("Invalid Index error when creating matrices at bin {}".format(bin))
         logging.debug(str(e))
         return None
 
