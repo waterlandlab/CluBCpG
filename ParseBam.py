@@ -39,34 +39,33 @@ class BamFileReadParser():
         read_cpgs = []
 
         for read in reads:
-            if read.mapping_quality >= 20:
-                reduced_read = []
-                # Join EVERY XM tag with its aligned_pair location
-                for pair, tag in zip(read.get_aligned_pairs(), read.get_tag('XM')):
-                    if pair[1]:
-                        if read.flag == 83 or read.flag == 163:
-                            reduced_read.append((pair[1] - 1, tag))
-                        else:
-                            reduced_read.append((pair[1], tag))
+            reduced_read = []
+            # Join EVERY XM tag with its aligned_pair location
+            for pair, tag in zip(read.get_aligned_pairs(), read.get_tag('XM')):
+                if pair[1]:
+                    if read.flag == 83 or read.flag == 163:
+                        reduced_read.append((pair[1] - 1, tag))
                     else:
-                        continue
+                        reduced_read.append((pair[1], tag))
+                else:
+                    continue
 
-                # if MBIAS was set, slice the joined list
-                if self.mbias_filtering:
-                    if read.is_read1:
-                        mbias_5_prime = self.read1_5
-                        mbias_3_prime = -self.read1_3
-                        if mbias_3_prime == 0:
-                            mbias_3_prime = None
-                        reduced_read = reduced_read[mbias_5_prime:mbias_3_prime]
-                    if read.is_read2:
-                        mbias_5_prime = self.read2_5
-                        mbias_3_prime = -self.read2_3
-                        if mbias_3_prime == 0:
-                            mbias_3_prime = None
-                        reduced_read = reduced_read[mbias_5_prime:mbias_3_prime]
+            # if MBIAS was set, slice the joined list
+            if self.mbias_filtering:
+                if read.is_read1:
+                    mbias_5_prime = self.read1_5
+                    mbias_3_prime = -self.read1_3
+                    if mbias_3_prime == 0:
+                        mbias_3_prime = None
+                    reduced_read = reduced_read[mbias_5_prime:mbias_3_prime]
+                if read.is_read2:
+                    mbias_5_prime = self.read2_5
+                    mbias_3_prime = -self.read2_3
+                    if mbias_3_prime == 0:
+                        mbias_3_prime = None
+                    reduced_read = reduced_read[mbias_5_prime:mbias_3_prime]
 
-                read_cpgs.append(reduced_read)
+            read_cpgs.append(reduced_read)
 
         self.full_reads = reads
         self.read_cpgs = read_cpgs
