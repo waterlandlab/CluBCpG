@@ -54,6 +54,7 @@ class BamFileReadParser():
             if self.mbias_filtering:
                 if read.is_read1:
                     mbias_5_prime = self.read1_5
+                    # note taking the NEGATIVE of the value for the 3-prime
                     mbias_3_prime = -self.read1_3
                     if mbias_3_prime == 0:
                         mbias_3_prime = None
