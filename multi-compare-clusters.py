@@ -3,6 +3,18 @@ from multiprocessing import Pool
 import pickle
 import sys
 
+########################
+#
+# Created by: Anthony Scott, PhD
+# Created on: February 2018
+#
+# Usage: python multi-compare-clusters.py input_data_file.csv
+#
+# input_data_file.csv should be generated using CombineClusterCompare.py
+# individual chromosome ouputs should be concatenated prior to using this for best results
+#
+########################
+
 
 class Analysis:
     """
