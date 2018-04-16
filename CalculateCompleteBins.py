@@ -213,7 +213,7 @@ if __name__ == "__main__":
 
     logging.basicConfig(filename=os.path.join(BASE_DIR, log_file), level=logging.DEBUG)
 
-    calc = CalculateCompleteBins(input_bam_file, 100, BASE_DIR, num_of_processors,
+    calc = CalculateCompleteBins(input_bam_file, bin_size, BASE_DIR, num_of_processors,
                                  mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
 
     logging.info("M bias inputs ignoring the following:\nread 1 5': {}bp\n"
