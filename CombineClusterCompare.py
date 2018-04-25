@@ -27,7 +27,7 @@ def filter_data_frame(matrix: pd.DataFrame, cluster_memeber_min):
     return output
 
 
-# Get only the matrices made up of reads from A or B
+# Get only the matrices made up of reads from A OR B
 def get_unique_matrices(filtered_matrix):
     unique_dfs = []
     for label in filtered_matrix['class'].unique():
@@ -38,7 +38,7 @@ def get_unique_matrices(filtered_matrix):
     return unique_dfs
 
 
-# Get matrices with reads made up of A and B
+# Get matrices with reads made up of A AND B
 def get_common_matrices(filtered_matrix):
     shared_dfs = []
     for label in filtered_matrix['class'].unique():
@@ -83,23 +83,29 @@ def generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc):
     bin_label = make_bin_label(chromosome, bin_loc)
 
     for matrix in unique_groups:
-        cpg_matrix = np.matrix(matrix.drop(['class', 'input'], axis=1))
+        cpg_matrix = np.array(matrix.drop(['class', 'input'], axis=1))
+        # get a semi-colon separated string of 1s and 0s representing the CpG pattern
+        cpg_pattern = ";".join([str(int(x)) for x in list(cpg_matrix[0])])
         m_mean = cpg_matrix.mean()
         num_cpgs = cpg_matrix.shape[1]
         read_number = len(matrix)
         input_label = matrix['input'].unique()[0]
         class_label = matrix['class'].unique()[0]
-        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number), str(num_cpgs)])
+        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number),
+                             str(num_cpgs), cpg_pattern])
         lines.append(out_line)
 
     for matrix in common_groups:
-        cpg_matrix = np.matrix(matrix.drop(['class', 'input'], axis=1))
+        cpg_matrix = np.array(matrix.drop(['class', 'input'], axis=1))
+        # get a semi-colon separated string of 1s and 0s representing the CpG pattern
+        cpg_pattern = ";".join([str(int(x)) for x in list(cpg_matrix[0])])
         m_mean = cpg_matrix.mean()
         num_cpgs = cpg_matrix.shape[1]
         read_number = len(matrix)
         input_label = 'AB'
         class_label = matrix['class'].unique()[0]
-        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number), str(num_cpgs)])
+        out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number),
+                             str(num_cpgs), cpg_pattern])
         lines.append(out_line)
 
     return lines
@@ -164,6 +170,7 @@ def process_bins(bin):
         # logging.debug(str(e))
         return None
 
+    # Get data without labels for clustering
     data_to_cluster = np.matrix(full_matrix)[:, :-1]
 
     # Create DBSCAN classifier and cluster add cluster classes to df
