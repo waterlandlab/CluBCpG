@@ -14,6 +14,7 @@ from multiprocessing import Pool
 
 # HELPER METHODS
 
+
 # Remove clusters with less than n members
 def filter_data_frame(matrix: pd.DataFrame, cluster_memeber_min):
     output = matrix.copy()
@@ -57,6 +58,7 @@ def get_unique_means(filtered_matrix):
 
     return output
 
+
 # Get the means for all common matrices
 def get_common_means(filtered_matrix):
     output = []
@@ -65,6 +67,7 @@ def get_common_means(filtered_matrix):
         output.append(matrix_mean)
 
     return output
+
 
 # Generate a string label for each bin
 def make_bin_label(chromosome, stop_loc):
@@ -124,7 +127,7 @@ def process_bins(bin):
     reads_A = bam_parser_A.parse_reads(chromosome, bin_loc - bin_size, bin_loc)
     reads_B = bam_parser_B.parse_reads(chromosome, bin_loc - bin_size, bin_loc)
 
-    # This try/catch block returns None for a bin any discrepancies in the data format of the bins are detected.
+    # This try/catch block returns None for a bin if any discrepancies in the data format of the bins are detected.
     # The Nones are filtered out during the output of the data
     try:
         matrix_A = bam_parser_A.create_matrix(reads_A)
