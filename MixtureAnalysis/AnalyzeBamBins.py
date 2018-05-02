@@ -1,13 +1,10 @@
-from ParseBam import BamFileReadParser
+from MixtureAnalysis.ParseBam import BamFileReadParser
 import sys
 import os
 import logging
 import numpy as np
-import pandas as pd
-from sklearn.cluster import DBSCAN
-from sklearn.datasets import make_blobs
 from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_samples, silhouette_score
+from sklearn.metrics import silhouette_score
 
 
 # Adapted from Stackoverflow

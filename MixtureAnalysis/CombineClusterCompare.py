@@ -1,13 +1,12 @@
 from sklearn.cluster import DBSCAN
-from collections import Counter
 import pandas as pd
 from pandas.core.indexes.base import InvalidIndexError
 import numpy as np
 import sys
 import logging
 import os
-from ParseBam import BamFileReadParser
-from OutputComparisonResults import OutputIndividualMatrixData
+from MixtureAnalysis.ParseBam import BamFileReadParser
+from MixtureAnalysis.OutputComparisonResults import OutputIndividualMatrixData
 import argparse
 import datetime
 from multiprocessing import Pool

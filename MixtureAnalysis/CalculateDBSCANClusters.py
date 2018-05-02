@@ -1,11 +1,9 @@
 from sklearn.cluster import DBSCAN
 from collections import Counter
-import pandas as pd
-import numpy as np
 import sys
 import logging
 import os
-from ParseBam import BamFileReadParser
+from MixtureAnalysis.ParseBam import BamFileReadParser
 
 # Input params
 # todo set this up as arg parser

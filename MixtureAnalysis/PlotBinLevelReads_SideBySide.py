@@ -1,4 +1,4 @@
-from ParseBam import BamFileReadParser
+from MixtureAnalysis.ParseBam import BamFileReadParser
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt

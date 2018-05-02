@@ -1,5 +1,4 @@
-from ParseBam import BamFileReadParser
-import sys
+from MixtureAnalysis.ParseBam import BamFileReadParser
 import os
 import logging
 from multiprocessing import Pool
