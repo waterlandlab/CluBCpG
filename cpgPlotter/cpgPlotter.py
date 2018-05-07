@@ -37,6 +37,16 @@ class CpGMatrixPlotter:
 
         return cpgMatrix, cpgPositions, cluster_labels, input_labels
 
+    @staticmethod
+    def get_color(cpg_value: int):
+        if cpg_value == 1:
+            return "black"
+        elif cpg_value == 0:
+            return "white"
+
+        else:
+            NotImplementedError("I cannot yet accept unknown values. But I will soon.")
+
     def plotCpGMatrix(self, cpgMatrix, cpgPositions, title=None, figsize=(8, 8)):
         fig, ax = plt.subplots(figsize=figsize)
         v_steps = 1 / cpgMatrix.shape[0]
@@ -57,7 +67,7 @@ class CpGMatrixPlotter:
             for cpg, hspace in zip(read, h_spacings):
                 x = hspace
                 y = vspace
-                circle = plt.Circle((x, y), radius=radius, facecolor=str(cpg), edgecolor="black")
+                circle = plt.Circle((x, y), radius=radius, facecolor=self.get_color(cpg), edgecolor="black")
                 ax.add_artist(circle)
 
         return fig
