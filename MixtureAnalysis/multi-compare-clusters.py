@@ -10,7 +10,7 @@ import sys
 #
 # Usage: python multi-compare-clusters.py input_data_file.csv
 #
-# input_data_file.csv should be generated using CombineClusterCompare.py
+# input_data_file.csv should be generated using CombineClusterCompare
 # individual chromosome ouputs should be concatenated prior to using this for best results
 #
 ########################

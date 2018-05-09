@@ -8,5 +8,7 @@ setup(name="MixtureAnalysis",
       license='MIT',
       packages=['MixtureAnalysis', 'cpgPlotter'],
       install_requires=['pysam', 'numpy', 'matplotlib', 'scikit-learn',
-                        'seaborn', 'scipy', 'pandas', 'fastcluster']
+                        'seaborn', 'scipy', 'pandas', 'fastcluster'],
+      scripts=['bin/CalculateCompleteBins',
+               'bin/CombineClusterCompare']
       )
