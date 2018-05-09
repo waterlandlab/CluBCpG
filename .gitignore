@@ -169,3 +169,5 @@ fabric.properties
 # data for testing during dev
 test_data/*
 debug.py
+
+.pytest_cache/
