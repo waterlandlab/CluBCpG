@@ -28,6 +28,8 @@ class BamFileReadParser():
             self.mbias_filtering = False
 
         self.OpenBamFile = pysam.AlignmentFile(bamfile, 'rb')
+        # Check for presnece of index file
+        assert self.OpenBamFile.check_index(), "Can't find index file. Please run samtools index to generate it."
 
     # Get reads from the bam file, extract methylation state
     def parse_reads(self, chromosome, start, stop):
