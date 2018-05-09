@@ -31,6 +31,18 @@ class BamFileReadParser():
         # Check for presnece of index file
         assert self.OpenBamFile.check_index(), "Can't find index file. Please run samtools index to generate it."
 
+    # From open bam file, get locaiton of first read from the provided chromosome
+    def get_location_of_first_read(self, chromosome: str):
+
+        # Get reference lenghts
+        ref_lens = dict(zip(self.OpenBamFile.references, self.OpenBamFile.lengths))
+
+        for read in self.OpenBamFile.fetch(chromosome, 0, ref_lens[chromosome]):
+            reads_start_loc = read.reference_start
+            break
+
+        return reads_start_loc
+
     # Get reads from the bam file, extract methylation state
     def parse_reads(self, chromosome, start, stop):
         reads = []
