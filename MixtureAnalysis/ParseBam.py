@@ -191,30 +191,3 @@ class BamFileReadParser():
         return fixed_read_cpgs
 
 
-if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("input_bam", help="bam file")
-    parser.add_argument("chromosome", help="chromosome to extract from, example: chr19")
-    parser.add_argument("end_coordinate", help="Specifcy the final coordinate of the region you wish to extract, example"
-                                               " 500 would give you a region randing from bp window_size-500")
-    parser.add_argument("-w", "--window", help="Size of the region in bp you with you convert into a matrix",
-                        default=200)
-    parser.add_argument("-q", "--quality", help="Minimum mapping quality for read to be considered default=20",
-                        default=20)
-
-    args = parser.parse_args()
-
-    bam_file = args.input_bam
-    quality_score = args.quality
-    window_size = args.window
-    stop_pos = int(args.end_coordinate)
-    chromosome = args.chromosome
-
-    bamfileparser = BamFileReadParser(bam_file, quality_score)
-
-    data = bamfileparser.parse_reads(chromosome, stop_pos-window_size, stop_pos)
-
-    matrix = bamfileparser.create_matrix(data)
-
-    print(matrix)
