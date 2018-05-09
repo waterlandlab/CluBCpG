@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from MixtureAnalysis.ParseBam import BamFileReadParser
 import os
 import logging
