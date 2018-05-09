@@ -6,9 +6,9 @@ setup(name="MixtureAnalysis",
       author="Anthony Scott, PhD",
       author_email="charles.scott@bcm.edu",
       license='MIT',
-      packages=['MixtureAnalysis', 'cpgPlotter'],
+      packages=['MixtureAnalysis'],
       install_requires=['pysam', 'numpy', 'matplotlib', 'scikit-learn',
                         'seaborn', 'scipy', 'pandas', 'fastcluster'],
       scripts=['bin/CalculateCompleteBins',
-               'bin/CombineClusterCompare']
+               'bin/CombineClusterCompare'],
       )
