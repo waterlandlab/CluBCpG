@@ -1,5 +1,6 @@
-from ParseBam import BamFileReadParser
-import sys
+#!/usr/bin/env python3
+
+from MixtureAnalysis.ParseBam import BamFileReadParser
 import os
 import logging
 from multiprocessing import Pool
@@ -169,7 +170,7 @@ if __name__ == "__main__":
                             help="Number of processors to use for analysis, default=1",
                             default=1)
     arg_parser.add_argument("-chr", "--chromosome",
-                            help="Chromosome to analyze, example: 'chr19', not required but encouraged, default=all chromosomes")
+                            help="Chromosome to analyze, example: 'chr19', required", default=None)
 
     arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
@@ -199,6 +200,9 @@ if __name__ == "__main__":
         chrom_of_interest = args.chromosome
     else:
         chrom_of_interest = None
+
+    # For now, this will be made required
+    assert chrom_of_interest, "Chromosome to analyze must be specified"
 
     if args.output_dir:
         BASE_DIR = args.output_dir

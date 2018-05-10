@@ -28,6 +28,20 @@ class BamFileReadParser():
             self.mbias_filtering = False
 
         self.OpenBamFile = pysam.AlignmentFile(bamfile, 'rb')
+        # Check for presnece of index file
+        assert self.OpenBamFile.check_index(), "Can't find index file. Please run samtools index to generate it."
+
+    # From open bam file, get locaiton of first read from the provided chromosome
+    def get_location_of_first_read(self, chromosome: str):
+
+        # Get reference lenghts
+        ref_lens = dict(zip(self.OpenBamFile.references, self.OpenBamFile.lengths))
+
+        for read in self.OpenBamFile.fetch(chromosome, 0, ref_lens[chromosome]):
+            reads_start_loc = read.reference_start
+            break
+
+        return reads_start_loc
 
     # Get reads from the bam file, extract methylation state
     def parse_reads(self, chromosome, start, stop):
@@ -189,30 +203,3 @@ class BamFileReadParser():
         return fixed_read_cpgs
 
 
-if __name__ == "__main__":
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("input_bam", help="bam file")
-    parser.add_argument("chromosome", help="chromosome to extract from, example: chr19")
-    parser.add_argument("end_coordinate", help="Specifcy the final coordinate of the region you wish to extract, example"
-                                               " 500 would give you a region randing from bp window_size-500")
-    parser.add_argument("-w", "--window", help="Size of the region in bp you with you convert into a matrix",
-                        default=200)
-    parser.add_argument("-q", "--quality", help="Minimum mapping quality for read to be considered default=20",
-                        default=20)
-
-    args = parser.parse_args()
-
-    bam_file = args.input_bam
-    quality_score = args.quality
-    window_size = args.window
-    stop_pos = int(args.end_coordinate)
-    chromosome = args.chromosome
-
-    bamfileparser = BamFileReadParser(bam_file, quality_score)
-
-    data = bamfileparser.parse_reads(chromosome, stop_pos-window_size, stop_pos)
-
-    matrix = bamfileparser.create_matrix(data)
-
-    print(matrix)

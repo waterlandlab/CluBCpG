@@ -1,13 +1,9 @@
-from ParseBam import BamFileReadParser
+from MixtureAnalysis.ParseBam import BamFileReadParser
 import  matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
-import pandas as pd
-import matplotlib.cm as cm
 import argparse
-import logging
 import sys
 import os
 from multiprocessing import Pool
