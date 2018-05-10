@@ -5,7 +5,7 @@ This repo will be a collection of tools created to assist with the mixture analy
 Documentation will be added once the package is more complete. This repo is a WORK IN PROGRESS.
 
 ### Requirements
-* Python3
+* Python3+
 * All dependencies listed in ```requirements.txt```
 * All of [pysam's dependencies](http://pysam.readthedocs.io/en/latest/#)
 
@@ -13,7 +13,8 @@ Documentation will be added once the package is more complete. This repo is a WO
 ### Install
 * Clone or download the master branch to your local machine
 * __(Optional, but HIGHLY recommended)__ Create a new python virtual environment and activate that virualenv
-* Install all python requirements using ```pip3 install -r /path/to/requirements.txt```
+* Navigate to folder containing setup.py
+* Execute `pip install .` within that folder to install the package. Requirements will automatically be installed if not already present.
 
 ### Plot read-level matrices
 * Create a text file containing the bins you wish to plot (will be refered to below as __bins.txt__ below). One bin per line in this format: __chr19_55555__. This will generate a plot for the genomic region chr19:55455-55555
