@@ -59,8 +59,10 @@ class CalculateCompleteBins:
             logging.error("Unknown error: {}".format(bin))
             return None
 
+        matrix_has_unknowns = np.isnan(np.array(matrix)).any()
+
         # if impute flag is true, attempt to impute missing values
-        if impute and matrix.shape[1] >=2 and matrix.shape[1] <= 8:
+        if impute and matrix.shape[1] >=2 and matrix.shape[1] <= 8 and matrix_has_unknowns:
             matrix_cols = matrix.columns
             imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin)
             matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)), positions=np.array(matrix.columns))
