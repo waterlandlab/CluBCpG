@@ -5,6 +5,7 @@ import os
 import logging
 from multiprocessing import Pool
 import numpy as np
+import pandas as pd
 import argparse
 from collections import defaultdict
 import time
@@ -57,6 +58,13 @@ class CalculateCompleteBins:
         except:
             logging.error("Unknown error: {}".format(bin))
             return None
+
+        # if impute flag is true, attempt to impute missing values
+        if impute:
+            matrix_cols = matrix.columns
+            imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin)
+            matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)), positions=np.array(matrix.columns))
+            matrix = pd.DataFrame(matrix, columns=matrix_cols)
 
         # convert to data_frame of 1s and 0s, drop rows with NaN
         matrix = matrix.dropna()
@@ -195,6 +203,9 @@ if __name__ == "__main__":
     arg_parser.add_argument("--no_overlap", help="bool, remove any overlap between paired reads and stitch"
                                                  " reads together when possible, default=True",
                             type=str2bool, const=True, default='True', nargs='?')
+    arg_parser.add_argument("--impute", help="use CpGNet to impute missing values default=False",
+                            type=str2bool, const=False, default='False', nargs='?')
+
 
     args = arg_parser.parse_args()
 
@@ -204,6 +215,7 @@ if __name__ == "__main__":
     min_cluster_members = int(args.cluster_member_minimum)
     read_depth_req = int(args.read_depth)
     no_overlap = args.no_overlap
+    impute = args.impute
 
     # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
     mbias_read1_5 = int(args.read1_5)
@@ -242,6 +254,13 @@ if __name__ == "__main__":
     logging.info("Bin size: {}".format(bin_size))
     logging.info("Number of processors: {}".format(num_of_processors))
     logging.info("Fix overlapping reads: {}".format(no_overlap))
+
+    if impute:
+        logging.info("Imputation set to True, will impute missing values in reads when possible")
+        from MixtureAnalysis.ImputeWithCpGNet import ImputeWithCpGNet
+    else:
+        logging.info("Imputation set to False. I will simply drop reads with missing values")
+
     logging.info("M bias inputs ignoring the following:\nread 1 5': {}bp\n"
                  "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
 
