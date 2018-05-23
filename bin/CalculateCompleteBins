@@ -60,7 +60,7 @@ class CalculateCompleteBins:
             return None
 
         # if impute flag is true, attempt to impute missing values
-        if impute:
+        if impute and matrix.shape[1] >=2 and matrix.shape[1] <= 8:
             matrix_cols = matrix.columns
             imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin)
             matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)), positions=np.array(matrix.columns))
