@@ -39,7 +39,6 @@ class CalculateCompleteBins:
         :param bin: Bin should be passed as "Chr19_4343343"
         :return: pd.DataFrame with rows containing NaNs dropped
         """
-
         # Get reads from bam file
         parser = BamFileReadParser(self.input_bam_file, 20, self.mbias_read1_5, self.mbias_read1_3,
                                    self.mbias_read2_5, self.mbias_read2_3, no_overlap)
@@ -63,6 +62,8 @@ class CalculateCompleteBins:
 
         # if impute flag is true, attempt to impute missing values
         if impute and matrix.shape[1] >=2 and matrix.shape[1] <= 8 and matrix_has_unknowns:
+            # drop rows of ALL NaN
+            matrix = matrix.dropna(how="all")
             matrix_cols = matrix.columns
             imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin)
             matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)), positions=np.array(matrix.columns))
