@@ -1,5 +1,6 @@
 from CpGNet import CpGNet, TRAINED_CPG_MODELS
 import numpy as np
+from keras.models import load_model
 
 class ImputeWithCpGNet:
 
@@ -11,7 +12,7 @@ class ImputeWithCpGNet:
 
     def get_model(self):
         net = CpGNet(cpgDensity=self.cpg_density)
-        net.model = TRAINED_CPG_MODELS[self.cpg_density]
+        net.model = load_model(TRAINED_CPG_MODELS[self.cpg_density])
         return net
 
     # Take the predicted matrix, convert to 1 and 0 when confident, otherwise nan
