@@ -10,6 +10,7 @@ import argparse
 from collections import defaultdict
 import time
 
+DEBUG = False
 
 class CalculateCompleteBins:
 
@@ -68,6 +69,7 @@ class CalculateCompleteBins:
             imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin)
             matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)), positions=np.array(matrix.columns))
             matrix = pd.DataFrame(matrix, columns=matrix_cols)
+            print("Imputed bin {}".format(bin), flush=True)
 
         # convert to data_frame of 1s and 0s, drop rows with NaN
         matrix = matrix.dropna()
@@ -133,6 +135,15 @@ class CalculateCompleteBins:
 
         print("Generating bins for the entire genome...")
         bins_to_analyze = self.generate_bins_list(chromosome_lengths)
+
+        if DEBUG:
+            ##DEBUG DELETE ME
+            read_bins = []
+            with open("/media/sf_VMShared/test_bins.txt", "r") as f:
+                for line in f:
+                    read_bins.append(line.strip())
+            bins_to_analyze = {"chr19": read_bins}
+            ######################
 
         # Set up for multiprocessing
         print("Beginning analysis of bins using {} processors.".format(self.number_of_processors))
