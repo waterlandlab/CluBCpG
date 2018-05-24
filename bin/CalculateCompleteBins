@@ -63,13 +63,14 @@ class CalculateCompleteBins:
 
         # if impute flag is true, attempt to impute missing values
         if impute and matrix.shape[1] >=2 and matrix.shape[1] <= 8 and matrix_has_unknowns:
+            logging.info("Attempting to imput bin {}....".format(bin))
             # drop rows of ALL NaN
             matrix = matrix.dropna(how="all")
             matrix_cols = matrix.columns
             imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin)
             matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)), positions=np.array(matrix.columns))
             matrix = pd.DataFrame(matrix, columns=matrix_cols)
-            print("Imputed bin {}".format(bin), flush=True)
+            logging.info("Imputed bin {}".format(bin))
 
         # convert to data_frame of 1s and 0s, drop rows with NaN
         matrix = matrix.dropna()
