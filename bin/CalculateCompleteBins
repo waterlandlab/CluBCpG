@@ -59,18 +59,20 @@ class CalculateCompleteBins:
             logging.error("Unknown error: {}".format(bin))
             return None
 
+        # drop rows of ALL NaN
+        matrix = matrix.dropna(how="all")
+
         matrix_has_unknowns = np.isnan(np.array(matrix)).any()
 
         # if impute flag is true, attempt to impute missing values
-        if impute and matrix.shape[1] >=2 and matrix.shape[1] <= 8 and matrix_has_unknowns:
-            logging.info("Attempting to imput bin {}....".format(bin))
-            # drop rows of ALL NaN
-            matrix = matrix.dropna(how="all")
-            matrix_cols = matrix.columns
-            imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin)
-            matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)), positions=np.array(matrix.columns))
-            matrix = pd.DataFrame(matrix, columns=matrix_cols)
-            logging.info("Imputed bin {}".format(bin))
+        try:
+            if impute and matrix.shape[1] >=2 and matrix.shape[1] <= 8 and matrix_has_unknowns:
+                matrix_cols = matrix.columns
+                imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin)
+                matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)), positions=np.array(matrix.columns))
+                matrix = pd.DataFrame(matrix, columns=matrix_cols)
+        except ValueError:
+            logging.error("Error imputing at bin: {}".format(bin))
 
         # convert to data_frame of 1s and 0s, drop rows with NaN
         matrix = matrix.dropna()
@@ -140,7 +142,7 @@ class CalculateCompleteBins:
         if DEBUG:
             ##DEBUG DELETE ME
             read_bins = []
-            with open("/media/sf_VMShared/test_bins.txt", "r") as f:
+            with open("/home/anthony/test_bins.txt", "r") as f:
                 for line in f:
                     read_bins.append(line.strip())
             bins_to_analyze = {"chr19": read_bins}
