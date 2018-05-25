@@ -149,19 +149,19 @@ def process_bins(bin):
             matrix_B_cols = matrix_B.columns
 
         #attempt to Impute missing values and drop if not possible
-        if impute:
-            imputer = ImputeWithCpGNet(cpg_density=matrix_A.shape[1], bin=bin)
-            matrix_A = imputer.impute_matrix(np.array(matrix_A.fillna(-1)), positions=np.array(matrix_A.columns))
-            # Convert back to original format with columns names
-            matrix_A = pd.DataFrame(matrix_A, columns=matrix_A_cols)
-            matrix_A = matrix_A.dropna()
-
-            if not single_file_mode:
-                imputer = ImputeWithCpGNet(cpg_density=matrix_B.shape[1], bin=bin)
-                matrix_B = imputer.impute_matrix(np.array(matrix_B.fillna(-1)), positions=np.array(matrix_B.columns))
-                # Convert back to original format with columns names
-                matrix_B = pd.DataFrame(matrix_B, columns=matrix_B_cols)
-                matrix_B = matrix_B.dropna()
+        # if impute:
+        #     imputer = ImputeWithCpGNet(cpg_density=matrix_A.shape[1], bin=bin)
+        #     matrix_A = imputer.impute_matrix(np.array(matrix_A.fillna(-1)), positions=np.array(matrix_A.columns))
+        #     # Convert back to original format with columns names
+        #     matrix_A = pd.DataFrame(matrix_A, columns=matrix_A_cols)
+        #     matrix_A = matrix_A.dropna()
+        #
+        #     if not single_file_mode:
+        #         imputer = ImputeWithCpGNet(cpg_density=matrix_B.shape[1], bin=bin)
+        #         matrix_B = imputer.impute_matrix(np.array(matrix_B.fillna(-1)), positions=np.array(matrix_B.columns))
+        #         # Convert back to original format with columns names
+        #         matrix_B = pd.DataFrame(matrix_B, columns=matrix_B_cols)
+        #         matrix_B = matrix_B.dropna()
 
     except ValueError as e:
         logging.error("ValueError when creating matrix at bin {}. Stack trace will be below if log level=DEBUG".format(bin))
@@ -352,11 +352,11 @@ if __name__ == "__main__":
                  "Bins: {}"
                  .format(input_bam_a, input_bam_b, bins_file))
 
-    if impute:
-        logging.info("Imputation set to True, will impute missing values in reads when possible")
-        from MixtureAnalysis.ImputeWithCpGNet import ImputeWithCpGNet
-    else:
-        logging.info("Imputation set to False. I will simply drop reads with missing values")
+    # if impute:
+    #     logging.info("Imputation set to True, will impute missing values in reads when possible")
+    #     from MixtureAnalysis.ImputeWithCpGNet import ImputeWithCpGNet
+    # else:
+    #     logging.info("Imputation set to False. I will simply drop reads with missing values")
 
 
     logging.info("Starting workers pool, using {} processors".format(num_processors))
