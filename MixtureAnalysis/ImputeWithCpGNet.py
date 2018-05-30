@@ -50,5 +50,6 @@ class ImputeWithCpGNet:
         if postprocess:
             predicted_matrix = self.postprocess(predicted_matrix)
 
+        # This call forces tf to release memory, otherwise a large memory leak happens when executing in parallel
         K.clear_session()
         return predicted_matrix
