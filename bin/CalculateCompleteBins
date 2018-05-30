@@ -7,6 +7,7 @@ from multiprocessing import Pool
 import numpy as np
 import argparse
 from collections import defaultdict
+import time
 
 
 class CalculateCompleteBins:
@@ -99,6 +100,15 @@ class CalculateCompleteBins:
         return all_bins
 
     def analyze_bins(self, individual_chrom=None):
+
+        # Track the progress of the multiprocessing and output
+        def track_progress(job, update_interval=60):
+            while job._number_left > 0:
+                logging.info("Tasks remaining = {0}".format(
+                    job._number_left * job._chunksize))
+                time.sleep(update_interval)
+
+
         # Get and clean dict of chromosome lenghts, convert to list of bins
         print("Getting Chromosome lengths from bam files...")
         chromosome_lengths = self.get_chromosome_lengths()
@@ -122,7 +132,13 @@ class CalculateCompleteBins:
         for key in bins_to_analyze.keys():
             print("Analyzing chromosome {}".format(key))
             pool = Pool(processes=self.number_of_processors)
-            results = pool.map(self.calculate_bin_coverage, bins_to_analyze[key])
+            results = pool.map_async(self.calculate_bin_coverage, bins_to_analyze[key])
+
+            track_progress(results)
+
+            # once done, get results
+            results = results.get()
+
             final_results.extend(results)
             print("Finished chromosome {}".format(key))
 
