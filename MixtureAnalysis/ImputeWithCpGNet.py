@@ -1,7 +1,6 @@
 from CpGNet import CpGNet, TRAINED_CPG_MODELS
 import numpy as np
 from keras.models import load_model
-import keras.backend as K
 
 class ImputeWithCpGNet:
 
@@ -50,5 +49,4 @@ class ImputeWithCpGNet:
         if postprocess:
             predicted_matrix = self.postprocess(predicted_matrix)
 
-        K.clear_session()
         return predicted_matrix
