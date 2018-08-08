@@ -5,7 +5,7 @@ This repo will be a collection of tools created to assist with the mixture analy
 Documentation will be added once the package is more complete. This repo is a WORK IN PROGRESS.
 
 ### Requirements
-* Python3+
+* Python3.5+
 * All dependencies listed in ```requirements.txt```
 * All of [pysam's dependencies](http://pysam.readthedocs.io/en/latest/#)
 
