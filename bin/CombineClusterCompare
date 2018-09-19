@@ -19,6 +19,8 @@ from multiprocessing import Pool
 # Remove clusters with less than n members
 def filter_data_frame(matrix: pd.DataFrame, cluster_memeber_min):
     output = matrix.copy()
+    # duplicate indexes exist from concatenation, reset in the index to prevent dropping unintended rows
+    output.reset_index(drop=True, inplace=True)
     for cluster in output['class'].unique():
         df = output[output['class'] == cluster]
         if len(df) < cluster_memeber_min:
