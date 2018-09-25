@@ -8,6 +8,7 @@ Documentation will be added once the package is more complete. This repo is a WO
 * Python3.5+
 * All dependencies listed in ```requirements.txt```
 * All of [pysam's dependencies](http://pysam.readthedocs.io/en/latest/#)
+* A pip installed version of CpGNet
 
 ## Temporary usage directions
 ### Install
