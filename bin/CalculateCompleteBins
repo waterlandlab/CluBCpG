@@ -26,6 +26,7 @@ class CalculateCompleteBins:
         self.output_directory = output_directory
         self.bins_no_reads = 0
         self.bins_yes_reads = 0
+        self.chromosome = chromosome
 
         self.mbias_read1_5 = mbias_read1_5
         self.mbias_read1_3 = mbias_read1_3
@@ -147,7 +148,7 @@ class CalculateCompleteBins:
         print("Complete.")
 
         # Write to output file
-        output_file = os.path.join(self.output_directory, "CalculateCompleteBins_{}.csv".format(os.path.basename(self.input_bam_file)))
+        output_file = os.path.join(self.output_directory, "CompleteBins.{}.{}.csv".format(os.path.basename(self.input_bam_file), individual_chrom))
 
         with open(output_file, "w") as out:
             for result in final_results:
