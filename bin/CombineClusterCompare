@@ -271,7 +271,7 @@ if __name__ == "__main__":
 
     # Check all inputs are supplied
     if not input_bam_a and bins_file:
-        print("You must supply input_bam_a and a bind file. Exiting")
+        print("You must supply input_bam_a and a bins file. Exiting")
         sys.exit(1)
 
     if not input_bam_b:
@@ -280,7 +280,7 @@ if __name__ == "__main__":
     else:
         single_file_mode = False
 
-    # Get or assign ouput directory
+    # Get or assign output directory
     if args.output_dir:
         output_dir = args.output_dir
     else:
@@ -306,6 +306,12 @@ if __name__ == "__main__":
             bins.append(data[0])
 
     pool = Pool(processes=num_processors)
+    logging.info("Input files supplied:\n"
+                 "A: {}\n"
+                 "B: {}\n"
+                 "Bins: {}"
+                 .format(input_bam_a, input_bam_b, bins_file))
+
     logging.info("Starting workers pool, using {} processors".format(num_processors))
     logging.info("M bias inputs received, ignoring the following:\nread 1 5': {}bp\n"
                  "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
