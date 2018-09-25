@@ -230,8 +230,8 @@ if __name__ == "__main__":
         os.makedirs(BASE_DIR)
 
     log_file = os.path.join(BASE_DIR, "CompleteBins.{}.{}.log".format(os.path.basename(input_bam_file), chrom_of_interest))
-
-    logging.basicConfig(filename=os.path.join(BASE_DIR, log_file), level=logging.DEBUG)
+    print("Log file: {}".format(log_file), flush=True)
+    logging.basicConfig(filename=log_file, level=logging.DEBUG)
 
     calc = CalculateCompleteBins(input_bam_file, bin_size, BASE_DIR, num_of_processors,
                                  mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
