@@ -276,12 +276,12 @@ if __name__ == "__main__":
     arg_parser.add_argument("--remove_noise", help="bool, Discard the cluster containing noise points (-1)"
                                                    " after clustering, default=True",
                             type=str2bool, const=True, default='True', nargs='?')
-<<<<<<< b83e3258c6333c765d73d6de1a6ea0e57a421fae
+
     arg_parser.add_argument("--suffix", help="Any additional info to include in the output file name, chromosome for example", default=None)
-=======
+
     arg_parser.add_argument("--impute", help="use CpGNet to impute missing values default=False",
                             type=str2bool, const=False, default='False', nargs='?')
->>>>>>> added flag for imputation
+
 
     args = arg_parser.parse_args()
 
