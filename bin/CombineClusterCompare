@@ -12,6 +12,7 @@ from MixtureAnalysis.OutputComparisonResults import OutputIndividualMatrixData
 import argparse
 import datetime
 from multiprocessing import Pool
+import time
 
 # HELPER METHODS
 
@@ -205,6 +206,14 @@ def process_bins(bin):
     return generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc)
 
 
+def track_progress(job, update_interval=60):
+    while job._number_left > 0:
+        logging.info("Tasks remaining = {0}".format(
+            job._number_left * job._chunksize
+        ))
+        time.sleep(update_interval)
+
+
 if __name__ == "__main__":
 
     def str2bool(v):
@@ -323,7 +332,12 @@ if __name__ == "__main__":
                  "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
 
     # Results is a list of lists
-    results = pool.map(process_bins, bins)
+    # results = pool.map(process_bins, bins)
+
+    # Multiprocess the list, track progress, get results
+    results = pool.map_async(process_bins, bins)
+    track_progress(results)
+    results = results.get()
 
     # Convert the results into two output csv files for human analysis
     output = OutputIndividualMatrixData(results)
