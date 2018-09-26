@@ -248,6 +248,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("--remove_noise", help="bool, Discard the cluster containing noise points (-1)"
                                                    " after clustering, default=True",
                             type=str2bool, const=True, default='True', nargs='?')
+    arg_parser.add_argument("--suffix", help="Any additional info to include in the output file name, chromosome for example", default=None)
 
     args = arg_parser.parse_args()
 
@@ -265,6 +266,7 @@ if __name__ == "__main__":
     mbias_read2_5 = int(args.read2_5)
     mbias_read2_3 = int(args.read2_3)
     remove_noise = args.remove_noise
+    suffix = str(args.suffix)
 
 
     # todo write input params to log_file for record keeping
@@ -292,10 +294,10 @@ if __name__ == "__main__":
 
     # Set up logging
     start_time = datetime.datetime.now().strftime("%y-%m-%d")
-    log_file = os.path.join(output_dir, "Clustering.{}.{}.log".format(os.path.basename(input_bam_a), start_time))
+    log_file = os.path.join(output_dir, "Clustering.{}.{}.{}log".format(os.path.basename(input_bam_a), suffix, start_time))
 
     # todo adjust this with a -v imput param
-    logging.basicConfig(filename=os.path.join(output_dir, log_file), level=logging.DEBUG)
+    logging.basicConfig(filename=log_file, level=logging.DEBUG)
 
     # Read in bins
     bins=[]
@@ -321,6 +323,6 @@ if __name__ == "__main__":
 
     # Convert the results into two output csv files for human analysis
     output = OutputIndividualMatrixData(results)
-    output.write_to_output(output_dir, "Clustering.{}.{}".format(os.path.basename(input_bam_a), start_time))
+    output.write_to_output(output_dir, "Clustering.{}.{}.{}".format(os.path.basename(input_bam_a), suffix, start_time))
 
     logging.info("Done")
