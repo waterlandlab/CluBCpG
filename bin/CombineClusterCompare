@@ -266,7 +266,11 @@ if __name__ == "__main__":
     mbias_read2_5 = int(args.read2_5)
     mbias_read2_3 = int(args.read2_3)
     remove_noise = args.remove_noise
-    suffix = str(args.suffix)
+    if args.suffix:
+        suffix = str(args.suffix)
+        suffix = "." + suffix
+    else:
+        suffix = ""
 
 
     # todo write input params to log_file for record keeping
@@ -294,7 +298,7 @@ if __name__ == "__main__":
 
     # Set up logging
     start_time = datetime.datetime.now().strftime("%y-%m-%d")
-    log_file = os.path.join(output_dir, "Clustering.{}.{}.{}log".format(os.path.basename(input_bam_a), suffix, start_time))
+    log_file = os.path.join(output_dir, "Clustering.{}{}.{}log".format(os.path.basename(input_bam_a), suffix, start_time))
 
     # todo adjust this with a -v imput param
     logging.basicConfig(filename=log_file, level=logging.DEBUG)
@@ -323,6 +327,6 @@ if __name__ == "__main__":
 
     # Convert the results into two output csv files for human analysis
     output = OutputIndividualMatrixData(results)
-    output.write_to_output(output_dir, "Clustering.{}.{}.{}".format(os.path.basename(input_bam_a), suffix, start_time))
+    output.write_to_output(output_dir, "Clustering.{}{}.{}".format(os.path.basename(input_bam_a), suffix, start_time))
 
     logging.info("Done")
