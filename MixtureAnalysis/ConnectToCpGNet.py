@@ -3,7 +3,7 @@ import numpy as np
 from keras.models import load_model
 import keras.backend as K
 
-class ConnectToCpGNet:
+class ImputeWithCpGNet:
 
     def __init__(self, cpg_density: int, bin: str, bin_size=100):
         self.cpg_density = cpg_density
@@ -53,3 +53,6 @@ class ConnectToCpGNet:
         # This call forces tf to release memory, otherwise a large memory leak happens when executing in parallel
         K.clear_session()
         return predicted_matrix
+
+
+class Train

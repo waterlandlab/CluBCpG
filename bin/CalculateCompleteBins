@@ -68,7 +68,7 @@ class CalculateCompleteBins:
         try:
             if impute and matrix.shape[1] >=2 and matrix.shape[1] <= 8 and matrix_has_unknowns:
                 matrix_cols = matrix.columns
-                imputer = ConnectToCpGNet(cpg_density=matrix.shape[1], bin=bin)
+                imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin)
                 matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)), positions=np.array(matrix.columns))
                 matrix = pd.DataFrame(matrix, columns=matrix_cols)
         except ValueError:
@@ -278,7 +278,7 @@ if __name__ == "__main__":
 
     if impute:
         logging.info("Imputation set to True, will impute missing values in reads when possible")
-        from MixtureAnalysis.ConnectToCpGNet import ConnectToCpGNet
+        from MixtureAnalysis.ConnectToCpGNet import ImputeWithCpGNet
     else:
         logging.info("Imputation set to False. I will simply drop reads with missing values")
 
