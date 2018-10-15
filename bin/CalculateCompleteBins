@@ -224,6 +224,7 @@ if __name__ == "__main__":
                             type=str2bool, const=False, default='False', nargs='?')
 
 
+    # Extract arguments from command line and set as correct types
     args = arg_parser.parse_args()
 
     input_bam_file = args.input_bam_A
@@ -233,6 +234,7 @@ if __name__ == "__main__":
     read_depth_req = int(args.read_depth)
     no_overlap = args.no_overlap
     impute = args.impute
+    genome = args.genome
 
     # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
     mbias_read1_5 = int(args.read1_5)
@@ -249,6 +251,7 @@ if __name__ == "__main__":
     # For now, this will be made required
     assert chrom_of_interest, "Chromosome to analyze must be specified"
 
+    # Set output directory, or use bam file location if not specified
     if args.output_dir:
         BASE_DIR = args.output_dir
     else:
@@ -258,6 +261,7 @@ if __name__ == "__main__":
     if not os.path.exists(BASE_DIR):
         os.makedirs(BASE_DIR)
 
+    # Setup logging
     log_file = os.path.join(BASE_DIR, "CompleteBins.{}.{}.log".format(os.path.basename(input_bam_file), chrom_of_interest))
     print("Log file: {}".format(log_file), flush=True)
     logging.basicConfig(filename=log_file, level=logging.DEBUG)
