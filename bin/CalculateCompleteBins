@@ -2,6 +2,7 @@
 
 from MixtureAnalysis.ParseBam import BamFileReadParser
 import os
+import sys
 import logging
 from multiprocessing import Pool
 import numpy as np
@@ -116,6 +117,11 @@ class CalculateCompleteBins:
         return all_bins
 
     def analyze_bins(self, individual_chrom=None):
+        """
+        Main function in class. Run the Complete analysis on the data
+        :param individual_chrom: Chromosome to analyze: ie "chr7"
+        :return: filename of the generated report
+        """
 
         # Track the progress of the multiprocessing and output
         def track_progress(job, update_interval=60):
@@ -138,15 +144,6 @@ class CalculateCompleteBins:
 
         print("Generating bins for the entire genome...")
         bins_to_analyze = self.generate_bins_list(chromosome_lengths)
-
-        if DEBUG:
-            ##DEBUG DELETE ME
-            read_bins = []
-            with open("/home/anthony/test_bins.txt", "r") as f:
-                for line in f:
-                    read_bins.append(line.strip())
-            bins_to_analyze = {"chr19": read_bins}
-            ######################
 
         # Set up for multiprocessing
         print("Beginning analysis of bins using {} processors.".format(self.number_of_processors))
@@ -177,11 +174,15 @@ class CalculateCompleteBins:
         with open(output_file, "w") as out:
             for result in final_results:
                 if result:
+                    # bin
                     out.write(result[0] + ",")
+                    # num of reads
                     out.write(str(result[1].shape[0]) + ",")
+                    # num of CpGs
                     out.write(str(result[1].shape[1]) + "\n")
 
         logging.info("Full read coverage analysis complete!")
+        return output_file
 
 
 if __name__ == "__main__":
@@ -201,12 +202,6 @@ if __name__ == "__main__":
     arg_parser.add_argument("-o", "--output_dir",
                             help="Output directory to save figures, defaults to bam file loaction")
     arg_parser.add_argument("-bin_size", help="Size of bins to extract and analyze, default=100", default=100)
-    arg_parser.add_argument("-m", "--cluster_member_minimum",
-                            help="Minimum number of members a cluster should have for it to be considered, default=4",
-                            default=4)
-    arg_parser.add_argument("-r", "--read_depth",
-                            help="Minium number of reads covering all CpGs that the bins should have to analyze, default=10",
-                            default=10)
     arg_parser.add_argument("-n", "--num_processors",
                             help="Number of processors to use for analysis, default=1",
                             default=1)
@@ -220,8 +215,13 @@ if __name__ == "__main__":
     arg_parser.add_argument("--no_overlap", help="bool, remove any overlap between paired reads and stitch"
                                                  " reads together when possible, default=True",
                             type=str2bool, const=True, default='True', nargs='?')
-    arg_parser.add_argument("--impute", help="use CpGNet to impute missing values default=False",
-                            type=str2bool, const=False, default='False', nargs='?')
+    arg_parser.add_argument("--train", help="folder to save model, After analysis, "
+                                            "a machine learning model will be trained on the data. This model can the be  "
+                                            "used with --impute to increase data coverage", default=None)
+
+    arg_parser.add_argument("--impute", help="path to folder containing trained models. Use this after using --train to "
+                                             "re-run analysis and attempting to increase coverage by imputing unknown values",
+                            default=None)
 
 
     # Extract arguments from command line and set as correct types
@@ -230,11 +230,9 @@ if __name__ == "__main__":
     input_bam_file = args.input_bam_A
     num_of_processors = int(args.num_processors)
     bin_size = int(args.bin_size)
-    min_cluster_members = int(args.cluster_member_minimum)
-    read_depth_req = int(args.read_depth)
     no_overlap = args.no_overlap
     impute = args.impute
-    genome = args.genome
+    train = args.train
 
     # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
     mbias_read1_5 = int(args.read1_5)
@@ -266,8 +264,6 @@ if __name__ == "__main__":
     print("Log file: {}".format(log_file), flush=True)
     logging.basicConfig(filename=log_file, level=logging.DEBUG)
 
-    calc = CalculateCompleteBins(input_bam_file, bin_size, BASE_DIR, num_of_processors,
-                                 mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
 
     # Log run input params
     logging.info("Input file: {}".format(input_bam_file))
@@ -279,11 +275,28 @@ if __name__ == "__main__":
     if impute:
         logging.info("Imputation set to True, will impute missing values in reads when possible")
         from MixtureAnalysis.ConnectToCpGNet import ImputeWithCpGNet
+        ### CHANGE FOR NOW
+        print("Im not updated for this yet. Fix me first")
+        sys.exit(7)
     else:
         logging.info("Imputation set to False. I will simply drop reads with missing values")
 
     logging.info("M bias inputs ignoring the following:\nread 1 5': {}bp\n"
                  "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
 
-    calc.analyze_bins(chrom_of_interest)
+    # Perform the analysis
+    calc = CalculateCompleteBins(input_bam_file, bin_size, BASE_DIR, num_of_processors,
+                                 mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
+    output_file = calc.analyze_bins(chrom_of_interest)
 
+
+    # Train the model if directed to
+    if train:
+        logging.info("--train flag detected. Attempting to train a model...")
+        from MixtureAnalysis.ConnectToCpGNet import TrainWithCpGNet
+
+        # Read in outputfile as a dataframe
+        complete_bins = pd.read_csv(output_file, header=None)
+        complete_bins.columns = ['bin', 'reads',' cpgs']
+
+        # todo subset cpg_densities, load all matricies into memeory (if they fit) and train
