@@ -297,6 +297,6 @@ if __name__ == "__main__":
 
         # Read in outputfile as a dataframe
         complete_bins = pd.read_csv(output_file, header=None)
-        complete_bins.columns = ['bin', 'reads',' cpgs']
+        complete_bins.columns = ['bin', 'reads', 'cpgs']
 
         # todo subset cpg_densities, load all matricies into memeory (if they fit) and train
