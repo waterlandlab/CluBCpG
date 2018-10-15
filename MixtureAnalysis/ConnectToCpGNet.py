@@ -3,7 +3,7 @@ import numpy as np
 from keras.models import load_model
 import keras.backend as K
 
-class ImputeWithCpGNet:
+class ConnectToCpGNet:
 
     def __init__(self, cpg_density: int, bin: str, bin_size=100):
         self.cpg_density = cpg_density
