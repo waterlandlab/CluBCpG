@@ -10,5 +10,6 @@ setup(name="MixtureAnalysis",
       install_requires=['pysam', 'numpy', 'matplotlib', 'scikit-learn',
                         'seaborn', 'scipy', 'pandas', 'fastcluster'],
       scripts=['bin/CalculateCompleteBins',
-               'bin/CombineClusterCompare'],
+               'bin/CombineClusterCompare',
+               'bin/TrainForImputation'],
       )
