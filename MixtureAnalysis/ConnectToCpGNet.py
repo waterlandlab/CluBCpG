@@ -6,15 +6,18 @@ import os
 
 class ImputeWithCpGNet:
 
-    def __init__(self, cpg_density: int, bin: str, bin_size=100):
+    def __init__(self, cpg_density: int, bin: str, bin_size=100, path_to_models=None):
         self.cpg_density = cpg_density
         self.bin = bin
         self.bin_size = bin_size
+        if not path_to_models:
+            raise AttributeError("Path to models is not specified")
+        self.path_to_models = path_to_models
         self.model = self.get_model()
 
     def get_model(self):
         net = CpGNet(cpgDensity=self.cpg_density)
-        net.model = load_model(TRAINED_CPG_MODELS[self.cpg_density])
+        net.model = load_model(os.path.join(self.path_to_models, "saved_model_{}_cpgs.h5".format(self.cpg_density)))
         return net
 
     # Take the predicted matrix, convert to 1 and 0 when confident, otherwise nan
