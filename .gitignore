@@ -157,6 +157,9 @@ fabric.properties
 
 .idea/*
 
+# VSCode
+.vscode
+
 # dont commit data
 *.csv
 *.gz
