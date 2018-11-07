@@ -300,3 +300,11 @@ if __name__ == "__main__":
         complete_bins.columns = ['bin', 'reads', 'cpgs']
 
         # todo subset cpg_densities, load all matricies into memeory (if they fit) and train
+        for i in range(2,6):
+            # subset_bins
+            logging.info("Training model of {} cpgs...".format(i))
+            sub = complete_bins[complete_bins['cpgs'] == i]
+            sub = np.array(sub[['reads', 'cpgs']])
+
+            trainer = TrainWithCpGNet(cpg_density=i, save_path=train)
+            trainer.train_model(sub)
