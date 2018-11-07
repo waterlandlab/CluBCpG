@@ -36,7 +36,7 @@ class TrainForImputation:
         matrices = pool.map_async(self.multiprocess_extract, bins_of_interest)
 
         track_progress(matrices)
-        matrices = matices.get()
+        matrices = matrices.get()
 
         return np.array(matrices)
 
