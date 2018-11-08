@@ -111,7 +111,6 @@ if __name__ == "__main__":
         print("Starting training cpg density: {}".format(i))
         trainer = TrainForImputation(i, args.input_bam_file, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
         matrices = trainer.extract_matrices(coverage_data)
-        np.save("/home/anthony/Documents/DATA/2cpg_matrices.npy", matrices)
         model = trainer.train_model(output_folder, matrices)
 
 
