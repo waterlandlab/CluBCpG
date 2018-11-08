@@ -11,5 +11,5 @@ setup(name="MixtureAnalysis",
                         'seaborn', 'scipy', 'pandas', 'fastcluster'],
       scripts=['bin/CalculateCompleteBins',
                'bin/CombineClusterCompare',
-               'bin/TrainForImputation'],
+               'bin/TrainModels'],
       )
