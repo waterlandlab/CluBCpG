@@ -38,7 +38,12 @@ class TrainForImputation:
         track_progress(matrices)
         matrices = matrices.get()
 
-        return np.array(matrices)
+        clean_matrices = []
+        for matrix in matrices:
+            if matrix.shape[1] == self.cpg_density:
+                clean_matrices.append(matrix)
+
+        return np.array(clean_matrices)
 
 
     def multiprocess_extract(self, one_bin: str):
@@ -48,6 +53,7 @@ class TrainForImputation:
         reads = read_parser.parse_reads(chrom, loc-100, loc)
         matrix = read_parser.create_matrix(reads)
         matrix = matrix.fillna(-1)
+        matrix = np.array(matrix)
 
         return matrix
 
