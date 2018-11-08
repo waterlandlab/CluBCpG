@@ -215,9 +215,9 @@ if __name__ == "__main__":
     arg_parser.add_argument("--no_overlap", help="bool, remove any overlap between paired reads and stitch"
                                                  " reads together when possible, default=True",
                             type=str2bool, const=True, default='True', nargs='?')
-    arg_parser.add_argument("--train", help="folder to save model, After analysis, "
-                                            "a machine learning model will be trained on the data. This model can the be  "
-                                            "used with --impute to increase data coverage", default=None)
+    # arg_parser.add_argument("--train", help="folder to save model, After analysis, "
+    #                                         "a machine learning model will be trained on the data. This model can the be  "
+    #                                         "used with --impute to increase data coverage", default=None)
 
     arg_parser.add_argument("--impute", help="path to folder containing trained models. Use this after using --train to "
                                              "re-run analysis and attempting to increase coverage by imputing unknown values",
@@ -294,17 +294,17 @@ if __name__ == "__main__":
 
 
     # Train the model if directed to
-    if train:
-        logging.info("--train flag detected. Attempting to train a model...")
-        from MixtureAnalysis.ConnectToCpGNet import TrainWithCpGNet
+    # if train:
+    #     logging.info("--train flag detected. Attempting to train a model...")
+    #     from MixtureAnalysis.ConnectToCpGNet import TrainWithCpGNet
 
-        # Read in outputfile as a dataframe
-        complete_bins = pd.read_csv(output_file, header=None)
-        complete_bins.columns = ['bin', 'reads', 'cpgs']
+    #     # Read in outputfile as a dataframe
+    #     complete_bins = pd.read_csv(output_file, header=None)
+    #     complete_bins.columns = ['bin', 'reads', 'cpgs']
 
-        # todo subset cpg_densities, load all matricies into memeory (if they fit) and train
-        for i in range(2,6):
-            # subset_bins
-            logging.info("Training model of {} cpgs...".format(i))
-            sub = complete_bins[complete_bins['cpgs'] == i]
+    #     # todo subset cpg_densities, load all matricies into memeory (if they fit) and train
+    #     for i in range(2,6):
+    #         # subset_bins
+    #         logging.info("Training model of {} cpgs...".format(i))
+    #         sub = complete_bins[complete_bins['cpgs'] == i]
 
