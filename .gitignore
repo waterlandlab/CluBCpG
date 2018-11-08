@@ -164,6 +164,8 @@ fabric.properties
 *.csv
 *.gz
 *.txt
+*.h5
+*.npy
 
 
 # Dont add shell files
