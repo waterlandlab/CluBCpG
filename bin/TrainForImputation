@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 import time
+import os
 from multiprocessing import Pool
 from MixtureAnalysis.ConnectToCpGNet import TrainWithCpGNet
 from MixtureAnalysis.ParseBam import BamFileReadParser
@@ -52,14 +53,18 @@ class TrainForImputation:
         loc = int(loc)
         reads = read_parser.parse_reads(chrom, loc-100, loc)
         matrix = read_parser.create_matrix(reads)
+        matrix = matrix.dropna(how="all")
         matrix = matrix.fillna(-1)
         matrix = np.array(matrix)
 
         return matrix
 
 
-    def train_model(self):
-        pass
+    def train_model(self, output_folder: str, matrices: iter):
+        trainer = TrainWithCpGNet(cpg_density=self.cpg_density, save_path=output_folder)
+        model = trainer.train_model(matrices)
+
+        return model
 
 
 if __name__ == "__main__":
@@ -85,6 +90,17 @@ if __name__ == "__main__":
     mbias_read2_5 = int(args.read2_5)
     mbias_read2_3 = int(args.read2_3)
     processes = int(args.n)
+    
+    # Set output dir
+    if not args.output:
+        output_folder = os.path.dirname(args.input_bam_file)
+    else:
+        output_folder = args.output
+
+    try:
+        os.mkdir(output_folder)
+    except FileExistsError:
+        print("Output folder already exists... no need to create it...")
 
     # Read in coverage file
     coverage_data = pd.read_csv(args.coverage, header=None)
@@ -94,8 +110,9 @@ if __name__ == "__main__":
     for i in range(2,7):
         print("Starting training cpg density: {}".format(i))
         trainer = TrainForImputation(i, args.input_bam_file, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
-        matices = trainer.extract_matrices(coverage_data)
-        np.save("test.npy", matices)
+        matrices = trainer.extract_matrices(coverage_data)
+        np.save("/home/anthony/Documents/DATA/2cpg_matrices.npy", matrices)
+        model = trainer.train_model(output_folder, matrices)
 
 
 
