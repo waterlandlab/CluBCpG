@@ -293,18 +293,3 @@ if __name__ == "__main__":
     output_file = calc.analyze_bins(chrom_of_interest)
 
 
-    # Train the model if directed to
-    # if train:
-    #     logging.info("--train flag detected. Attempting to train a model...")
-    #     from MixtureAnalysis.ConnectToCpGNet import TrainWithCpGNet
-
-    #     # Read in outputfile as a dataframe
-    #     complete_bins = pd.read_csv(output_file, header=None)
-    #     complete_bins.columns = ['bin', 'reads', 'cpgs']
-
-    #     # todo subset cpg_densities, load all matricies into memeory (if they fit) and train
-    #     for i in range(2,6):
-    #         # subset_bins
-    #         logging.info("Training model of {} cpgs...".format(i))
-    #         sub = complete_bins[complete_bins['cpgs'] == i]
-
