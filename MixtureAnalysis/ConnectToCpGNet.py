@@ -27,9 +27,9 @@ class ImputeWithCpGNet:
             new_array = []
             for item in array:
                 if item != 1 and item != 0:
-                    if item <= 0.2:
+                    if item <= 0.2: #TODO un-hardcode this
                         new_array.append(0.0)
-                    elif item >= 0.8:
+                    elif item >= 0.8: #TODO un-hardcode this
                         new_array.append(1.0)
                     else:
                         new_array.append(np.nan)
@@ -40,17 +40,15 @@ class ImputeWithCpGNet:
 
         return np.array(processed_array)
 
-    def impute_matrix(self, matrix, positions, postprocess=True):
+    def impute_matrix(self, matrix, postprocess=True):
         """
         :param matrix: 2D np array with unknowns as -1
         :param positions: 1D np array of chromosomal positions (ints)
         :param postprocess: Imply classes from imputation, if False, returns probabilities instead of predictions
         :return: A matrix imputed with highly confident predictions, less confident regions are assigned np.nan
         """
-        bin_stop = int(self.bin.split("_")[1])
-        bin_start = bin_stop - self.bin_size
 
-        predicted_matrix = self.model.impute(matrix, positions, bin_start, bin_stop)
+        predicted_matrix = self.model.impute(matrix)
         if postprocess:
             predicted_matrix = self.postprocess(predicted_matrix)
 
