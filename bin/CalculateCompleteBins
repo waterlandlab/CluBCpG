@@ -16,7 +16,7 @@ DEBUG = False
 class CalculateCompleteBins:
 
     def __init__(self, bam_file: str, bin_size: int, output_directory: str, number_of_processors=1, mbias_read1_5=None, mbias_read1_3=None,
-                 mbias_read2_5= None, mbias_read2_3=None):
+                 mbias_read2_5= None, mbias_read2_3=None, inpute=None):
         """
         This class is initialized with a path to a bam file and a bin size
         :param bam_file: One of the BAM files for analysis to be performed
@@ -29,6 +29,7 @@ class CalculateCompleteBins:
         self.output_directory = output_directory
         self.bins_no_reads = 0
         self.bins_yes_reads = 0
+        self.impute = impute
 
         self.mbias_read1_5 = mbias_read1_5
         self.mbias_read1_3 = mbias_read1_3
@@ -67,10 +68,10 @@ class CalculateCompleteBins:
 
         # if impute flag is true, attempt to impute missing values
         try:
-            if impute and matrix.shape[1] >=2 and matrix.shape[1] <= 6 and matrix_has_unknowns: # todo un-hardcode these values
+            if self.impute and matrix.shape[1] >=2 and matrix.shape[1] <= 6 and matrix_has_unknowns: #TODO un-hardcode these values
                 matrix_cols = matrix.columns
                 imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin, path_to_models=impute)
-                matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)), positions=np.array(matrix.columns))
+                matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)))
                 matrix = pd.DataFrame(matrix, columns=matrix_cols)
         except ValueError:
             logging.error("Error imputing at bin: {}".format(bin))
@@ -215,9 +216,6 @@ if __name__ == "__main__":
     arg_parser.add_argument("--no_overlap", help="bool, remove any overlap between paired reads and stitch"
                                                  " reads together when possible, default=True",
                             type=str2bool, const=True, default='True', nargs='?')
-    # arg_parser.add_argument("--train", help="folder to save model, After analysis, "
-    #                                         "a machine learning model will be trained on the data. This model can the be  "
-    #                                         "used with --impute to increase data coverage", default=None)
 
     arg_parser.add_argument("--impute", help="path to folder containing trained models. Use this after using --train to "
                                              "re-run analysis and attempting to increase coverage by imputing unknown values",
@@ -232,7 +230,6 @@ if __name__ == "__main__":
     bin_size = int(args.bin_size)
     no_overlap = args.no_overlap
     impute = args.impute
-    train = args.train
 
     # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
     mbias_read1_5 = int(args.read1_5)
@@ -272,24 +269,17 @@ if __name__ == "__main__":
     logging.info("Number of processors: {}".format(num_of_processors))
     logging.info("Fix overlapping reads: {}".format(no_overlap))
 
-    if train:
-        logging.info("Train set to True, I will try to train a model with CpGNet so you can run again with imputation")
 
     if impute:
-        logging.info("Imputation set to True, will impute missing values in reads when possible")
+        logging.info("Imputation set to True, will impute missing values in reads when possible using models in {}".format(impute))
         from MixtureAnalysis.ConnectToCpGNet import ImputeWithCpGNet
-        ### CHANGE FOR NOW
-        print("Im not updated for this yet. Fix me first")
-        sys.exit(7)
-    else:
-        logging.info("Imputation set to False. I will simply drop reads with missing values")
 
     logging.info("M bias inputs ignoring the following:\nread 1 5': {}bp\n"
                  "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
 
     # Perform the analysis
     calc = CalculateCompleteBins(input_bam_file, bin_size, BASE_DIR, num_of_processors,
-                                 mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
+                                 mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3, impute)
     output_file = calc.analyze_bins(chrom_of_interest)
 
 
