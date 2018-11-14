@@ -262,8 +262,7 @@ if __name__ == "__main__":
 
     arg_parser.add_argument("--suffix", help="Any additional info to include in the output file name, chromosome for example", default=None)
 
-    arg_parser.add_argument("--impute", help="use CpGNet to impute missing values default=False",
-                            type=str2bool, const=False, default='False', nargs='?')
+    arg_parser.add_argument("--impute", help="optional: path to folder containing trained models", default=None)
 
 
     args = arg_parser.parse_args()
@@ -288,6 +287,9 @@ if __name__ == "__main__":
     else:
         suffix = ""
     impute = args.impute
+
+    if impute:
+        from MixtureAnalysis.ConnectToCpGNet import ImputeWithCpGNet
 
 
     # todo write input params to log_file for record keeping
