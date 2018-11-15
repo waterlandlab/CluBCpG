@@ -66,15 +66,17 @@ class CalculateCompleteBins:
 
         matrix_has_unknowns = np.isnan(np.array(matrix)).any()
 
+        # THIS IS PAINFULLY SLOW. LOADING A MODEL EACH BIN IS BAD
         # if impute flag is true, attempt to impute missing values
-        try:
-            if self.impute and matrix.shape[1] >=2 and matrix.shape[1] <= 6 and matrix_has_unknowns: #TODO un-hardcode these values
-                matrix_cols = matrix.columns
-                imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin, path_to_models=impute)
-                matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)))
-                matrix = pd.DataFrame(matrix, columns=matrix_cols)
-        except ValueError:
-            logging.error("Error imputing at bin: {}".format(bin))
+        # try:
+        #     if self.impute and matrix.shape[1] >=2 and matrix.shape[1] <= 6 and matrix_has_unknowns: #TODO un-hardcode these values
+        #         matrix_cols = matrix.columns
+        #         imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin, path_to_models=impute)
+        #         matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)))
+        #         matrix = pd.DataFrame(matrix, columns=matrix_cols)
+        # except ValueError:
+        #     logging.error("Error imputing at bin: {}".format(bin))
+
 
         # convert to data_frame of 1s and 0s, drop rows with NaN
         matrix = matrix.dropna()
@@ -133,7 +135,7 @@ class CalculateCompleteBins:
 
 
         # Get and clean dict of chromosome lenghts, convert to list of bins
-        print("Getting Chromosome lengths from bam files...")
+        print("Getting Chromosome lengths from bam files...", flush=True)
         chromosome_lengths = self.get_chromosome_lengths()
         chromosome_lengths = self.remove_scaffolds(chromosome_lengths)
 
@@ -143,17 +145,17 @@ class CalculateCompleteBins:
             new[individual_chrom] = chromosome_lengths[individual_chrom]
             chromosome_lengths = new
 
-        print("Generating bins for the entire genome...")
+        print("Generating bins for the entire genome...", flush=True)
         bins_to_analyze = self.generate_bins_list(chromosome_lengths)
 
         # Set up for multiprocessing
-        print("Beginning analysis of bins using {} processors.".format(self.number_of_processors))
-        print("This will take awhile.....")
+        print("Beginning analysis of bins using {} processors.".format(self.number_of_processors), flush=True)
+        print("This will take awhile.....", flush=True)
 
         # Loop over bin dict and pool.map them individually
         final_results = []
         for key in bins_to_analyze.keys():
-            print("Analyzing chromosome {}".format(key))
+            print("Analyzing chromosome {}".format(key), flush=True)
             pool = Pool(processes=self.number_of_processors)
             results = pool.map_async(self.calculate_bin_coverage, bins_to_analyze[key])
 
@@ -163,11 +165,11 @@ class CalculateCompleteBins:
             results = results.get()
 
             final_results.extend(results)
-            print("Finished chromosome {}".format(key))
+            print("Finished chromosome {}".format(key), flush=True)
 
         logging.info("Analysis complete")
 
-        print("Complete.")
+        print("Complete.", flush=True)
 
         # Write to output file
         output_file = os.path.join(self.output_directory, "CompleteBins.{}.{}.csv".format(os.path.basename(self.input_bam_file), individual_chrom))
@@ -272,7 +274,6 @@ if __name__ == "__main__":
 
     if impute:
         logging.info("Imputation set to True, will impute missing values in reads when possible using models in {}".format(impute))
-        from MixtureAnalysis.ConnectToCpGNet import ImputeWithCpGNet
 
     logging.info("M bias inputs ignoring the following:\nread 1 5': {}bp\n"
                  "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
