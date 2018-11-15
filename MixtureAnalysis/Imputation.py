@@ -7,7 +7,7 @@ from MixtureAnalysis.ConnectToCpGNet import TrainWithCpGNet
 from MixtureAnalysis.ParseBam import BamFileReadParser
 
 
-class TrainForImputation:
+class Imputation:
 
     def __init__(self, cpg_density: int, bam_file: str, mbias_read1_5=None, 
         mbias_read1_3=None, mbias_read2_5= None, mbias_read2_3=None, processes=-1):
