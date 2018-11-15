@@ -48,7 +48,7 @@ if __name__ == "__main__":
     # Train models
     for i in range(2,7):
         print("Starting training cpg density: {}".format(i))
-        trainer = TrainForImputation(i, args.input_bam_file, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3, processes)
+        trainer = Imputation(i, args.input_bam_file, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3, processes)
         matrices = trainer.extract_matrices(coverage_data)
         model = trainer.train_model(output_folder, matrices)
 
