@@ -24,7 +24,7 @@ class Imputation:
 
 
 
-    def extract_matrices(self, coverage_data_frame: pd.DataFrame):
+    def extract_matrices(self, coverage_data_frame: pd.DataFrame, return_bins=False):
 
         def track_progress(job, update_interval=30):
             while job._number_left > 0:
@@ -35,20 +35,25 @@ class Imputation:
         bins_of_interest = subset['bin'].unique()
 
         pool = Pool(processes=self.processes)
-        matrices = pool.map_async(self.multiprocess_extract, bins_of_interest)
+        matrices = pool.map_async(self._multiprocess_extract, bins_of_interest)
 
         track_progress(matrices)
         matrices = matrices.get()
+
+        bins, matrices =zip(*matrices)
 
         clean_matrices = []
         for matrix in matrices:
             if matrix.shape[1] == self.cpg_density:
                 clean_matrices.append(matrix)
 
-        return np.array(clean_matrices)
+        if return_bins:
+            return bins, np.array(clean_matrices)
+        else:
+            return np.array(clean_matrices)
 
 
-    def multiprocess_extract(self, one_bin: str):
+    def _multiprocess_extract(self, one_bin: str):
         read_parser = BamFileReadParser(self.bam_file, 20, read1_5=self.mbias_read1_5, read1_3=self.mbias_read1_3, read2_5=self.mbias_read2_5, read2_3=self.mbias_read2_3)
         chrom, loc = one_bin.split("_")
         loc = int(loc)
@@ -58,7 +63,7 @@ class Imputation:
         matrix = matrix.fillna(-1)
         matrix = np.array(matrix)
 
-        return matrix
+        return (one_bin, matrix)
 
 
     def train_model(self, output_folder: str, matrices: iter):
@@ -68,7 +73,7 @@ class Imputation:
         return model
 
     @staticmethod
-    def postprocess(predicted_matrix):
+    def postprocess_predictions(predicted_matrix):
         """Takes array with predicted values and rounds them to 0 or 1 if threshold is exceeded
         
         Arguments:
@@ -105,9 +110,14 @@ class Imputation:
 
         predicted_matrices = []
         for m in matrices:
-            pm = trained_model.impute(m)
-            if postprocess:
-                pm = postprocess(pm)
+            # only impute if there is an unknown
+            if -1 in m:
+                pm = trained_model.impute(m)
+                if postprocess:
+                    pm = self.postprocess_predictions(pm)
+            # Nothing to impute, passback original matrix to keep list in order
+            else:
+                pm = m.copy()
             predicted_matrices.append(pm)
 
         return predicted_matrices
