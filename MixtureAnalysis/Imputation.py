@@ -8,6 +8,7 @@ from MixtureAnalysis.ConnectToCpGNet import TrainWithCpGNet
 from MixtureAnalysis.ParseBam import BamFileReadParser
 from CpGNet import CpGNet
 from keras.models import load_model
+import keras.backend as K
 
 
 class Imputation:
@@ -108,7 +109,7 @@ class Imputation:
         trained_model = CpGNet(cpgDensity=self.cpg_density)
         trained_model.model = load_model(model_path)
 
-        predicted_matrices = []
+        # predicted_matrices = []
         for m in matrices:
             # only impute if there is an unknown
             if -1 in m:
@@ -118,7 +119,9 @@ class Imputation:
             # Nothing to impute, passback original matrix to keep list in order
             else:
                 pm = m.copy()
-            predicted_matrices.append(pm)
+            # predicted_matrices.append(pm)
+            yield pm
 
-        return predicted_matrices
+
+        # return predicted_matrices
         
