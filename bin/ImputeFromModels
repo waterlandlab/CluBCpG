@@ -16,6 +16,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("-m", "--models", help="Path to folder containing saved models", default=None)
     arg_parser.add_argument("-o", "--output", help="folder to save imputed coverage data", default=None)
     arg_parser.add_argument("-n", help="number of cpu cores to use")
+    arg_parser.add_argument("--chr", help="Optional, perform only on one chromosome. Default=all chromosomes provided in -c. Example: 'chr7'", default=None)
     arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
@@ -31,6 +32,7 @@ if __name__ == "__main__":
     mbias_read2_3 = int(args.read2_3)
     processes = int(args.n)
     models = args.models
+    chr = args.chr
     
     # Set output dir
     if not args.output:
@@ -47,11 +49,15 @@ if __name__ == "__main__":
     coverage_data = pd.read_csv(args.coverage, header=None)
     coverage_data.columns = ['bin', 'reads', 'cpgs']
 
+    if chr:
+        print("Performing imputation only on chromosome: {}".format(chr))
+        coverage_data = coverage_data[coverage_data['bin'].str.startswith(''.join([chr, "_"]))]
+
     ### Impute from models ###
     # temp file for storage
     tfile = tempfile.TemporaryFile(mode="w+t")
     for i in range(2,7):
-        print("Starting imputation cpg density: {}...".format(i), flush=True)
+        print("Starting with cpg density: {}...".format(i), flush=True)
         imputer = Imputation(i, args.input_bam_file, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3, processes)
         # Get matrices with unknowns as -1
         print("Extracting cpg matrices from genome...", flush=True)
@@ -64,6 +70,7 @@ if __name__ == "__main__":
             tfile.write(line)
         
     ### Update Coverage File and Save New ###
+    print("Updating original data with imputed data...", flush=True)
     before = coverage_data
     tfile.seek(0)
     after = pd.read_csv(tfile, header=None)
@@ -77,7 +84,12 @@ if __name__ == "__main__":
     before.update(after)
 
     # save
-    outfile = os.path.join(output_folder, os.path.basename(args.coverage) + ".IMPUTED.csv")
+    if chr:
+        outfile = os.path.join(output_folder, os.path.basename(args.coverage) + ".{}.IMPUTED.csv".format(chr))
+    else:
+        outfile = os.path.join(output_folder, os.path.basename(args.coverage) + ".IMPUTED.csv")
+
+    print("Saving updated data to file...", flush=True)
     before.to_csv(outfile, header=False)
 
     print("done")
