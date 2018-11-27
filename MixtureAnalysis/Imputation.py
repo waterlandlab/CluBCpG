@@ -124,6 +124,7 @@ class Imputation:
         for m in matrices:
             # only impute if there is an unknown
             if -1 in m:
+                m = m.astype(float)
                 pm = trained_model.impute(m)
                 if postprocess:
                     pm = self.postprocess_predictions(pm)
