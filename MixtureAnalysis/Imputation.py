@@ -63,6 +63,7 @@ class Imputation:
         matrix = matrix.dropna(how="all")
         matrix = matrix.fillna(-1)
         matrix = np.array(matrix)
+        matrix = matrix.astype('uint16')
 
         return (one_bin, matrix)
 
@@ -105,11 +106,20 @@ class Imputation:
 
 
     def impute_from_model(self, models_folder: str, matrices: iter, postprocess=True):
+        """Generator to provide imputed matrices on-the-fly
+        
+        Arguments:
+            models_folder {str} -- Path to directory containing trained CpGNet models
+            matrices {iter} -- An iterable containging n x m matrices with n=cpgs and m=reads
+        
+        Keyword Arguments:
+            postprocess {bool} -- Round imputed values to 1s and 0s  (default: {True})
+        """
+
         model_path = os.path.join(models_folder, "saved_model_{}_cpgs.h5".format(self.cpg_density))
         trained_model = CpGNet(cpgDensity=self.cpg_density)
         trained_model.model = load_model(model_path)
 
-        # predicted_matrices = []
         for m in matrices:
             # only impute if there is an unknown
             if -1 in m:
@@ -120,8 +130,4 @@ class Imputation:
             else:
                 pm = m.copy()
             # predicted_matrices.append(pm)
-            yield pm
-
-
-        # return predicted_matrices
-        
+            yield pm        
