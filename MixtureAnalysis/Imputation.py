@@ -64,7 +64,7 @@ class Imputation:
         matrix = matrix.dropna(how="all")
         matrix = matrix.fillna(-1)
         matrix = np.array(matrix)
-        matrix = matrix.astype('uint16')
+        matrix = matrix.astype('int8')
 
         return (one_bin, matrix)
 
