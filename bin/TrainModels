@@ -3,7 +3,7 @@
 import argparse
 import os
 import pandas as pd
-from MixtureAnalysis.TrainForImputation import TrainForImputation
+from MixtureAnalysis.Imputation import Imputation
 
 
 if __name__ == "__main__":
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("-a", "--input_bam_file",
                             help="Input bam file, coordinate sorted with index present", default=None)
-    arg_parser.add_argument("-c", "--coverage", help="output file from CalculateCompleteBins", default=None)
+    arg_parser.add_argument("-c", "--coverage", help="output file from CalculateCompleteBins, filtered for at least 1 read and 2 cpgs", default=None)
     arg_parser.add_argument("-o", "--output", help="folder to save generated model files", default=None)
     arg_parser.add_argument("-n", help="number of cpu cores to use")
     arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=0", default=0)
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     # Train models
     for i in range(2,7):
         print("Starting training cpg density: {}".format(i))
-        trainer = TrainForImputation(i, args.input_bam_file, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3, processes)
+        trainer = Imputation(i, args.input_bam_file, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3, processes)
         matrices = trainer.extract_matrices(coverage_data)
         model = trainer.train_model(output_folder, matrices)
 

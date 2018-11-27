@@ -3,6 +3,7 @@ import numpy as np
 from keras.models import load_model
 import keras.backend as K
 import os
+import warnings
 
 class ImputeWithCpGNet:
 
@@ -21,6 +22,7 @@ class ImputeWithCpGNet:
             AttributeError -- Raised if a path to the models directory is not specified or does not exist
         """
 
+        warnings.warn("Stop using this class, it is being deprecated", DeprecationWarning)
         self.cpg_density = cpg_density
         self.bin = bin
         self.bin_size = bin_size
@@ -28,6 +30,7 @@ class ImputeWithCpGNet:
             raise AttributeError("Path to models is not specified or does not exist")
         self.path_to_models = path_to_models
         self.model = self.get_model()
+    
 
     def get_model(self):
         """Called during init to load model from disk into instance object
