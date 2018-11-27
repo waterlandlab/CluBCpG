@@ -43,6 +43,7 @@ class Imputation:
 
         bins, matrices =zip(*matrices)
 
+        # Remove any potential bad data
         clean_matrices = []
         for matrix in matrices:
             if matrix.shape[1] == self.cpg_density:
