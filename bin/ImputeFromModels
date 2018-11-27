@@ -4,6 +4,8 @@ import argparse
 import os
 import pandas as pd
 import tempfile
+import logging
+import sys
 from MixtureAnalysis.Imputation import Imputation
 
 if __name__ == "__main__":
@@ -45,6 +47,10 @@ if __name__ == "__main__":
     except FileExistsError:
         print("Output folder already exists... no need to create it...")
 
+    ### Set up logging ###
+    log_file = os.path.join(output_folder, "ImputeFromModels.{}.{}log".format(args.input_bam_file, chr+"." if chr else ""))
+    logging.basicConfig(filename=log_file, level=logging.DEBUG)
+
     ### Read in coverage file ###
     coverage_data = pd.read_csv(args.coverage, header=None)
     coverage_data.columns = ['bin', 'reads', 'cpgs']
@@ -62,6 +68,11 @@ if __name__ == "__main__":
         # Get matrices with unknowns as -1
         print("Extracting cpg matrices from genome...", flush=True)
         bins, matrices = imputer.extract_matrices(coverage_data, return_bins=True)
+        
+        # logging of memeory usage
+        logging.info("Cpg density: {}".format(i))
+        logging.info("Matrix size: {}".format(sys.getsizeof(matrices)))
+
         print("Beginning imputation...", flush=True)
         imputed_matrices = imputer.impute_from_model(models_folder=models, matrices=matrices, postprocess=True)
 
@@ -83,7 +94,7 @@ if __name__ == "__main__":
     # update rows with imputed values
     before.update(after)
 
-    # save
+    # Set filename and Save
     if chr:
         outfile = os.path.join(output_folder, os.path.basename(args.coverage) + ".{}.IMPUTED.csv".format(chr))
     else:
