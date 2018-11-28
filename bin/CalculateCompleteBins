@@ -16,7 +16,7 @@ DEBUG = False
 class CalculateCompleteBins:
 
     def __init__(self, bam_file: str, bin_size: int, output_directory: str, number_of_processors=1, mbias_read1_5=None, mbias_read1_3=None,
-                 mbias_read2_5= None, mbias_read2_3=None, inpute=None):
+                 mbias_read2_5= None, mbias_read2_3=None):
         """
         This class is initialized with a path to a bam file and a bin size
         :param bam_file: One of the BAM files for analysis to be performed
@@ -29,7 +29,6 @@ class CalculateCompleteBins:
         self.output_directory = output_directory
         self.bins_no_reads = 0
         self.bins_yes_reads = 0
-        self.impute = impute
 
         self.mbias_read1_5 = mbias_read1_5
         self.mbias_read1_3 = mbias_read1_3
@@ -63,20 +62,6 @@ class CalculateCompleteBins:
 
         # drop rows of ALL NaN
         matrix = matrix.dropna(how="all")
-
-        matrix_has_unknowns = np.isnan(np.array(matrix)).any()
-
-        # THIS IS PAINFULLY SLOW. LOADING A MODEL EACH BIN IS BAD
-        # if impute flag is true, attempt to impute missing values
-        # try:
-        #     if self.impute and matrix.shape[1] >=2 and matrix.shape[1] <= 6 and matrix_has_unknowns: #TODO un-hardcode these values
-        #         matrix_cols = matrix.columns
-        #         imputer = ImputeWithCpGNet(cpg_density=matrix.shape[1], bin=bin, path_to_models=impute)
-        #         matrix = imputer.impute_matrix(np.array(matrix.fillna(-1)))
-        #         matrix = pd.DataFrame(matrix, columns=matrix_cols)
-        # except ValueError:
-        #     logging.error("Error imputing at bin: {}".format(bin))
-
 
         # convert to data_frame of 1s and 0s, drop rows with NaN
         matrix = matrix.dropna()
@@ -219,10 +204,6 @@ if __name__ == "__main__":
                                                  " reads together when possible, default=True",
                             type=str2bool, const=True, default='True', nargs='?')
 
-    arg_parser.add_argument("--impute", help="path to folder containing trained models. Use this after using --train to "
-                                             "re-run analysis and attempting to increase coverage by imputing unknown values",
-                            default=None)
-
 
     # Extract arguments from command line and set as correct types
     args = arg_parser.parse_args()
@@ -231,7 +212,6 @@ if __name__ == "__main__":
     num_of_processors = int(args.num_processors)
     bin_size = int(args.bin_size)
     no_overlap = args.no_overlap
-    impute = args.impute
 
     # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
     mbias_read1_5 = int(args.read1_5)
@@ -272,15 +252,12 @@ if __name__ == "__main__":
     logging.info("Fix overlapping reads: {}".format(no_overlap))
 
 
-    if impute:
-        logging.info("Imputation set to True, will impute missing values in reads when possible using models in {}".format(impute))
-
     logging.info("M bias inputs ignoring the following:\nread 1 5': {}bp\n"
                  "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
 
     # Perform the analysis
     calc = CalculateCompleteBins(input_bam_file, bin_size, BASE_DIR, num_of_processors,
-                                 mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3, impute)
+                                 mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
     output_file = calc.analyze_bins(chrom_of_interest)
 
 
