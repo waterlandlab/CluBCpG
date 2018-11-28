@@ -12,9 +12,26 @@ import keras.backend as K
 
 
 class Imputation:
+    """The class providing convienent APIs to train models and impute from models using CpGNet
+    """
+
 
     def __init__(self, cpg_density: int, bam_file: str, mbias_read1_5=None, 
         mbias_read1_3=None, mbias_read2_5= None, mbias_read2_3=None, processes=-1):
+        """[summary]
+        
+        Arguments:
+            cpg_density {int} -- Number of CpGs this class instance will be used for
+            bam_file {str} -- path to the bam file
+        
+        Keyword Arguments:
+            mbias_read1_5 {[type]} -- [description] (default: {None})
+            mbias_read1_3 {[type]} -- [description] (default: {None})
+            mbias_read2_5 {[type]} -- [description] (default: {None})
+            mbias_read2_3 {[type]} -- [description] (default: {None})
+            processes {int} -- number or CPUs to use when parallelization can be utilized, default= All available (default: {-1})
+        """
+
         self.cpg_density = cpg_density
         self.bam_file = bam_file
         self.mbias_read1_5 = mbias_read1_5
@@ -26,6 +43,18 @@ class Imputation:
 
 
     def extract_matrices(self, coverage_data_frame: pd.DataFrame, return_bins=False):
+        """Extract CpG matrices from bam file.
+        
+        Arguments:
+            coverage_data_frame {pd.DataFrame} -- Output of CalculateCompleteBins read in as a csv file
+        
+        Keyword Arguments:
+            return_bins {bool} -- Return the bin location along with the matrix (default: {False})
+        
+        Returns:
+            [tuple] -- Returns tuple of (bin, np.array) if returns_bins = True else returns only np.array
+        """
+
 
         def track_progress(job, update_interval=30):
             while job._number_left > 0:
@@ -56,6 +85,15 @@ class Imputation:
 
 
     def _multiprocess_extract(self, one_bin: str):
+        """Function to be used for multiprocessing
+        
+        Arguments:
+            one_bin {str} -- bin id as "chr7_222222"
+        
+        Returns:
+            [tuple] -- bin, matrix
+        """
+
         read_parser = BamFileReadParser(self.bam_file, 20, read1_5=self.mbias_read1_5, read1_3=self.mbias_read1_3, read2_5=self.mbias_read2_5, read2_3=self.mbias_read2_3)
         chrom, loc = one_bin.split("_")
         loc = int(loc)
@@ -70,6 +108,16 @@ class Imputation:
 
 
     def train_model(self, output_folder: str, matrices: iter):
+        """Train a CpGNet model
+        
+        Arguments:
+            output_folder {str} -- Folder to save trained models
+            matrices {iter} -- An iterable of CpGMatrices - ideally obtained through Imputation.extract_matrices()
+        
+        Returns:
+            [keras model] -- Returns the trained CpGNet model
+        """
+
         train_net = TrainWithCpGNet(cpg_density=self.cpg_density, save_path=output_folder)
         model = train_net.train_model(matrices)
 
