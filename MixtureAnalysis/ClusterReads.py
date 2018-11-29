@@ -159,9 +159,9 @@ class ClusterReads:
         # The Nones are filtered out during the output of the data
         try:
             #create matrix DONT drop NA
-            matrix_A = bam_parser_A.create_matrix(reads_A)
+            matrix_A = bam_parser_A.create_matrix(reads_A).dropna()
             if not self.single_file_mode:
-                matrix_B = bam_parser_B.create_matrix(reads_B)
+                matrix_B = bam_parser_B.create_matrix(reads_B).dropna()
 
         except ValueError as e:
             logging.error("ValueError when creating matrix at bin {}. Stack trace will be below if log level=DEBUG".format(bin))
