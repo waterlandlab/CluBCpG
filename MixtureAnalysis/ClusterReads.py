@@ -7,6 +7,8 @@ import logging
 import os
 from MixtureAnalysis.ParseBam import BamFileReadParser
 from MixtureAnalysis.OutputComparisonResults import OutputIndividualMatrixData
+from MixtureAnalysis.Imputation import Imputation
+import keras.backend as K
 import argparse
 import datetime
 from multiprocessing import Pool
@@ -16,7 +18,9 @@ class ClusterReads:
 
     def __init__(self, bam_a: str, bam_b=None, bin_size=100, bins_file=None, output_directory=None, num_processors=1,
         cluster_member_min=4, read_depth_req=10, remove_noise=True, mbias_read1_5=None, 
-        mbias_read1_3=None, mbias_read2_5=None, mbias_read2_3=None, suffix="", no_overlap=True):
+        mbias_read1_3=None, mbias_read2_5=None, mbias_read2_3=None, suffix="", no_overlap=True,
+        models_a=None, models_b=None):
+
         self.bam_a = bam_a
         self.bam_b = bam_b
         self.bin_size = int(bin_size)
@@ -32,11 +36,19 @@ class ClusterReads:
         self.mbias_read2_3 = mbias_read2_3
         self.suffix = suffix
         self.no_overlap = no_overlap
+        self.models_a = models_a
+        self.models_b = models_b
         
         if bam_b:
             self.single_file_mode = False
         else:
             self.single_file_mode = True
+
+        # If path to models was provided, we will be trying to impute
+        if models_a or models_b:
+            self.impute = True
+        else:
+            self.impute = False
 
     # Remove clusters with less than n members
     def filter_data_frame(self, matrix: pd.DataFrame):
@@ -133,6 +145,40 @@ class ClusterReads:
 
         return lines
 
+    def impute_read_matrix(
+                self, 
+                cpg_density: int, 
+                bam_file: str, 
+                models_folder: str,
+                matrix,
+    ):
+        # Load the imputation class
+
+        matrix = matrix.dropna(how="all")
+        matrix = matrix.fillna(-1)
+        # rememer the columns and indexes
+        columns = matrix.columns
+        indexes = matrix.index
+        # convert to array
+        matrix=np.array(matrix)
+
+        imputer = Imputation(
+            cpg_density=str(cpg_density),
+            bam_file =bam_file,
+            mbias_read1_5=self.mbias_read1_5,
+            mbias_read1_3=self.mbias_read1_3,
+            mbias_read2_5=self.mbias_read2_5,
+            mbias_read2_3=self.mbias_read2_3,
+            processes=self.num_processors
+        )
+        # impute the single matrix
+        imputed_matrix = imputer.impute_from_model(models_folder, [matrix], postprocess=True)
+        imputed_matrix = pd.DataFrame(next(imputed_matrix))
+        imputed_matrix.columns = columns
+        imputed_matrix.index = indexes
+
+        return imputed_matrix
+
     # MAIN METHOD
     def process_bins(self, bin):
         """
@@ -158,10 +204,11 @@ class ClusterReads:
         # This try/catch block returns None for a bin if any discrepancies in the data format of the bins are detected.
         # The Nones are filtered out during the output of the data
         try:
-            #create matrix and drop NA
-            matrix_A = bam_parser_A.create_matrix(reads_A).dropna()
+            #create matrix DONT drop NA
+            # This matrix is actually a pandas dataframe
+            matrix_A = bam_parser_A.create_matrix(reads_A)
             if not self.single_file_mode:
-                matrix_B = bam_parser_B.create_matrix(reads_B).dropna()
+                matrix_B = bam_parser_B.create_matrix(reads_B)
 
         except ValueError as e:
             logging.error("ValueError when creating matrix at bin {}. Stack trace will be below if log level=DEBUG".format(bin))
@@ -172,6 +219,20 @@ class ClusterReads:
             logging.debug(str(e))
             return None
 
+        ### ATTEMPT TO IMPUTE ###
+        if self.impute:
+            if matrix_A.shape[1] >= 2 and matrix_A.shape[1] <= 6:
+                matrix_A = self.impute_read_matrix(matrix_A.shape[1], self.bam_a, self.models_a, matrix_A)
+            if not self.single_file_mode:
+                if matrix_B.shape[1] >= 2 and matrix_B.shape[1] <= 6:
+                    matrix_B = self.impute_read_matrix(matrix_B.shape[1], self.bam_b, self.models_b, matrix_B)
+        ### END IMPUTATION ###
+
+
+        # Drop rows with NAs
+        matrix_A = matrix_A.dropna()
+        if not self.single_file_mode:
+            matrix_B = matrix_B.dropna()
         # if read depths are still not a minimum, skip
         if matrix_A.shape[0] < self.read_depth_req:
             return None
