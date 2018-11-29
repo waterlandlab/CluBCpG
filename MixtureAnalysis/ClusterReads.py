@@ -158,7 +158,7 @@ class ClusterReads:
         # This try/catch block returns None for a bin if any discrepancies in the data format of the bins are detected.
         # The Nones are filtered out during the output of the data
         try:
-            #create matrix DONT drop NA
+            #create matrix and drop NA
             matrix_A = bam_parser_A.create_matrix(reads_A).dropna()
             if not self.single_file_mode:
                 matrix_B = bam_parser_B.create_matrix(reads_B).dropna()
