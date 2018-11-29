@@ -16,7 +16,7 @@ class ClusterReads:
 
     def __init__(self, bam_a: str, bam_b=None, bin_size=100, bins_file=None, output_directory=None, num_processors=1,
         cluster_member_min=4, read_depth_req=10, remove_noise=True, mbias_read1_5=None, 
-        mbias_read1_3=None, mbias_read2_5=None, mbias_read2_3=None, suffix=""):
+        mbias_read1_3=None, mbias_read2_5=None, mbias_read2_3=None, suffix="", no_overlap=True):
         self.bam_a = bam_a
         self.bam_b = bam_b
         self.bin_size = int(bin_size)
@@ -31,6 +31,7 @@ class ClusterReads:
         self.mbias_read2_5 = mbias_read2_5
         self.mbias_read2_3 = mbias_read2_3
         self.suffix = suffix
+        self.no_overlap = no_overlap
         
         if bam_b:
             self.single_file_mode = False
@@ -146,12 +147,12 @@ class ClusterReads:
 
         # Create bam parser and parse reads
         bam_parser_A = BamFileReadParser(self.bam_a, 20, read1_5=self.mbias_read1_5, read1_3=self.mbias_read1_3,
-                                        read2_5=self.mbias_read2_5, read2_3=self.mbias_read2_3, no_overlap=no_overlap)
+                                        read2_5=self.mbias_read2_5, read2_3=self.mbias_read2_3, no_overlap=self.no_overlap)
         reads_A = bam_parser_A.parse_reads(chromosome, bin_loc - self.bin_size, bin_loc)
 
         if not self.single_file_mode:
             bam_parser_B = BamFileReadParser(self.bam_b, 20, read1_5=self.mbias_read1_5, read1_3=self.mbias_read1_3,
-                                            read2_5=self.mbias_read2_5, read2_3=self.mbias_read2_3, no_overlap=no_overlap)
+                                            read2_5=self.mbias_read2_5, read2_3=self.mbias_read2_3, no_overlap=self.no_overlap)
             reads_B = bam_parser_B.parse_reads(chromosome, bin_loc - self.bin_size, bin_loc)
 
         # This try/catch block returns None for a bin if any discrepancies in the data format of the bins are detected.
