@@ -57,7 +57,7 @@ class BamFileReadParser():
             # Join EVERY XM tag with its aligned_pair location
             for pair, tag in zip(read.get_aligned_pairs(), read.get_tag('XM')):
                 if pair[1]:
-                    if read.flag == 83 or read.flag == 163:
+                    if read.flag == 83 or read.flag == 163 or read.flag == 16:
                         reduced_read.append((pair[1] - 1, tag))
                     else:
                         reduced_read.append((pair[1], tag))
