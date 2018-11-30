@@ -179,5 +179,6 @@ class Imputation:
             # Nothing to impute, passback original matrix to keep list in order
             else:
                 pm = m.copy()
-            # predicted_matrices.append(pm)
+                
+            K.clear_session()
             yield pm        
