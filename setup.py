@@ -12,5 +12,6 @@ setup(name="MixtureAnalysis",
       scripts=['bin/CalculateCompleteBins',
                'bin/CombineClusterCompare',
                'bin/TrainModels',
-               'bin/ImputeFromModels'],
+               'bin/ImputeFromModels',
+               'bin/ImputeCluster'],
       )

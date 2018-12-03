@@ -167,6 +167,7 @@ class Imputation:
 
         model_path = os.path.join(models_folder, "saved_model_{}_cpgs.h5".format(self.cpg_density))
         trained_model = CpGNet(cpgDensity=self.cpg_density)
+        print("Successfully loaded model: {}".format(model_path), flush=True)
         trained_model.model = load_model(model_path)
 
         for m in matrices:
@@ -180,5 +181,5 @@ class Imputation:
             else:
                 pm = m.copy()
                 
-            K.clear_session()
+            # K.clear_session()
             yield pm        
