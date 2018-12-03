@@ -311,6 +311,7 @@ class ClusterReadsWithImputation(ClusterReads):
 
         # start the main loop for imputation of these CpGs
         final_results_tf = tempfile.TemporaryFile(mode="w+t")
+        final_results_tf.write("bin,input_label,methylation,class_label,read_number,cpg_number,cpg_pattern" + "\n")
         for i in range(2,7):
             print("Starting Imputation of CpG density {}...".format(i))
             imputer_A = Imputation(cpg_density=i, 
@@ -391,12 +392,14 @@ class ClusterReadsWithImputation(ClusterReads):
                 for bin_ in data_imputed_A_dict.keys():
                     matrix_A = data_imputed_A_dict[bin_]
                     matrix_A = pd.DataFrame(matrix_A)
+                    matrix_A = matrix_A.dropna()
                     if matrix_A.shape[0] < self.read_depth_req:
                         # TODO OUTPUT SOME EMTPY RESULT
                         continue
                     if self.bam_b:
                         matrix_B = data_imputed_B_dict[bin_]
                         matrix_B = pd.DataFrame(matrix_B)
+                        matrix_B = matrix_B.dropna()
                         if matrix_B.shape[0] < self.read_depth_req:
                             # TODO SAME AS ABOVE
                             continue
@@ -443,6 +446,7 @@ class ClusterReadsWithImputation(ClusterReads):
         # TODO CLUSTER ALL OTHER BINS LIKE NORMAL WITHOUT IMPUTATION
         
         final_results_tf.seek(0)
+        # TODO SET BETTER OUTPUT NAME INTO OUTPUT DIRECTORY
         with open("final_results.csv", "w") as final:
             for line in final_results_tf:
                 final.write(line)

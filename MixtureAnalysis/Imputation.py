@@ -78,10 +78,13 @@ class Imputation:
             if matrix.shape[1] == self.cpg_density:
                 clean_matrices.append(matrix)
 
+        if len(clean_matrices) == 0:
+            clean_matrices = np.array(clean_matrices)
+
         if return_bins:
-            return bins, np.array(clean_matrices)
+            return bins, clean_matrices
         else:
-            return np.array(clean_matrices)
+            return clean_matrices
 
 
     def _multiprocess_extract(self, one_bin: str):
@@ -100,6 +103,8 @@ class Imputation:
         reads = read_parser.parse_reads(chrom, loc-100, loc) # TODO unhardcode bin size
         matrix = read_parser.create_matrix(reads)
         matrix = matrix.dropna(how="all")
+        if matrix.shape[0] == 0:
+            return None
         matrix = matrix.fillna(-1)
         matrix = np.array(matrix)
         matrix = matrix.astype('int8')
