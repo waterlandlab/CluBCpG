@@ -81,8 +81,10 @@ class Imputation:
             if matrix.shape[1] == self.cpg_density:
                 clean_matrices.append(matrix)
 
-        if len(clean_matrices) > 0:
-            clean_matrices = np.array(clean_matrices)
+        # if len(clean_matrices) > 0:
+        #     clean_matrices = np.array(clean_matrices)
+
+        clean_matrices = np.array(clean_matrices)
 
         if return_bins:
             return bins, clean_matrices
