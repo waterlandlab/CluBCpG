@@ -232,7 +232,7 @@ class ClusterReads:
         # return generate_output_data(filtered_matrix, chromosome, bin_loc)
         return self.generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc)
 
-    def execute(self):
+    def execute(self, return_only=False):
         start_time = datetime.datetime.now().strftime("%y-%m-%d")
         def track_progress(job, update_interval=60):
             while job._number_left > 0:
@@ -253,7 +253,10 @@ class ClusterReads:
         results = results.get()
 
         output = OutputIndividualMatrixData(results)
-        output.write_to_output(self.output_directory, "Clustering.{}{}.{}".format(os.path.basename(self.bam_a), self.suffix, start_time))
+        if return_only:
+            return output
+        else:
+            output.write_to_output(self.output_directory, "Clustering.{}{}.{}".format(os.path.basename(self.bam_a), self.suffix, start_time))
 
 
 class ClusterReadsWithImputation(ClusterReads):
@@ -444,10 +447,42 @@ class ClusterReadsWithImputation(ClusterReads):
                     for line in output_lines:
                         final_results_tf.write(line+"\n")
 
-        # TODO CLUSTER ALL OTHER BINS LIKE NORMAL WITHOUT IMPUTATION
-        
+        # CLUSTER ALL OTHER BINS LIKE NORMAL WITHOUT IMPUTATION
+        print("Performing clustering on the rest of the bins with no imputaiton...", flush=True)
+        unimputable_coverage = coverage_data[coverage_data['cpgs'] > 6]
+        with tempfile.TemporaryFile(mode="w+t") as temp:
+            unimputable_coverage.to_csv(temp, header=False)
+
+            cluster_reads = ClusterReads(
+                bam_a=self.bam_a,
+                bam_b=self.bam_b,
+                bins_size=self.bin_size,
+                bins_file=temp,
+                output_directory=self.output_directory,
+                num_processors=self.num_processors,
+                cluster_member_min=self.cluster_member_min,
+                read_depth_req=self.read_depth_req,
+                remove_noise=self.remove_noise,
+                mbias_read1_5=self.mbias_read1_5,
+                mbias_read1_3=self.mbias_read1_3,
+                mbias_read2_5=self.mbias_read2_5,
+                mbias_read2_3=self.mbias_read2_3,
+                suffix=self.suffix,
+                no_overlap=self.no_overlap
+            )
+
+            # Write this output to the output temp file
+            results = cluster_reads.execute(return_only=True)
+            for result in results:
+                if result:
+                    for line in result:
+                        final_results_tf.write(line + "\n")
+
+
+
+        # rewrite the tempfile to a final output file
         final_results_tf.seek(0)
-        # output = output_dir/basename_suffix_cluster_results.csv
+        # output = 'output_dir/basename_suffix_cluster_results.csv'
         output_file = os.path.join(self.output_directory, os.path.splitext(os.path.basename(path))[0], "_",self.suffix, "_cluster_results.csv")
         with open(output_file, "w") as final:
             for line in final_results_tf:
