@@ -159,6 +159,7 @@ class Imputation:
 
 
 
+
     def impute_from_model(self, models_folder: str, matrices: iter, postprocess=True):
         """Generator to provide imputed matrices on-the-fly
         
@@ -187,4 +188,6 @@ class Imputation:
                 pm = m.copy()
                 
             # K.clear_session()
-            yield pm        
+            yield pm   
+
+        K.clear_session()     
