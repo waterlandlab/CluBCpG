@@ -484,7 +484,7 @@ class ClusterReadsWithImputation(ClusterReads):
         # rewrite the tempfile to a final output file
         final_results_tf.seek(0)
         # output = 'output_dir/basename_suffix_cluster_results.csv'
-        output_file = os.path.join(self.output_directory, os.path.splitext(os.path.basename(path))[0], "_",self.suffix, "_cluster_results.csv")
+        output_file = os.path.join(self.output_directory, os.path.splitext(os.path.basename(self.bam_a))[0], "_",self.suffix, "_cluster_results.csv")
         with open(output_file, "w") as final:
             for line in final_results_tf:
                 final.write(line)
