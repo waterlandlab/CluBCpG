@@ -451,33 +451,32 @@ class ClusterReadsWithImputation(ClusterReads):
         # CLUSTER ALL OTHER BINS LIKE NORMAL WITHOUT IMPUTATION
         print("Performing clustering on the rest of the bins with no imputaiton...", flush=True)
         unimputable_coverage = coverage_data[coverage_data['cpgs'] > 6]
-        with tempfile.TemporaryFile(mode="w+t") as temp:
-            unimputable_coverage.to_csv(temp, header=False)
+        unimputable_coverage.to_csv("unimputable.tmp", header=False)
 
-            cluster_reads = ClusterReads(
-                bam_a=self.bam_a,
-                bam_b=self.bam_b,
-                bin_size=self.bin_size,
-                bins_file=temp,
-                output_directory=self.output_directory,
-                num_processors=self.num_processors,
-                cluster_member_min=self.cluster_member_min,
-                read_depth_req=self.read_depth_req,
-                remove_noise=self.remove_noise,
-                mbias_read1_5=self.mbias_read1_5,
-                mbias_read1_3=self.mbias_read1_3,
-                mbias_read2_5=self.mbias_read2_5,
-                mbias_read2_3=self.mbias_read2_3,
-                suffix=self.suffix,
-                no_overlap=self.no_overlap
-            )
+        cluster_reads = ClusterReads(
+            bam_a=self.bam_a,
+            bam_b=self.bam_b,
+            bin_size=self.bin_size,
+            bins_file="unimputable.tmp",
+            output_directory=self.output_directory,
+            num_processors=self.num_processors,
+            cluster_member_min=self.cluster_member_min,
+            read_depth_req=self.read_depth_req,
+            remove_noise=self.remove_noise,
+            mbias_read1_5=self.mbias_read1_5,
+            mbias_read1_3=self.mbias_read1_3,
+            mbias_read2_5=self.mbias_read2_5,
+            mbias_read2_3=self.mbias_read2_3,
+            suffix=self.suffix,
+            no_overlap=self.no_overlap
+        )
 
-            # Write this output to the output temp file
-            results = cluster_reads.execute(return_only=True)
-            for result in results:
-                if result:
-                    for line in result:
-                        final_results_tf.write(line + "\n")
+        # Write this output to the output temp file
+        results = cluster_reads.execute(return_only=True)
+        for result in results:
+            if result:
+                for line in result:
+                    final_results_tf.write(line + "\n")
 
 
 
