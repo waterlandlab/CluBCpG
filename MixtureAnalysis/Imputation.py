@@ -70,7 +70,7 @@ class Imputation:
         track_progress(matrices)
         matrices = matrices.get()
 
-        bins, matrices =zip(*matrices)
+        bins, matrices = zip(*matrices)
 
         # destroy the pool
         pool.close()

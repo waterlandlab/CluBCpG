@@ -70,9 +70,9 @@ if __name__ == "__main__":
         print("Extracting cpg matrices from genome...", flush=True)
         bins, matrices = imputer.extract_matrices(coverage_data, return_bins=True)
 
-        # logging of memeory usage
-        logging.info("Cpg density: {}".format(i))
-        logging.info("Matrix size (bytes): {}".format(sys.getsizeof(matrices)))
+        # # logging of memeory usage
+        # logging.info("Cpg density: {}".format(i))
+        # logging.info("Matrix size (bytes): {}".format(sys.getsizeof(matrices)))
 
         print("Beginning imputation...", flush=True)
         imputed_matrices = imputer.impute_from_model(models_folder=models, matrices=matrices, postprocess=True)
