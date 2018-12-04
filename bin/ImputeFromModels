@@ -78,7 +78,7 @@ if __name__ == "__main__":
         imputed_matrices = imputer.impute_from_model(models_folder=models, matrices=matrices, postprocess=True)
 
         for b, m in zip(bins, imputed_matrices):
-            m = m[~np.isnan(m).any(axis=1)]
+            # m = m[~np.isnan(m).any(axis=1)]
             line = "{},{},{}\n".format(b, m.shape[0], m.shape[1])
             tfile.write(line)
         
