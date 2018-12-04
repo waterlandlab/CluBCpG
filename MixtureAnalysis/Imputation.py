@@ -172,6 +172,9 @@ class Imputation:
         """
 
         model_path = os.path.join(models_folder, "saved_model_{}_cpgs.h5".format(self.cpg_density))
+        print("Clearning any current tf session...", flush=True)
+        K.clear_session()     
+
         trained_model = CpGNet(cpgDensity=self.cpg_density)
         print("Successfully loaded model: {}".format(model_path), flush=True)
         trained_model.model = load_model(model_path)
@@ -189,5 +192,3 @@ class Imputation:
                 
             # K.clear_session()
             yield pm   
-
-        K.clear_session()     
