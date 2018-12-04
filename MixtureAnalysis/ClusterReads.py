@@ -456,7 +456,7 @@ class ClusterReadsWithImputation(ClusterReads):
             cluster_reads = ClusterReads(
                 bam_a=self.bam_a,
                 bam_b=self.bam_b,
-                bins_size=self.bin_size,
+                bin_size=self.bin_size,
                 bins_file=temp,
                 output_directory=self.output_directory,
                 num_processors=self.num_processors,
