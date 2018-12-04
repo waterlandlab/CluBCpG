@@ -252,10 +252,11 @@ class ClusterReads:
         track_progress(results)
         results = results.get()
 
-        output = OutputIndividualMatrixData(results)
         if return_only:
-            return output
+            return results
+
         else:
+            output = OutputIndividualMatrixData(results)
             output.write_to_output(self.output_directory, "Clustering.{}{}.{}".format(os.path.basename(self.bam_a), self.suffix, start_time))
 
 
