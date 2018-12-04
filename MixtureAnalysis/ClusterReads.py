@@ -260,9 +260,10 @@ class ClusterReadsWithImputation(ClusterReads):
     
     def __init__(self, bam_a: str, bam_b=None, bin_size=100, bins_file=None, output_directory=None, num_processors=1,
         cluster_member_min=4, read_depth_req=10, remove_noise=True, mbias_read1_5=None, 
-        mbias_read1_3=None, mbias_read2_5=None, mbias_read2_3=None, suffix="", no_overlap=True, models_A=None, models_B=None):
+        mbias_read1_3=None, mbias_read2_5=None, mbias_read2_3=None, suffix="", no_overlap=True, models_A=None, models_B=None, chunksize=10000):
         self.models_A = models_A
         self.models_B = models_B
+        self.chunksize = chunksize
 
         super().__init__(bam_a, bam_b, bin_size, bins_file, output_directory, 
         num_processors, cluster_member_min, read_depth_req, remove_noise, 
@@ -336,7 +337,7 @@ class ClusterReadsWithImputation(ClusterReads):
             sub_coverage_data = self.filter_coverage_data(coverage_data, i)
 
             # Split into chunks for memory management
-            n = 10000
+            n = self.chunksize
             chunks = [sub_coverage_data[i * n:(i + 1) * n] for i in range((len(sub_coverage_data) + n - 1) // n )]
 
             for j, chunk in enumerate(chunks):
@@ -367,10 +368,8 @@ class ClusterReadsWithImputation(ClusterReads):
                 # Attempt to impute
                 print("Imputing chunk {}...".format(j), flush=True)
                 imputed_matrices_A = imputer_A.impute_from_model(self.models_A, list(data_A_dict.values()))
-                K.clear_session()
                 if self.bam_b:
                     imputed_matrices_B = imputer_B.impute_from_model(self.models_B, data_B_dict.values())
-                    K.clear_session()
                 else:
                     imputed_matrices_B = None
 
@@ -448,8 +447,9 @@ class ClusterReadsWithImputation(ClusterReads):
         # TODO CLUSTER ALL OTHER BINS LIKE NORMAL WITHOUT IMPUTATION
         
         final_results_tf.seek(0)
-        # TODO SET BETTER OUTPUT NAME INTO OUTPUT DIRECTORY
-        with open("final_results.csv", "w") as final:
+        # output = output_dir/basename_suffix_cluster_results.csv
+        output_file = os.path.join(self.output_directory, os.path.splitext(os.path.basename(path))[0], "_",self.suffix, "_cluster_results.csv")
+        with open(output_file, "w") as final:
             for line in final_results_tf:
                 final.write(line)
                 

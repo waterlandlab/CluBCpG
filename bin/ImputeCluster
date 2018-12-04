@@ -64,6 +64,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("--suffix", help="Any additional info to include in the output file name, chromosome for example", default=None)
     arg_parser.add_argument("--models_A", help="Models to impute for input_bam_A, OPTIONAL", default=None)
     arg_parser.add_argument("--models_B", help="Models to impute for imput_bam_B, OPTIONAL", default=None)
+    arg_parser.add_argument("--chunksize", help="How large of chunks to split bins into during imputation. Higher will go faster, but uses more memory", default=10000)
 
     args = arg_parser.parse_args()
 
@@ -83,6 +84,7 @@ if __name__ == "__main__":
     remove_noise = args.remove_noise
     models_A = args.models_A
     models_B = args.models_B
+    chunksize = args.chunksize
     if args.suffix:
         suffix = str(args.suffix)
         suffix = "." + suffix
@@ -146,7 +148,8 @@ if __name__ == "__main__":
         suffix=suffix,
         no_overlap=no_overlap,
         models_A=models_A,
-        models_B=models_B
+        models_B=models_B,
+        chunksize=chunksize
     )
 
     logging.debug(args)
