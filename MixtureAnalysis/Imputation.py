@@ -72,6 +72,9 @@ class Imputation:
 
         bins, matrices =zip(*matrices)
 
+        # destroy the pool
+        pool.close()
+
         # Remove any potential bad data
         clean_matrices = []
         for matrix in matrices:
