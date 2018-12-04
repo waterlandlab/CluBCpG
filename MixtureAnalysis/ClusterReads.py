@@ -367,8 +367,10 @@ class ClusterReadsWithImputation(ClusterReads):
                 # Attempt to impute
                 print("Imputing chunk {}...".format(j), flush=True)
                 imputed_matrices_A = imputer_A.impute_from_model(self.models_A, list(data_A_dict.values()))
+                K.clear_session()
                 if self.bam_b:
                     imputed_matrices_B = imputer_B.impute_from_model(self.models_B, data_B_dict.values())
+                    K.clear_session()
                 else:
                     imputed_matrices_B = None
 
