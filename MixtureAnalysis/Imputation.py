@@ -106,8 +106,8 @@ class Imputation:
         reads = read_parser.parse_reads(chrom, loc-100, loc) # TODO unhardcode bin size
         matrix = read_parser.create_matrix(reads)
         matrix = matrix.dropna(how="all")
-        if matrix.shape[0] == 0:
-            return None
+        # if matrix.shape[0] == 0:
+        #     return None
         matrix = matrix.fillna(-1)
         matrix = np.array(matrix)
         matrix = matrix.astype('int8')
