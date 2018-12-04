@@ -149,7 +149,10 @@ class ClusterReads:
         :param bin: string in this format: "chr19_55555"
         :return: a list of lines representing the cluster data from that bin
         """
-        chromosome, bin_loc = bin.split("_")
+        try:
+            chromosome, bin_loc = bin.split("_")
+        except ValueError:
+            return None
         bin_loc = int(bin_loc)
 
         # Create bam parser and parse reads
@@ -483,8 +486,10 @@ class ClusterReadsWithImputation(ClusterReads):
         # rewrite the tempfile to a final output file
         final_results_tf.seek(0)
         # output = 'output_dir/basename_suffix_cluster_results.csv'
-        output_file = os.path.join(self.output_directory, os.path.splitext(os.path.basename(self.bam_a))[0], "_",self.suffix, "_cluster_results.csv")
+        output_file = os.path.join(self.output_directory, os.path.basename(self.bam_a) + self.suffix + "_cluster_results.csv")
         with open(output_file, "w") as final:
             for line in final_results_tf:
                 final.write(line)
+
+        # TODO Delete unimputable.tmp file
                 
