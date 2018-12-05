@@ -114,6 +114,7 @@ class Imputation:
             matrix = matrix.fillna(-1)
             matrix = np.array(matrix)
             matrix = matrix.astype('int8')
+            print("bin complete")
         except: # BAD EXCEPTION
             return (one_bin, np.array([]))
 
