@@ -9,6 +9,7 @@ from MixtureAnalysis.ParseBam import BamFileReadParser
 from CpGNet import CpGNet
 from keras.models import load_model
 import keras.backend as K
+from pebble import ProcessPool
 
 
 class Imputation:
@@ -64,13 +65,25 @@ class Imputation:
         subset = coverage_data_frame[coverage_data_frame['cpgs'] == self.cpg_density]
         bins_of_interest = subset['bin'].unique()
 
-        pool = Pool(processes=self.processes)
-        matrices = pool.map_async(self._multiprocess_extract, bins_of_interest)
+        # pool = Pool(processes=self.processes)
+        # matrices = pool.map_async(self._multiprocess_extract, bins_of_interest)
 
-        track_progress(matrices)
-        matrices = matrices.get()
+        pool = ProcessPool(max_workers=self.processes)
+        results = pool.map(self._multiprocess_extract, bins_of_interest, timeout=5)
 
-        bins, matrices = zip(*matrices)
+        completed_iterator = results.result()
+
+        complete_results = []
+        while True:
+            try:
+                result = next(completed_iterator)
+                complete_results.append(result)
+            except StopIteration:
+                break
+            except TimeoutError as error:
+                print("Timeout - {}".format(error.args[1]))
+
+        bins, matrices = zip(*complete_results)
 
         # destroy the pool
         pool.close()
@@ -102,28 +115,17 @@ class Imputation:
             [tuple] -- bin, matrix
         """
         try:
-            print(one_bin, flush=True)
             read_parser = BamFileReadParser(self.bam_file, 20, read1_5=self.mbias_read1_5, read1_3=self.mbias_read1_3, read2_5=self.mbias_read2_5, read2_3=self.mbias_read2_3)
             chrom, loc = one_bin.split("_")
             loc = int(loc)
-            if one_bin == "chrY_9516600":
-                print(chrom + " " + str(loc))
             reads = read_parser.parse_reads(chrom, loc-100, loc) # TODO unhardcode bin size
-            if one_bin == "chrY_9516600":
-                print(reads)
             matrix = read_parser.create_matrix(reads)
-            if one_bin == "chrY_9516600":
-                print("Matrix")
-                print(matrix)
             matrix = matrix.dropna(how="all")
-            if one_bin == "chrY_9516600":
-                print(matrix)
             # if matrix.shape[0] == 0:
             #     return None
             matrix = matrix.fillna(-1)
             matrix = np.array(matrix)
             matrix = matrix.astype('int8')
-            print("bin complete")
         except: # BAD EXCEPTION
             return (one_bin, np.array([]))
 
