@@ -107,12 +107,13 @@ class Imputation:
             chrom, loc = one_bin.split("_")
             loc = int(loc)
             if one_bin == "chrY_9516600":
-                print(chrom + str(loc))
+                print(chrom + " " + str(loc))
             reads = read_parser.parse_reads(chrom, loc-100, loc) # TODO unhardcode bin size
             if one_bin == "chrY_9516600":
                 print(reads)
             matrix = read_parser.create_matrix(reads)
             if one_bin == "chrY_9516600":
+                print("Matrix")
                 print(matrix)
             matrix = matrix.dropna(how="all")
             if one_bin == "chrY_9516600":
