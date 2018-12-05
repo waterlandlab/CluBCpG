@@ -81,7 +81,7 @@ class Imputation:
                     break
                 except TimeoutError as error:
                     print("Timeout caught - {}".format(error.args[1]))
-                except as error:
+                except Exception as error:
                     print("Unknown exception = {}".format(error))
 
         bins, matrices = zip(*complete_results)
