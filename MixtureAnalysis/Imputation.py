@@ -67,21 +67,20 @@ class Imputation:
 
         # pool = Pool(processes=self.processes)
         # matrices = pool.map_async(self._multiprocess_extract, bins_of_interest)
-
-        pool = ProcessPool(max_workers=self.processes)
-        results = pool.map(self._multiprocess_extract, bins_of_interest, timeout=5)
-
-        completed_iterator = results.result()
-
         complete_results = []
-        while True:
-            try:
-                result = next(completed_iterator)
-                complete_results.append(result)
-            except StopIteration:
-                break
-            except TimeoutError as error:
-                print("Timeout - {}".format(error.args[1]))
+        with ProcessPool(max_workers=self.processes) as pool:
+            future = pool.map(self._multiprocess_extract, bins_of_interest, timeout=5)
+
+            iterator = future.result()
+
+            while True:
+                try:
+                    result = next(iterator)
+                    complete_results.append(result)
+                except StopIteration:
+                    break
+                except TimeoutError as error:
+                    print("Timeout caught - {}".format(error.args[1]))
 
         bins, matrices = zip(*complete_results)
 
