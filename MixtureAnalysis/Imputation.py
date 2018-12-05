@@ -103,6 +103,8 @@ class Imputation:
         """
         try:
             print(one_bin, flush=True)
+            if one_bin == "chrY_9516600":
+                return(one_bin, None)
             read_parser = BamFileReadParser(self.bam_file, 20, read1_5=self.mbias_read1_5, read1_3=self.mbias_read1_3, read2_5=self.mbias_read2_5, read2_3=self.mbias_read2_3)
             chrom, loc = one_bin.split("_")
             loc = int(loc)
