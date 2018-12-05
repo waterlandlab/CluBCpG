@@ -101,18 +101,20 @@ class Imputation:
         Returns:
             [tuple] -- bin, matrix
         """
-
-        read_parser = BamFileReadParser(self.bam_file, 20, read1_5=self.mbias_read1_5, read1_3=self.mbias_read1_3, read2_5=self.mbias_read2_5, read2_3=self.mbias_read2_3)
-        chrom, loc = one_bin.split("_")
-        loc = int(loc)
-        reads = read_parser.parse_reads(chrom, loc-100, loc) # TODO unhardcode bin size
-        matrix = read_parser.create_matrix(reads)
-        matrix = matrix.dropna(how="all")
-        # if matrix.shape[0] == 0:
-        #     return None
-        matrix = matrix.fillna(-1)
-        matrix = np.array(matrix)
-        matrix = matrix.astype('int8')
+        try:
+            read_parser = BamFileReadParser(self.bam_file, 20, read1_5=self.mbias_read1_5, read1_3=self.mbias_read1_3, read2_5=self.mbias_read2_5, read2_3=self.mbias_read2_3)
+            chrom, loc = one_bin.split("_")
+            loc = int(loc)
+            reads = read_parser.parse_reads(chrom, loc-100, loc) # TODO unhardcode bin size
+            matrix = read_parser.create_matrix(reads)
+            matrix = matrix.dropna(how="all")
+            # if matrix.shape[0] == 0:
+            #     return None
+            matrix = matrix.fillna(-1)
+            matrix = np.array(matrix)
+            matrix = matrix.astype('int8')
+        except: # BAD EXCEPTION
+            return (one_bin, np.array([]))
 
         return (one_bin, matrix)
 
