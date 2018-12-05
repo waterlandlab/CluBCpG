@@ -112,6 +112,8 @@ class Imputation:
             if one_bin == "chrY_9516600":
                 print(reads)
             matrix = read_parser.create_matrix(reads)
+            if one_bin == "chrY_9516600":
+                print(matrix)
             matrix = matrix.dropna(how="all")
             if one_bin == "chrY_9516600":
                 print(matrix)
