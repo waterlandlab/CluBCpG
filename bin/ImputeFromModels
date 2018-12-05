@@ -85,8 +85,6 @@ if __name__ == "__main__":
         imputed_matrices = imputer.impute_from_model(models_folder=models, matrices=list(data_dict.values()), postprocess=True)
 
         data_dict = create_dictionary(data_dict.keys(), imputed_matrices)
-        with open("COVIMPUTEDDATADICT_{}cpgs.pickle".format(i), "wb") as f:
-            pickle.dump(data_dict, f)
 
         for b, m in zip(data_dict.keys(), data_dict.values()):
             m2 = m[~np.isnan(m).any(axis=1)]

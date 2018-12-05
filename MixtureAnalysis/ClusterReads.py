@@ -346,18 +346,9 @@ class ClusterReadsWithImputation(ClusterReads):
 
                 # Create dictionary with key as bin and values as a list like [matrix_A, matrix_B]
                 data_A_dict = self.create_dictionary(bins_A, matrices_A)
-                with open("UNIMPUTED_TESTINGDUMP_A_{}cpgs_{}chunk.pickle".format(i, j), "wb") as f:
-                    pickle.dump(data_A_dict, f)
                 if self.bam_b:
                     data_B_dict = self.create_dictionary(bins_B, matrices_B)
 
-                # ### TESTING ###
-                # with open("unimputed_matrix_dict_A_cpgs{}_chunk{}.pickle".format(i,j), "w+b") as f:
-                #     pickle.dump(data_A_dict, f)
-                # if self.bam_b:
-                #     with open("unimputed_matrix_dict_B_cpgs{}_chunk{}.pickle".format(i,j), "w+b") as f:
-                #         pickle.dump(data_B_dict, f)
-                # ### TESTING ###
 
                 # Attempt to impute
                 print("Imputing chunk {}...".format(j), flush=True)
@@ -368,19 +359,9 @@ class ClusterReadsWithImputation(ClusterReads):
                     imputed_matrices_B = None
 
                 data_imputed_A_dict = self.create_dictionary(data_A_dict.keys(), imputed_matrices_A)
-                with open("IMPUTED_TESTINGDUMP_A_{}cpgs_{}chunk.pickle".format(i, j), "wb") as f:
-                    pickle.dump(data_imputed_A_dict, f)
 
                 if self.bam_b:
                     data_imputed_B_dict = self.create_dictionary(data_B_dict.keys(), imputed_matrices_B)
-
-                # ### TESTING ###
-                # with open("IMPUTED_matrix_dict_A_cpgs{}_chunk{}.pickle".format(i,j), "w+b") as f:
-                #     pickle.dump(data_imputed_A_dict, f)
-                # if self.bam_b:
-                #     with open("IMPUTED_matrix_dict_B_cpgs{}_chunk{}.pickle".format(i,j), "w+b") as f:
-                #         pickle.dump(data_imputed_B_dict, f)
-                # ### TESTING ###
 
                 # Combine and cluster as normal
                 # Maybe do this in the future
