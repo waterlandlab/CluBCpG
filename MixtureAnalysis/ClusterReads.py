@@ -284,14 +284,6 @@ class ClusterReadsWithImputation(ClusterReads):
 
         return coverage_data
 
-    # def create_dictionary(self, bins_A, matrices_A, bins_B=None, matrices_B=None):
-    #     output = defaultdict(list)
-    #     for b, m in zip(bins_A, matrices_A):
-    #         output[b].append(m)
-    #     if bins_B is not None and matrices_B is not None:
-    #         for b, m in zip(bins_B, matrices_B):
-    #             output[b].append(m)
-    #     return output
 
     def create_dictionary(self, bins, matrices):
         output = dict()
@@ -307,13 +299,6 @@ class ClusterReadsWithImputation(ClusterReads):
 
     
     def execute(self):
-        start_time = datetime.datetime.now().strftime("%y-%m-%d")
-        def track_progress(job, update_interval=60):
-            while job._number_left > 0:
-                logging.info("Tasks remaining = {0}".format(
-                    job._number_left * job._chunksize
-                ))
-                time.sleep(update_interval)
         
         coverage_data = self.get_coverage_data()
 
@@ -361,6 +346,8 @@ class ClusterReadsWithImputation(ClusterReads):
 
                 # Create dictionary with key as bin and values as a list like [matrix_A, matrix_B]
                 data_A_dict = self.create_dictionary(bins_A, matrices_A)
+                with open("UNIMPUTED_TESTINGDUMP_A_{}cpgs_{}chunk.pickle".format(i, j), "wb") as f:
+                    pickle.dump(data_A_dict, f)
                 if self.bam_b:
                     data_B_dict = self.create_dictionary(bins_B, matrices_B)
 
@@ -381,6 +368,9 @@ class ClusterReadsWithImputation(ClusterReads):
                     imputed_matrices_B = None
 
                 data_imputed_A_dict = self.create_dictionary(data_A_dict.keys(), imputed_matrices_A)
+                with open("IMPUTED_TESTINGDUMP_A_{}cpgs_{}chunk.pickle".format(i, j), "wb") as f:
+                    pickle.dump(data_imputed_A_dict, f)
+
                 if self.bam_b:
                     data_imputed_B_dict = self.create_dictionary(data_B_dict.keys(), imputed_matrices_B)
 

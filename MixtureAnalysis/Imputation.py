@@ -57,16 +57,10 @@ class Imputation:
         """
 
 
-        def track_progress(job, update_interval=30):
-            while job._number_left > 0:
-                print("Tasks remaining = {0}".format(job._number_left * job._chunksize), flush=True)
-                time.sleep(update_interval)
-
         subset = coverage_data_frame[coverage_data_frame['cpgs'] == self.cpg_density]
         bins_of_interest = subset['bin'].unique()
 
-        # pool = Pool(processes=self.processes)
-        # matrices = pool.map_async(self._multiprocess_extract, bins_of_interest)
+        # Use the pebbel ProcessPool because it can handle hanging processes with a timeout
         complete_results = []
         with ProcessPool(max_workers=self.processes) as pool:
             future = pool.map(self._multiprocess_extract, bins_of_interest, timeout=5)
@@ -91,9 +85,11 @@ class Imputation:
 
         # Remove any potential bad data
         clean_matrices = []
-        for matrix in matrices:
+        clean_bins = []
+        for matrix, bin_ in zip(matrices, bins):
             if matrix.shape[1] == self.cpg_density:
                 clean_matrices.append(matrix)
+                clean_bins.append(bin_)
 
         # if len(clean_matrices) > 0:
         #     clean_matrices = np.array(clean_matrices)
@@ -101,7 +97,7 @@ class Imputation:
         clean_matrices = np.array(clean_matrices)
 
         if return_bins:
-            return bins, clean_matrices
+            return clean_bins, clean_matrices
         else:
             return clean_matrices
 
