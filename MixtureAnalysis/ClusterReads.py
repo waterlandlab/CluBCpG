@@ -425,13 +425,21 @@ class ClusterReadsWithImputation(ClusterReads):
         # CLUSTER ALL OTHER BINS LIKE NORMAL WITHOUT IMPUTATION
         print("Performing clustering on the rest of the bins with no imputaiton...", flush=True)
         unimputable_coverage = coverage_data[coverage_data['cpgs'] > 6]
-        unimputable_coverage.to_csv("unimputable.tmp", header=False)
+
+        unimputable_temp = tempfile.NamedTemporaryFile(mode="w+t")
+        unimputable_file_name = unimputable_temp.name
+        logging.info("Temp file for unimputable bins is {}".format(unimputable_file_name))
+        logging.info("unimputable bins looks like this...")
+        logging.info(unimputable_coverage.head())
+
+        unimputable_coverage.to_csv(unimputable_file_name, header=False, index=False)
+
 
         cluster_reads = ClusterReads(
             bam_a=self.bam_a,
             bam_b=self.bam_b,
             bin_size=self.bin_size,
-            bins_file="unimputable.tmp",
+            bins_file=unimputable_file_name,
             output_directory=self.output_directory,
             num_processors=self.num_processors,
             cluster_member_min=self.cluster_member_min,
@@ -463,4 +471,5 @@ class ClusterReadsWithImputation(ClusterReads):
                 final.write(line)
 
         # TODO Delete unimputable.tmp file
+        unimputable_temp.close()
                 
