@@ -376,7 +376,12 @@ class ClusterReadsWithImputation(ClusterReads):
                         # TODO OUTPUT SOME EMTPY RESULT
                         continue
                     if self.bam_b:
-                        matrix_B = data_imputed_B_dict[bin_]
+                        try:
+                            matrix_B = data_imputed_B_dict[bin_]
+                        # matrix doesnt exist in other file
+                        except KeyError:
+                            logging.info("Covered bin {} doesnt exist in second file".format(bin_))
+                            continue
                         matrix_B = pd.DataFrame(matrix_B)
                         matrix_B = matrix_B.dropna()
                         if matrix_B.shape[0] < self.read_depth_req:
