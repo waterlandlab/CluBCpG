@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 import time
+import logging
 import os
 from multiprocessing import Pool
 from MixtureAnalysis.ConnectToCpGNet import TrainWithCpGNet
