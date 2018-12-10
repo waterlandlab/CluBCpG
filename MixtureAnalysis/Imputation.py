@@ -91,7 +91,9 @@ class Imputation:
                 if matrix.shape[1] == self.cpg_density:
                     clean_matrices.append(matrix)
                     clean_bins.append(bin_)
-                except IndexError:
+                except IndexError as e:
+                    logging.info("Index error at bin {}".format(bin_))
+                    logging.error(str(e))
                     continue
 
         # if len(clean_matrices) > 0:
