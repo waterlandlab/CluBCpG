@@ -87,9 +87,12 @@ class Imputation:
         clean_matrices = []
         clean_bins = []
         for matrix, bin_ in zip(matrices, bins):
-            if matrix.shape[1] == self.cpg_density:
-                clean_matrices.append(matrix)
-                clean_bins.append(bin_)
+            try:
+                if matrix.shape[1] == self.cpg_density:
+                    clean_matrices.append(matrix)
+                    clean_bins.append(bin_)
+                except IndexError:
+                    continue
 
         # if len(clean_matrices) > 0:
         #     clean_matrices = np.array(clean_matrices)
