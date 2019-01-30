@@ -31,6 +31,7 @@ if __name__ == "__main__":
     mbias_read2_5 = int(args.read2_5)
     mbias_read2_3 = int(args.read2_3)
     processes = int(args.n)
+    sample_limit = int(args.limit_samples)
     
     # Set output dir
     if not args.output:
@@ -51,7 +52,7 @@ if __name__ == "__main__":
     for i in range(2,7):
         print("Starting training cpg density: {}".format(i))
         trainer = Imputation(i, args.input_bam_file, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3, processes)
-        matrices = trainer.extract_matrices(coverage_data)
+        matrices = trainer.extract_matrices(coverage_data, sample_limit=sample_limit)
         model = trainer.train_model(output_folder, matrices)
 
     print("done")
