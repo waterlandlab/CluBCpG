@@ -17,7 +17,6 @@ class Imputation:
     """The class providing convienent APIs to train models and impute from models using CpGNet
     """
 
-
     def __init__(self, cpg_density: int, bam_file: str, mbias_read1_5=None, 
         mbias_read1_3=None, mbias_read2_5= None, mbias_read2_3=None, processes=-1):
         """[summary]
@@ -42,9 +41,7 @@ class Imputation:
         self.mbias_read2_3 = mbias_read2_3
         self.processes = processes
 
-
-
-    def extract_matrices(self, coverage_data_frame: pd.DataFrame, return_bins=False):
+    def extract_matrices(self, coverage_data_frame: pd.DataFrame, sample_limit: int = None, return_bins=False):
         """Extract CpG matrices from bam file.
         
         Arguments:
@@ -57,9 +54,12 @@ class Imputation:
             [tuple] -- Returns tuple of (bin, np.array) if returns_bins = True else returns only np.array
         """
 
-
         subset = coverage_data_frame[coverage_data_frame['cpgs'] == self.cpg_density]
         bins_of_interest = subset['bin'].unique()
+
+        # Downsample the training bins if requested and necessary
+        if sample_limit and len(bins_of_interest) > sample_limit:
+            bins_of_interest = np.random.choice(bins_of_interest, size=sample_limit)
 
         # Use the pebbel ProcessPool because it can handle hanging processes with a timeout
         complete_results = []

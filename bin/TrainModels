@@ -15,6 +15,8 @@ if __name__ == "__main__":
     arg_parser.add_argument("-c", "--coverage", help="output file from CalculateCompleteBins, filtered for at least 1 read and 2 cpgs", default=None)
     arg_parser.add_argument("-o", "--output", help="folder to save generated model files", default=None)
     arg_parser.add_argument("-n", help="number of cpu cores to use")
+    arg_parser.add_argument("-l", "--limit_samples", help="Limit the number of samples used to train the model, "
+                                                          "this will speed up training. default=100000", default=100000)
     arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
