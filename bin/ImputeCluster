@@ -9,7 +9,7 @@ import logging
 import os
 from MixtureAnalysis.ParseBam import BamFileReadParser
 from MixtureAnalysis.OutputComparisonResults import OutputIndividualMatrixData
-from MixtureAnalysis.ClusterReads import ClusterReads
+from MixtureAnalysis.ClusterReads import ClusterReadsWithImputation
 import argparse
 import datetime
 from multiprocessing import Pool
@@ -62,6 +62,9 @@ if __name__ == "__main__":
                             type=str2bool, const=True, default='True', nargs='?')
 
     arg_parser.add_argument("--suffix", help="Any additional info to include in the output file name, chromosome for example", default=None)
+    arg_parser.add_argument("--models_A", help="Models to impute for input_bam_A, OPTIONAL", default=None)
+    arg_parser.add_argument("--models_B", help="Models to impute for imput_bam_B, OPTIONAL", default=None)
+    arg_parser.add_argument("--chunksize", help="How large of chunks to split bins into during imputation. Higher will go faster, but uses more memory", default=10000)
 
     args = arg_parser.parse_args()
 
@@ -79,6 +82,9 @@ if __name__ == "__main__":
     mbias_read2_5 = int(args.read2_5)
     mbias_read2_3 = int(args.read2_3)
     remove_noise = args.remove_noise
+    models_A = args.models_A
+    models_B = args.models_B
+    chunksize = args.chunksize
     if args.suffix:
         suffix = str(args.suffix)
         suffix = "." + suffix
@@ -125,7 +131,8 @@ if __name__ == "__main__":
     logging.info("M bias inputs received, ignoring the following:\nread 1 5': {}bp\n"
                  "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
 
-    cluster_reads = ClusterReads(
+    # Instantiate The clustering class
+    cluster_reads = ClusterReadsWithImputation(
         bam_a=input_bam_a,
         bam_b=input_bam_b,
         bin_size=100,
@@ -141,11 +148,16 @@ if __name__ == "__main__":
         mbias_read2_3=mbias_read2_3,
         suffix=suffix,
         no_overlap=no_overlap,
+        models_A=models_A,
+        models_B=models_B,
+        chunksize=chunksize
     )
 
     logging.debug(args)
 
+    # Perform clustering
     cluster_reads.execute()
 
 
     logging.info("Done")
+    print("Complete")

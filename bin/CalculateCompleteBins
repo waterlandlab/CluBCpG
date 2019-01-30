@@ -2,13 +2,16 @@
 
 from MixtureAnalysis.ParseBam import BamFileReadParser
 import os
+import sys
 import logging
 from multiprocessing import Pool
 import numpy as np
+import pandas as pd
 import argparse
 from collections import defaultdict
 import time
 
+DEBUG = False
 
 class CalculateCompleteBins:
 
@@ -38,7 +41,6 @@ class CalculateCompleteBins:
         :param bin: Bin should be passed as "Chr19_4343343"
         :return: pd.DataFrame with rows containing NaNs dropped
         """
-
         # Get reads from bam file
         parser = BamFileReadParser(self.input_bam_file, 20, self.mbias_read1_5, self.mbias_read1_3,
                                    self.mbias_read2_5, self.mbias_read2_3, no_overlap)
@@ -57,6 +59,9 @@ class CalculateCompleteBins:
         except:
             logging.error("Unknown error: {}".format(bin))
             return None
+
+        # drop rows of ALL NaN
+        matrix = matrix.dropna(how="all")
 
         # convert to data_frame of 1s and 0s, drop rows with NaN
         matrix = matrix.dropna()
@@ -100,6 +105,11 @@ class CalculateCompleteBins:
         return all_bins
 
     def analyze_bins(self, individual_chrom=None):
+        """
+        Main function in class. Run the Complete analysis on the data
+        :param individual_chrom: Chromosome to analyze: ie "chr7"
+        :return: filename of the generated report
+        """
 
         # Track the progress of the multiprocessing and output
         def track_progress(job, update_interval=60):
@@ -110,7 +120,7 @@ class CalculateCompleteBins:
 
 
         # Get and clean dict of chromosome lenghts, convert to list of bins
-        print("Getting Chromosome lengths from bam files...")
+        print("Getting Chromosome lengths from bam files...", flush=True)
         chromosome_lengths = self.get_chromosome_lengths()
         chromosome_lengths = self.remove_scaffolds(chromosome_lengths)
 
@@ -120,17 +130,17 @@ class CalculateCompleteBins:
             new[individual_chrom] = chromosome_lengths[individual_chrom]
             chromosome_lengths = new
 
-        print("Generating bins for the entire genome...")
+        print("Generating bins for the entire genome...", flush=True)
         bins_to_analyze = self.generate_bins_list(chromosome_lengths)
 
         # Set up for multiprocessing
-        print("Beginning analysis of bins using {} processors.".format(self.number_of_processors))
-        print("This will take awhile.....")
+        print("Beginning analysis of bins using {} processors.".format(self.number_of_processors), flush=True)
+        print("This will take awhile.....", flush=True)
 
         # Loop over bin dict and pool.map them individually
         final_results = []
         for key in bins_to_analyze.keys():
-            print("Analyzing chromosome {}".format(key))
+            print("Analyzing chromosome {}".format(key), flush=True)
             pool = Pool(processes=self.number_of_processors)
             results = pool.map_async(self.calculate_bin_coverage, bins_to_analyze[key])
 
@@ -140,11 +150,11 @@ class CalculateCompleteBins:
             results = results.get()
 
             final_results.extend(results)
-            print("Finished chromosome {}".format(key))
+            print("Finished chromosome {}".format(key), flush=True)
 
         logging.info("Analysis complete")
 
-        print("Complete.")
+        print("Complete.", flush=True)
 
         # Write to output file
         output_file = os.path.join(self.output_directory, "CompleteBins.{}.{}.csv".format(os.path.basename(self.input_bam_file), individual_chrom))
@@ -152,11 +162,15 @@ class CalculateCompleteBins:
         with open(output_file, "w") as out:
             for result in final_results:
                 if result:
+                    # bin
                     out.write(result[0] + ",")
+                    # num of reads
                     out.write(str(result[1].shape[0]) + ",")
+                    # num of CpGs
                     out.write(str(result[1].shape[1]) + "\n")
 
         logging.info("Full read coverage analysis complete!")
+        return output_file
 
 
 if __name__ == "__main__":
@@ -176,12 +190,6 @@ if __name__ == "__main__":
     arg_parser.add_argument("-o", "--output_dir",
                             help="Output directory to save figures, defaults to bam file loaction")
     arg_parser.add_argument("-bin_size", help="Size of bins to extract and analyze, default=100", default=100)
-    arg_parser.add_argument("-m", "--cluster_member_minimum",
-                            help="Minimum number of members a cluster should have for it to be considered, default=4",
-                            default=4)
-    arg_parser.add_argument("-r", "--read_depth",
-                            help="Minium number of reads covering all CpGs that the bins should have to analyze, default=10",
-                            default=10)
     arg_parser.add_argument("-n", "--num_processors",
                             help="Number of processors to use for analysis, default=1",
                             default=1)
@@ -196,13 +204,13 @@ if __name__ == "__main__":
                                                  " reads together when possible, default=True",
                             type=str2bool, const=True, default='True', nargs='?')
 
+
+    # Extract arguments from command line and set as correct types
     args = arg_parser.parse_args()
 
     input_bam_file = args.input_bam_A
     num_of_processors = int(args.num_processors)
     bin_size = int(args.bin_size)
-    min_cluster_members = int(args.cluster_member_minimum)
-    read_depth_req = int(args.read_depth)
     no_overlap = args.no_overlap
 
     # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
@@ -220,6 +228,7 @@ if __name__ == "__main__":
     # For now, this will be made required
     assert chrom_of_interest, "Chromosome to analyze must be specified"
 
+    # Set output directory, or use bam file location if not specified
     if args.output_dir:
         BASE_DIR = args.output_dir
     else:
@@ -229,12 +238,11 @@ if __name__ == "__main__":
     if not os.path.exists(BASE_DIR):
         os.makedirs(BASE_DIR)
 
+    # Setup logging
     log_file = os.path.join(BASE_DIR, "CompleteBins.{}.{}.log".format(os.path.basename(input_bam_file), chrom_of_interest))
     print("Log file: {}".format(log_file), flush=True)
     logging.basicConfig(filename=log_file, level=logging.DEBUG)
 
-    calc = CalculateCompleteBins(input_bam_file, bin_size, BASE_DIR, num_of_processors,
-                                 mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
 
     # Log run input params
     logging.info("Input file: {}".format(input_bam_file))
@@ -242,8 +250,14 @@ if __name__ == "__main__":
     logging.info("Bin size: {}".format(bin_size))
     logging.info("Number of processors: {}".format(num_of_processors))
     logging.info("Fix overlapping reads: {}".format(no_overlap))
+
+
     logging.info("M bias inputs ignoring the following:\nread 1 5': {}bp\n"
                  "read1 3': {}bp\nread2 5: {}bp\nread2 3': {}bp".format(mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3))
 
-    calc.analyze_bins(chrom_of_interest)
+    # Perform the analysis
+    calc = CalculateCompleteBins(input_bam_file, bin_size, BASE_DIR, num_of_processors,
+                                 mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3)
+    output_file = calc.analyze_bins(chrom_of_interest)
+
 
