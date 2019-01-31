@@ -13,7 +13,7 @@ import time
 class CalculateCompleteBins:
 
     def __init__(self, bam_file: str, bin_size: int, output_directory: str, number_of_processors=1, mbias_read1_5=None, mbias_read1_3=None,
-                 mbias_read2_5= None, mbias_read2_3=None):
+                 mbias_read2_5= None, mbias_read2_3=None, no_overlap=True):
         """
         This class is initialized with a path to a bam file and a bin size
         :param bam_file: One of the BAM files for analysis to be performed
@@ -31,6 +31,7 @@ class CalculateCompleteBins:
         self.mbias_read1_3 = mbias_read1_3
         self.mbias_read2_5 = mbias_read2_5
         self.mbias_read2_3 = mbias_read2_3
+        self.no_overlap = no_overlap
 
     def calculate_bin_coverage(self, bin):
         """
@@ -40,7 +41,7 @@ class CalculateCompleteBins:
         """
         # Get reads from bam file
         parser = BamFileReadParser(self.input_bam_file, 20, self.mbias_read1_5, self.mbias_read1_3,
-                                   self.mbias_read2_5, self.mbias_read2_3, no_overlap)
+                                   self.mbias_read2_5, self.mbias_read2_3, self.no_overlap)
         # Split bin into parts
         chromosome, bin_location = bin.split("_")
         bin_location = int(bin_location)

@@ -1,5 +1,6 @@
 import unittest
 from MixtureAnalysis import ParseBam
+from MixtureAnalysis.CalculateBinCoverage import CalculateCompleteBins
 import os
 import pandas as pd
 
@@ -24,13 +25,16 @@ def check_data_exists(required_data):
         if data not in os.listdir(test_data_location):
             download_data()
 
+bamA = "TEST_DATA_A.bam"
+test_bin = "chr1_910700"
+test_bin_bad = ""
 
 class TestParseBam(unittest.TestCase):
 
     def setUp(self):
-        self.required_data = ['TEST_DATA_A.bam', 'TEST_DATA_B.bam', 'TEST_DATA_A.bam.bai', 'TEST_DATA_B.bam.bai']
+        self.required_data = [bamA, 'TEST_DATA_B.bam', 'TEST_DATA_A.bam.bai', 'TEST_DATA_B.bam.bai']
         check_data_exists(self.required_data)
-        self.parserA = ParseBam.BamFileReadParser(os.path.join(test_data_location, "TEST_DATA_A.bam"), 20)
+        self.parserA = ParseBam.BamFileReadParser(os.path.join(test_data_location, bamA), 20)
 
     def test_cases_works(self):
         self.assertTrue(True, "Truth isn't truth -Rudy Giuliani")
@@ -45,6 +49,21 @@ class TestParseBam(unittest.TestCase):
         self.assertIsInstance(matrix, pd.DataFrame, "Reads failing to convert to data frame")
         self.assertEqual(matrix.shape, (118 ,4), "Dataframe fails to be expected shape")
 
+
+class TestCoverageCalculation(unittest.TestCase):
+
+    def setUp(self):
+        self.required_data = [bamA]
+        check_data_exists(self.required_data)
+        self.calc = CalculateCompleteBins(bam_file=os.path.join(test_data_location, bamA), bin_size=100, output_directory=os.path.join(test_data_location, 'TestCoverageCalculation'))
+
+    def testCoverageCalcLoaded(self):
+        self.assertIsInstance(self.calc, CalculateCompleteBins, "Failed to load module")
+
+    def testCoverageCalc(self):
+        b, matrix = self.calc.calculate_bin_coverage(test_bin)
+        self.assertEqual(b, test_bin, "Bin failed to return ID correctly")
+        self.assertIsInstance(matrix, pd.DataFrame, "matrix failed to return correctly")
 
 
 if __name__ == "__main__":
