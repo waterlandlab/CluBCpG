@@ -7,11 +7,15 @@ setup(name="MixtureAnalysis",
       author_email="charles.scott@bcm.edu",
       license='MIT',
       packages=['MixtureAnalysis'],
+
       install_requires=['pysam', 'numpy', 'matplotlib', 'scikit-learn',
                         'seaborn', 'scipy', 'pandas', 'fastcluster', 'pebble'],
+
       scripts=['bin/CalculateCompleteBins',
                'bin/CombineClusterCompare',
                'bin/TrainModels',
                'bin/ImputeFromModels',
                'bin/ImputeCluster'],
+
+      test_suite="MixtureAnalysis.tests.test_ParseBam",
       )
