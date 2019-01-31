@@ -27,7 +27,7 @@ def check_data_exists(required_data):
 
 bamA = "TEST_DATA_A.bam"
 test_bin = "chr1_910700"
-test_bin_bad = ""
+test_bin_bad = "chr1_500"
 
 class TestParseBam(unittest.TestCase):
 
@@ -64,6 +64,8 @@ class TestCoverageCalculation(unittest.TestCase):
         b, matrix = self.calc.calculate_bin_coverage(test_bin)
         self.assertEqual(b, test_bin, "Bin failed to return ID correctly")
         self.assertIsInstance(matrix, pd.DataFrame, "matrix failed to return correctly")
+        bad_result = self.calc.calculate_bin_coverage(test_bin_bad)
+        self.assertIsNone(bad_result, "empty bin shouldn't have returned data")
 
 
 if __name__ == "__main__":
