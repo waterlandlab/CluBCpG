@@ -139,7 +139,6 @@ class ClusterReads:
 
         return lines
 
-
     # MAIN METHOD
     def process_bins(self, bin):
         """
@@ -266,8 +265,9 @@ class ClusterReads:
 class ClusterReadsWithImputation(ClusterReads):
     
     def __init__(self, bam_a: str, bam_b=None, bin_size=100, bins_file=None, output_directory=None, num_processors=1,
-        cluster_member_min=4, read_depth_req=10, remove_noise=True, mbias_read1_5=None, 
+        cluster_member_min=4, read_depth_req=10, remove_noise=True, mbias_read1_5=None,
         mbias_read1_3=None, mbias_read2_5=None, mbias_read2_3=None, suffix="", no_overlap=True, models_A=None, models_B=None, chunksize=10000):
+
         self.models_A = models_A
         self.models_B = models_B
         self.chunksize = chunksize
@@ -297,8 +297,7 @@ class ClusterReadsWithImputation(ClusterReads):
     def filter_coverage_data(coverage_data, cpg_density):
         return coverage_data[coverage_data['cpgs'] == cpg_density]
 
-    
-    def execute(self):
+    def execute(self, return_only=False):
         
         coverage_data = self.get_coverage_data()
 
@@ -307,22 +306,24 @@ class ClusterReadsWithImputation(ClusterReads):
         final_results_tf.write("bin,input_label,methylation,class_label,read_number,cpg_number,cpg_pattern" + "\n")
         for i in range(2,7):
             print("Starting Imputation of CpG density {}...".format(i))
+
             imputer_A = Imputation(cpg_density=i, 
-            bam_file=self.bam_a, 
-            mbias_read1_5=self.mbias_read1_5,
-            mbias_read1_3=self.mbias_read1_3, 
-            mbias_read2_5=self.mbias_read2_5, 
-            mbias_read2_3=self.mbias_read2_3,
-            processes=self.num_processors,
+                bam_file=self.bam_a,
+                mbias_read1_5=self.mbias_read1_5,
+                mbias_read1_3=self.mbias_read1_3,
+                mbias_read2_5=self.mbias_read2_5,
+                mbias_read2_3=self.mbias_read2_3,
+                processes=self.num_processors,
             )
+
             if self.bam_b:
                 imputer_B = Imputation(cpg_density=i, 
-                bam_file=self.bam_b, 
-                mbias_read1_5=self.mbias_read1_5,
-                mbias_read1_3=self.mbias_read1_3, 
-                mbias_read2_5=self.mbias_read2_5, 
-                mbias_read2_3=self.mbias_read2_3,
-                processes=self.num_processors
+                    bam_file=self.bam_b,
+                    mbias_read1_5=self.mbias_read1_5,
+                    mbias_read1_3=self.mbias_read1_3,
+                    mbias_read2_5=self.mbias_read2_5,
+                    mbias_read2_3=self.mbias_read2_3,
+                    processes=self.num_processors
                 )
 
             # Subset for CpG density
@@ -331,10 +332,11 @@ class ClusterReadsWithImputation(ClusterReads):
             # Split into chunks for memory management
             n = self.chunksize
             chunks = [sub_coverage_data[i * n:(i + 1) * n] for i in range((len(sub_coverage_data) + n - 1) // n )]
+            n_chunks = len(chunks)
+            print("Divided into {} chunks for processing...".format(n_chunks), flush=True)
 
             for j, chunk in enumerate(chunks):
-                print("Divided into {} chunks for processing...".format(len(chunks)), flush=True)
-                print("Extracting matrices from chunk {}...".format(j+1))
+                print("Extracting matrices from chunk {}/{}...".format(j+1,n_chunks))
                 bins_A, matrices_A = imputer_A.extract_matrices(chunk, return_bins=True)
 
                 if self.bam_b:
@@ -349,9 +351,8 @@ class ClusterReadsWithImputation(ClusterReads):
                 if self.bam_b:
                     data_B_dict = self.create_dictionary(bins_B, matrices_B)
 
-
                 # Attempt to impute
-                print("Imputing chunk {}...".format(j), flush=True)
+                print("Imputing chunk {}/{}...".format(j+1, n_chunks), flush=True)
                 imputed_matrices_A = imputer_A.impute_from_model(self.models_A, list(data_A_dict.values()))
                 if self.bam_b:
                     imputed_matrices_B = imputer_B.impute_from_model(self.models_B, data_B_dict.values())
@@ -465,8 +466,6 @@ class ClusterReadsWithImputation(ClusterReads):
                 for line in result:
                     final_results_tf.write(line + "\n")
 
-
-
         # rewrite the tempfile to a final output file
         final_results_tf.seek(0)
         # output = 'output_dir/basename_suffix_cluster_results.csv'
@@ -475,6 +474,4 @@ class ClusterReadsWithImputation(ClusterReads):
             for line in final_results_tf:
                 final.write(line)
 
-        # TODO Delete unimputable.tmp file
         unimputable_temp.close()
-                
