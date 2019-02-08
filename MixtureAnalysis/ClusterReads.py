@@ -14,6 +14,9 @@ import tempfile
 
 
 class ClusterReads:
+    """
+    This class is used to take a dataframe or matrix of reads and cluster them
+    """
 
     def __init__(self, bam_a: str, bam_b=None, bin_size=100, bins_file=None, output_directory=None, num_processors=1,
         cluster_member_min=4, read_depth_req=10, remove_noise=True, mbias_read1_5=None, 
@@ -155,6 +158,7 @@ class ClusterReads:
         This is the main method and should be called using Pool.map It takes one bin location and uses the other helper
         functions to get the reads, form the matrix, cluster it with DBSCAN, and output the cluster data as text lines
         ready to writing to a file.
+
         :param bin: string in this format: "chr19_55555"
         :return: a list of lines representing the cluster data from that bin
         """
@@ -246,6 +250,7 @@ class ClusterReads:
 
     def execute(self, return_only=False):
         start_time = datetime.datetime.now().strftime("%y-%m-%d")
+
         def track_progress(job, update_interval=60):
             while job._number_left > 0:
                 logging.info("Tasks remaining = {0}".format(
@@ -273,6 +278,10 @@ class ClusterReads:
 
 
 class ClusterReadsWithImputation(ClusterReads):
+    """
+    This class is used to perfom the same clustering, but also enabled the ability to perform imputation during clustering.
+    This inherits from :class:`.ClusterReads`
+    """
     
     def __init__(self, bam_a: str, bam_b=None, bin_size=100, bins_file=None, output_directory=None, num_processors=1,
         cluster_member_min=4, read_depth_req=10, remove_noise=True, mbias_read1_5=None,
@@ -286,14 +295,11 @@ class ClusterReadsWithImputation(ClusterReads):
         num_processors, cluster_member_min, read_depth_req, remove_noise, 
         mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3, suffix, no_overlap)
 
-
-
     def get_coverage_data(self, cpg_density=None):
         coverage_data = pd.read_csv(self.bins_file, header=None)
         coverage_data.columns = ['bin', 'reads', 'cpgs']
 
         return coverage_data
-
 
     def create_dictionary(self, bins, matrices):
         output = dict()

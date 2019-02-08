@@ -94,6 +94,7 @@ class TrainWithCpGNet:
     def __init__(self, cpg_density=None, save_path=None):
         """
         Class to train a CpGNet model from input data
+
         :param cpg_density: Number of CpGs
         :param save_path: Location of folder to save the resulting model files. One per cpg density
         """
@@ -108,6 +109,7 @@ class TrainWithCpGNet:
     def save_net(self, model):
         """
         Save the network to a file
+
         :param model: The trained CpGNet model. Located at CpGNet.model
         :return: Path to the saved model
         """
@@ -122,6 +124,7 @@ class TrainWithCpGNet:
     def train_model(self, bins: iter):
         """
         Train the CpGNet model on a list of provided bins
+
         :param bins: iterable containing CpG matrices of 1 (methylated), 0 (unmethylated), and -1 (unknown)
         :return: Path to the saved model file
         """
