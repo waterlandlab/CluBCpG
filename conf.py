@@ -20,7 +20,7 @@
 # -- Project information -----------------------------------------------------
 
 project = 'MixtureAnalysis'
-copyright = '2019, Anthony Scott'
+copyright = '2019, Anthony Scott, PhD'
 author = 'Anthony Scott, PhD'
 
 # The short X.Y version
@@ -110,7 +110,7 @@ html_static_path = ['_static']
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'MixAnalysisdoc'
+htmlhelp_basename = 'MixtureAnalysisdoc'
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -137,8 +137,8 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'MixAnalysis.tex', 'MixAnalysis Documentation',
-     'Anthony Scott', 'manual'),
+    (master_doc, 'MixtureAnalysis.tex', 'MixtureAnalysis Documentation',
+     'Anthony Scott, PhD', 'manual'),
 ]
 
 
@@ -147,7 +147,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'mixanalysis', 'MixAnalysis Documentation',
+    (master_doc, 'mixtureanalysis', 'MixtureAnalysis Documentation',
      [author], 1)
 ]
 
@@ -158,8 +158,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'MixAnalysis', 'MixAnalysis Documentation',
-     author, 'MixAnalysis', 'One line description of project.',
+    (master_doc, 'MixtureAnalysis', 'MixtureAnalysis Documentation',
+     author, 'MixtureAnalysis', 'One line description of project.',
      'Miscellaneous'),
 ]
 
