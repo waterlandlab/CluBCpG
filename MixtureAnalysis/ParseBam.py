@@ -7,6 +7,14 @@ from collections import defaultdict
 class BamFileReadParser:
     """
     Used to simplify the opening and reading from BAM files. BAMs must be coordinate sorted and indexed.
+
+    :Example:
+        >>> from MixtureAnalysis.ParseBam import BamFileReadParser
+        >>> parser = BamFileReadParser("/path/to/data.BAM", quality_score=20, 3, 4, 7, 1)
+        >>> reads = parser.parse_reads("chr7", 10000, 101000)
+        >>> matrix = parser.create_matrix(reads)
+
+
     """
 
     def __init__(self, bamfile, quality_score, read1_5=None, read1_3=None,
@@ -61,14 +69,6 @@ class BamFileReadParser:
         :param start: start coordinate
         :param stop: end coordinate
         :return: List of reads and their positional tags as assigned by bismark
-
-        :Example:
-        >>> from MixtureAnalysis.ParseBam import BamFileReadParser
-        >>> parser = BamFileReadParser("/path/to/data.BAM", quality_score=20, 3, 4, 7, 1)
-        >>> reads = parser.parse_reads("chr7", 10000, 101000)
-        >>> matrix = parser.create_matrix(reads)
-
-
         """
         reads = []
         for read in self.OpenBamFile.fetch(chromosome, start, stop):

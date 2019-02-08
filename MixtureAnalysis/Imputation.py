@@ -136,7 +136,7 @@ class Imputation:
 
 
     def train_model(self, output_folder: str, matrices: iter):
-        """Train a CpGNet model
+        """Train a CpGNet model using :class:`.TrainWithCpGNet`
         
         Arguments:
             output_folder {str} -- Folder to save trained models
