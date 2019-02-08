@@ -19,9 +19,9 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'MixAnalysis'
+project = 'MixtureAnalysis'
 copyright = '2019, Anthony Scott'
-author = 'Anthony Scott'
+author = 'Anthony Scott, PhD'
 
 # The short X.Y version
 version = ''
