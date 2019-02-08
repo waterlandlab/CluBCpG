@@ -1,20 +1,11 @@
 #!/usr/bin/env python3
 
-from sklearn.cluster import DBSCAN
-import pandas as pd
-from pandas.core.indexes.base import InvalidIndexError
-import numpy as np
 import sys
 import logging
 import os
-from MixtureAnalysis.ParseBam import BamFileReadParser
-from MixtureAnalysis.OutputComparisonResults import OutputIndividualMatrixData
 from MixtureAnalysis.ClusterReads import ClusterReads
 import argparse
 import datetime
-from multiprocessing import Pool
-import time
-
 
 
 if __name__ == "__main__":

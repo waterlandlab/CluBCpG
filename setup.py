@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name="MixtureAnalysis",
-      version="0.1.7",
+      version="0.1.8",
       description="Package to identify epialleles using read clustering from WGBS data",
       author="Anthony Scott, PhD",
       author_email="charles.scott@bcm.edu",

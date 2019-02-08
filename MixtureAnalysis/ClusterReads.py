@@ -2,20 +2,16 @@ from sklearn.cluster import DBSCAN
 import pandas as pd
 from pandas.core.indexes.base import InvalidIndexError
 import numpy as np
-import sys
 import logging
 import os
 from MixtureAnalysis.ParseBam import BamFileReadParser
 from MixtureAnalysis.OutputComparisonResults import OutputIndividualMatrixData
 from MixtureAnalysis.Imputation import Imputation
-import keras.backend as K
-import argparse
 import datetime
 from multiprocessing import Pool
-from collections import defaultdict
 import time
 import tempfile
-import pickle
+
 
 class ClusterReads:
 
@@ -63,7 +59,7 @@ class ClusterReads:
         unique_dfs = []
         for label in filtered_matrix['class'].unique():
             df = filtered_matrix[filtered_matrix['class'] == label]
-            if len(df['input'].unique()) == 1:
+            if len(df['input'].unique()) == 1:  # A or B
                 unique_dfs.append(df)
 
         return unique_dfs
@@ -74,7 +70,7 @@ class ClusterReads:
         shared_dfs = []
         for label in filtered_matrix['class'].unique():
             df = filtered_matrix[filtered_matrix['class'] == label]
-            if len(df['input'].unique()) > 1:
+            if len(df['input'].unique()) > 1:  # A and B
                 shared_dfs.append(df)
 
         return shared_dfs
@@ -103,6 +99,15 @@ class ClusterReads:
     def make_bin_label(chromosome, stop_loc):
         return "_".join([chromosome, str(stop_loc)])
 
+    @staticmethod
+    def get_input_counts(df):
+        output = {}
+        for input_label in df['input'].unique():
+            cts = len(df[df['input'] == input_label])
+            output[input_label] = cts
+
+        return output
+
     # Takes the output of process_bins() and converts it into list of lines of data for output
     def generate_individual_matrix_data(self, filtered_matrix, chromosome, bin_loc):
         # Individual comparisons data
@@ -121,7 +126,7 @@ class ClusterReads:
             input_label = matrix['input'].unique()[0]
             class_label = matrix['class'].unique()[0]
             out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number),
-                                str(num_cpgs), cpg_pattern])
+                                str(num_cpgs), cpg_pattern, np.nan])  # np.nan to match up with added common group data
             lines.append(out_line)
 
         for matrix in common_groups:
@@ -133,8 +138,10 @@ class ClusterReads:
             read_number = len(matrix)
             input_label = "".join(list(matrix['input'].unique()))
             class_label = matrix['class'].unique()[0]
+            input_counts = self.get_input_counts(matrix)
+            split_n_cpgs = ';'.join(["{}={}".format(x[0], x[1]) for x in input_counts.items()])
             out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number),
-                                str(num_cpgs), cpg_pattern])
+                                str(num_cpgs), cpg_pattern, split_n_cpgs])
             lines.append(out_line)
 
         return lines
