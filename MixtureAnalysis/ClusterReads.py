@@ -125,8 +125,11 @@ class ClusterReads:
             read_number = len(matrix)
             input_label = matrix['input'].unique()[0]
             class_label = matrix['class'].unique()[0]
+            input_counts = self.get_input_counts(matrix)
+            split_n_cpgs = ';'.join(["{}={}".format(x[0], x[1]) for x in input_counts.items()])
+
             out_line = ",".join([bin_label, input_label, str(m_mean), str(class_label), str(read_number),
-                                str(num_cpgs), cpg_pattern, np.nan])  # np.nan to match up with added common group data
+                                str(num_cpgs), cpg_pattern, split_n_cpgs])
             lines.append(out_line)
 
         for matrix in common_groups:
