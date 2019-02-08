@@ -52,7 +52,7 @@
     <span class="sd">&quot;&quot;&quot;The class providing convienent APIs to train models and impute from models using CpGNet</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cpg_density</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bam_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mbias_read1_5</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+<div class="viewcode-block" id="Imputation.__init__"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.Imputation.Imputation.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cpg_density</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">bam_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">mbias_read1_5</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
         <span class="n">mbias_read1_3</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mbias_read2_5</span><span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">mbias_read2_3</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processes</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;[summary]</span>
 <span class="sd">        </span>
@@ -74,7 +74,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mbias_read1_3</span> <span class="o">=</span> <span class="n">mbias_read1_3</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mbias_read2_5</span> <span class="o">=</span> <span class="n">mbias_read2_5</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mbias_read2_3</span> <span class="o">=</span> <span class="n">mbias_read2_3</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">processes</span> <span class="o">=</span> <span class="n">processes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">processes</span> <span class="o">=</span> <span class="n">processes</span></div>
 
 <div class="viewcode-block" id="Imputation.extract_matrices"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.Imputation.Imputation.extract_matrices">[docs]</a>    <span class="k">def</span> <span class="nf">extract_matrices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coverage_data_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">sample_limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">return_bins</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Extract CpG matrices from bam file.</span>

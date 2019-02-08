@@ -6,6 +6,10 @@ import os
 import warnings
 
 class ImputeWithCpGNet:
+    """
+    DEPRECATED: Please do not use this class.
+    Class used to connect parts of MixtureAnalysis to the CpGNet package)
+    """
 
     def __init__(self, cpg_density: int, bin: str, bin_size=100, path_to_models=None):
         """Class used to connect this package with CpGNet's imputation classes
@@ -90,6 +94,9 @@ class ImputeWithCpGNet:
 
 
 class TrainWithCpGNet:
+    """
+    Used to train models using CpGnet
+    """
 
     def __init__(self, cpg_density=None, save_path=None):
         """

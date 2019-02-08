@@ -176,3 +176,5 @@ test_data/*
 debug.py
 
 .pytest_cache/
+
+_build/

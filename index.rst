@@ -32,8 +32,10 @@ Indices and tables
 
 .. automodule:: MixtureAnalysis.ConnectToCpGNet
    :members:
+   :special-members: __init__
 
 
 .. automodule:: MixtureAnalysis.Imputation
    :members:
+   :special-members: __init__
 
