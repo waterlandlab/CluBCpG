@@ -319,7 +319,7 @@ class ClusterReadsWithImputation(ClusterReads):
 
         # start the main loop for imputation of these CpGs
         final_results_tf = tempfile.TemporaryFile(mode="w+t")
-        final_results_tf.write("bin,input_label,methylation,class_label,read_number,cpg_number,cpg_pattern" + "\n")
+        final_results_tf.write("bin,input_label,methylation,class_label,read_number,cpg_number,cpg_pattern,class_split" + "\n")
         for i in range(2,7):
             print("Starting Imputation of CpG density {}...".format(i))
 
