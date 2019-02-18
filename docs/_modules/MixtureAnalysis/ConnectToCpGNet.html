@@ -1,0 +1,243 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>MixtureAnalysis.ConnectToCpGNet &#8212; MixtureAnalysis 0.1.8 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for MixtureAnalysis.ConnectToCpGNet</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">CpGNet</span> <span class="k">import</span> <span class="n">CpGNet</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="k">import</span> <span class="n">load_model</span>
+<span class="kn">import</span> <span class="nn">keras.backend</span> <span class="k">as</span> <span class="nn">K</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<div class="viewcode-block" id="ImputeWithCpGNet"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ConnectToCpGNet.ImputeWithCpGNet">[docs]</a><span class="k">class</span> <span class="nc">ImputeWithCpGNet</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DEPRECATED: Please do not use this class.</span>
+<span class="sd">    Class used to connect parts of MixtureAnalysis to the CpGNet package)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ImputeWithCpGNet.__init__"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ConnectToCpGNet.ImputeWithCpGNet.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cpg_density</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">bin</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bin_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">path_to_models</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Class used to connect this package with CpGNet&#39;s imputation classes</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            cpg_density {int} -- number of CpGs in bin</span>
+<span class="sd">            bin {str} -- bin in format &quot;chr1_4444&quot;</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            bin_size {int} -- size of bin in base-pairs (default: {100})</span>
+<span class="sd">            path_to_models {[str]} -- Path to directory containing models built by TrainModels scripy (default: {None})</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            AttributeError -- Raised if a path to the models directory is not specified or does not exist</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Stop using this class, it is being deprecated&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cpg_density</span> <span class="o">=</span> <span class="n">cpg_density</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bin</span> <span class="o">=</span> <span class="nb">bin</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bin_size</span> <span class="o">=</span> <span class="n">bin_size</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path_to_models</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path_to_models</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Path to models is not specified or does not exist&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path_to_models</span> <span class="o">=</span> <span class="n">path_to_models</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model</span><span class="p">()</span></div>
+    
+
+<div class="viewcode-block" id="ImputeWithCpGNet.get_model"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ConnectToCpGNet.ImputeWithCpGNet.get_model">[docs]</a>    <span class="k">def</span> <span class="nf">get_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called during init to load model from disk into instance object</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            [type] -- CpGNet model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">net</span> <span class="o">=</span> <span class="n">CpGNet</span><span class="p">(</span><span class="n">cpgDensity</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cpg_density</span><span class="p">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path_to_models</span><span class="p">,</span> <span class="s2">&quot;saved_model_</span><span class="si">{}</span><span class="s2">_cpgs.h5&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cpg_density</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">net</span></div>
+
+    <span class="c1"># Take the predicted matrix, convert to 1 and 0 when confident, otherwise nan</span>
+<div class="viewcode-block" id="ImputeWithCpGNet.postprocess"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ConnectToCpGNet.ImputeWithCpGNet.postprocess">[docs]</a>    <span class="k">def</span> <span class="nf">postprocess</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">predicted_matrix</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Takes array with predicted values and rounds them to 0 or 1 if threshold is exceeded</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            predicted_matrix {[type]} -- matrix generated by imputation</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            [type] -- predicted matrix predictions as 1, 0, or NaN</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">processed_array</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">predicted_matrix</span><span class="p">:</span>
+            <span class="n">new_array</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">array</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">item</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">item</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">item</span> <span class="o">&lt;=</span> <span class="mf">0.2</span><span class="p">:</span> <span class="c1">#TODO un-hardcode this</span>
+                        <span class="n">new_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">item</span> <span class="o">&gt;=</span> <span class="mf">0.8</span><span class="p">:</span> <span class="c1">#TODO un-hardcode this</span>
+                        <span class="n">new_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">new_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+            <span class="n">processed_array</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_array</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">processed_array</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ImputeWithCpGNet.impute_matrix"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ConnectToCpGNet.ImputeWithCpGNet.impute_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">impute_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">postprocess</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param matrix: 2D np array with unknowns as -1</span>
+<span class="sd">        :param positions: 1D np array of chromosomal positions (ints)</span>
+<span class="sd">        :param postprocess: Imply classes from imputation, if False, returns probabilities instead of predictions</span>
+<span class="sd">        :return: A matrix imputed with highly confident predictions, less confident regions are assigned np.nan</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">predicted_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">impute</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">postprocess</span><span class="p">:</span>
+            <span class="n">predicted_matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">postprocess</span><span class="p">(</span><span class="n">predicted_matrix</span><span class="p">)</span>
+
+        <span class="c1"># This call forces tensorflow to release memory, otherwise a large memory leak happens when executing in parallel</span>
+        <span class="n">K</span><span class="o">.</span><span class="n">clear_session</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">predicted_matrix</span></div></div>
+
+
+<div class="viewcode-block" id="TrainWithCpGNet"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ConnectToCpGNet.TrainWithCpGNet">[docs]</a><span class="k">class</span> <span class="nc">TrainWithCpGNet</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used to train models using CpGnet</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="TrainWithCpGNet.__init__"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ConnectToCpGNet.TrainWithCpGNet.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cpg_density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class to train a CpGNet model from input data</span>
+
+<span class="sd">        :param cpg_density: Number of CpGs</span>
+<span class="sd">        :param save_path: Location of folder to save the resulting model files. One per cpg density</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cpg_density</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;CpG density must be specified&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">save_path</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Folder to save trained model must be specified&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_path</span> <span class="o">=</span> <span class="n">save_path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cpg_density</span> <span class="o">=</span> <span class="n">cpg_density</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span> <span class="o">=</span> <span class="n">CpGNet</span><span class="p">(</span><span class="n">cpgDensity</span><span class="o">=</span><span class="n">cpg_density</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TrainWithCpGNet.save_net"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ConnectToCpGNet.TrainWithCpGNet.save_net">[docs]</a>    <span class="k">def</span> <span class="nf">save_net</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the network to a file</span>
+
+<span class="sd">        :param model: The trained CpGNet model. Located at CpGNet.model</span>
+<span class="sd">        :return: Path to the saved model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="s2">&quot;saved_model_</span><span class="si">{}</span><span class="s2">_cpgs.h5&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cpg_density</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">save_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved </span><span class="si">{}</span><span class="s2"> cpg model to </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cpg_density</span><span class="p">,</span> <span class="n">output</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="TrainWithCpGNet.train_model"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ConnectToCpGNet.TrainWithCpGNet.train_model">[docs]</a>    <span class="k">def</span> <span class="nf">train_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bins</span><span class="p">:</span> <span class="nb">iter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Train the CpGNet model on a list of provided bins</span>
+
+<span class="sd">        :param bins: iterable containing CpG matrices of 1 (methylated), 0 (unmethylated), and -1 (unknown)</span>
+<span class="sd">        :return: Path to the saved model file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_net</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">model</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span></div></div>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">MixtureAnalysis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Anthony Scott, PhD.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

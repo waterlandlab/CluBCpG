@@ -1,0 +1,339 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>MixtureAnalysis.ParseBam &#8212; MixtureAnalysis 0.1.8 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for MixtureAnalysis.ParseBam</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pysam</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+
+
+<div class="viewcode-block" id="BamFileReadParser"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ParseBam.BamFileReadParser">[docs]</a><span class="k">class</span> <span class="nc">BamFileReadParser</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Used to simplify the opening and reading from BAM files. BAMs must be coordinate sorted and indexed.</span>
+
+<span class="sd">    :Example:</span>
+<span class="sd">        &gt;&gt;&gt; from MixtureAnalysis.ParseBam import BamFileReadParser</span>
+<span class="sd">        &gt;&gt;&gt; parser = BamFileReadParser(&quot;/path/to/data.BAM&quot;, quality_score=20, 3, 4, 7, 1)</span>
+<span class="sd">        &gt;&gt;&gt; reads = parser.parse_reads(&quot;chr7&quot;, 10000, 101000)</span>
+<span class="sd">        &gt;&gt;&gt; matrix = parser.create_matrix(reads)</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BamFileReadParser.__init__"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ParseBam.BamFileReadParser.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bamfile</span><span class="p">,</span> <span class="n">quality_score</span><span class="p">,</span> <span class="n">read1_5</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read1_3</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">read2_5</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read2_3</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">no_overlap</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Class used to read WGBSeq reads from a BAM file, extract methylation, and convert into data frame</span>
+
+<span class="sd">        :param bamfile: Path to bam file location</span>
+<span class="sd">        :param quality_score: Only include reads &gt;= this fastq quality</span>
+<span class="sd">        :param read1_5: mbias ignore read1 5&#39;</span>
+<span class="sd">        :param read1_3: mbias ignore read1 3&#39;</span>
+<span class="sd">        :param read2_5: mbias ignore read2 5&#39;</span>
+<span class="sd">        :param read2_3: mbias ignore read2 3&#39;</span>
+<span class="sd">        :param no_overlap: bool. If overlap exists between two reads, ignore that region from read 2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mapping_quality</span> <span class="o">=</span> <span class="n">quality_score</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bamfile</span> <span class="o">=</span> <span class="n">bamfile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read1_5</span> <span class="o">=</span> <span class="n">read1_5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read1_3</span> <span class="o">=</span> <span class="n">read1_3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read2_5</span> <span class="o">=</span> <span class="n">read2_5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read2_3</span> <span class="o">=</span> <span class="n">read2_3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">full_reads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_cpgs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_overlap</span> <span class="o">=</span> <span class="n">no_overlap</span>
+
+        <span class="k">if</span> <span class="n">read1_5</span> <span class="ow">or</span> <span class="n">read2_5</span> <span class="ow">or</span> <span class="n">read1_3</span> <span class="ow">or</span> <span class="n">read2_3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mbias_filtering</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mbias_filtering</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">OpenBamFile</span> <span class="o">=</span> <span class="n">pysam</span><span class="o">.</span><span class="n">AlignmentFile</span><span class="p">(</span><span class="n">bamfile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
+        <span class="c1"># Check for presnece of index file</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">OpenBamFile</span><span class="o">.</span><span class="n">check_index</span><span class="p">(),</span> <span class="s2">&quot;Can&#39;t find index file. Please run samtools index to generate it.&quot;</span></div>
+
+    <span class="c1"># From open bam file, get locaiton of first read from the provided chromosome</span>
+    <span class="k">def</span> <span class="nf">get_location_of_first_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chromosome</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+        <span class="c1"># Get reference lenghts</span>
+        <span class="n">ref_lens</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">OpenBamFile</span><span class="o">.</span><span class="n">references</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">OpenBamFile</span><span class="o">.</span><span class="n">lengths</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">read</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">OpenBamFile</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">chromosome</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ref_lens</span><span class="p">[</span><span class="n">chromosome</span><span class="p">]):</span>
+            <span class="n">reads_start_loc</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="n">reference_start</span>
+            <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">reads_start_loc</span>
+
+    <span class="c1"># Get reads from the bam file, extract methylation state</span>
+<div class="viewcode-block" id="BamFileReadParser.parse_reads"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ParseBam.BamFileReadParser.parse_reads">[docs]</a>    <span class="k">def</span> <span class="nf">parse_reads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chromosome</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span><span class="nb">int</span> <span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param chromosome: chromosome as &quot;chr6&quot;</span>
+<span class="sd">        :param start: start coordinate</span>
+<span class="sd">        :param stop: end coordinate</span>
+<span class="sd">        :return: List of reads and their positional tags as assigned by bismark</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">reads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">read</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">OpenBamFile</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">chromosome</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">read</span><span class="o">.</span><span class="n">mapping_quality</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapping_quality</span><span class="p">:</span>
+                <span class="n">reads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">read</span><span class="p">)</span>
+
+        <span class="n">read_cpgs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">read</span> <span class="ow">in</span> <span class="n">reads</span><span class="p">:</span>
+            <span class="n">reduced_read</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># Join EVERY XM tag with its aligned_pair location</span>
+            <span class="k">for</span> <span class="n">pair</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">get_aligned_pairs</span><span class="p">(),</span> <span class="n">read</span><span class="o">.</span><span class="n">get_tag</span><span class="p">(</span><span class="s1">&#39;XM&#39;</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">read</span><span class="o">.</span><span class="n">flag</span> <span class="o">==</span> <span class="mi">83</span> <span class="ow">or</span> <span class="n">read</span><span class="o">.</span><span class="n">flag</span> <span class="o">==</span> <span class="mi">163</span> <span class="ow">or</span> <span class="n">read</span><span class="o">.</span><span class="n">flag</span> <span class="o">==</span> <span class="mi">16</span><span class="p">:</span>
+                        <span class="n">reduced_read</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tag</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">reduced_read</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pair</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">tag</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+            <span class="c1"># if MBIAS was set, slice the joined list</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mbias_filtering</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">read</span><span class="o">.</span><span class="n">is_read1</span><span class="p">:</span>
+                    <span class="n">mbias_5_prime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read1_5</span>
+                    <span class="c1"># note taking the NEGATIVE of the value for the 3-prime</span>
+                    <span class="n">mbias_3_prime</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">read1_3</span>
+                    <span class="k">if</span> <span class="n">mbias_3_prime</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">mbias_3_prime</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">reduced_read</span> <span class="o">=</span> <span class="n">reduced_read</span><span class="p">[</span><span class="n">mbias_5_prime</span><span class="p">:</span><span class="n">mbias_3_prime</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">read</span><span class="o">.</span><span class="n">is_read2</span><span class="p">:</span>
+                    <span class="n">mbias_5_prime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read2_5</span>
+                    <span class="n">mbias_3_prime</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">read2_3</span>
+                    <span class="k">if</span> <span class="n">mbias_3_prime</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">mbias_3_prime</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">reduced_read</span> <span class="o">=</span> <span class="n">reduced_read</span><span class="p">[</span><span class="n">mbias_5_prime</span><span class="p">:</span><span class="n">mbias_3_prime</span><span class="p">]</span>
+
+            <span class="n">read_cpgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">reduced_read</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">full_reads</span> <span class="o">=</span> <span class="n">reads</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">read_cpgs</span> <span class="o">=</span> <span class="n">read_cpgs</span>
+
+        <span class="c1"># Correct overlapping paired reads if set, this is default behavior</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">no_overlap</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">read_cpgs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fix_read_overlap</span><span class="p">(</span><span class="n">reads</span><span class="p">,</span> <span class="n">read_cpgs</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Could not determine read 1 or 2. </span><span class="si">{}</span><span class="s2">:</span><span class="si">{}</span><span class="s2">-</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">chromosome</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">))</span>
+                <span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="c1"># Filter the list for positions between start-stop and CpG (Z/z) tags</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">read_cpg</span> <span class="ow">in</span> <span class="n">read_cpgs</span><span class="p">:</span>
+            <span class="n">temp</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">read_cpg</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pos</span> <span class="ow">and</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="n">start</span> <span class="ow">and</span> <span class="n">pos</span> <span class="o">&lt;=</span> <span class="n">stop</span> <span class="ow">and</span> <span class="p">(</span><span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;Z&#39;</span> <span class="ow">or</span> <span class="n">tag</span> <span class="o">==</span> <span class="s1">&#39;z&#39;</span><span class="p">):</span>
+                    <span class="n">temp</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">pos</span><span class="p">,</span> <span class="n">tag</span><span class="p">))</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span></div>
+
+<div class="viewcode-block" id="BamFileReadParser.create_matrix"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ParseBam.BamFileReadParser.create_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">create_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">read_cpgs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converted parsed reads into a pandas dataframe.</span>
+
+<span class="sd">        :param read_cpgs: read CpGs generated by self.parse_reads</span>
+<span class="sd">        :type read_cpgs: iterable</span>
+<span class="sd">        :return: matrix methylated (1) and unmethylated (0) states</span>
+<span class="sd">        :rtype: pd.DataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">read_cpgs</span><span class="p">:</span>
+            <span class="n">positions</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">statues</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                <span class="n">positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+                <span class="n">statues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+            <span class="n">series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">statues</span><span class="p">,</span> <span class="n">positions</span><span class="p">))</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">series</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">matrix</span><span class="o">.</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="BamFileReadParser.fix_read_overlap"><a class="viewcode-back" href="../../index.html#MixtureAnalysis.ParseBam.BamFileReadParser.fix_read_overlap">[docs]</a>    <span class="k">def</span> <span class="nf">fix_read_overlap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">full_reads</span><span class="p">,</span> <span class="n">read_cpgs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Takes pysam reads and read_cpgs generated during parse reads and removes any</span>
+<span class="sd">        overlap between read1 and read2. If possible it also stitches read1 and read2 together to create</span>
+<span class="sd">        a super read.</span>
+
+<span class="sd">        :param full_reads: set of reads generated by self.parse_reads()</span>
+<span class="sd">        :param read_cpgs: todoo</span>
+<span class="sd">        :return: A list in the same format as read_cpgs input, but corrected for paired read overlap</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># data for return</span>
+        <span class="n">fixed_read_cpgs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="c1"># Combine raw reads and extracted tags</span>
+        <span class="n">combined</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">read</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">full_reads</span><span class="p">,</span> <span class="n">read_cpgs</span><span class="p">):</span>
+            <span class="n">combined</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">read</span><span class="p">,</span> <span class="n">state</span><span class="p">))</span>
+
+        <span class="c1"># Get names of all the reads present</span>
+        <span class="n">query_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">query_name</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">full_reads</span><span class="p">]</span>
+
+        <span class="c1"># Match paired reads by query_name</span>
+        <span class="n">tally</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">query_names</span><span class="p">):</span>
+            <span class="n">tally</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">tally</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="c1"># A pair exists, process it</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="c1"># Set read1 and read2 correctly</span>
+                <span class="k">if</span> <span class="n">combined</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_read1</span><span class="p">:</span>
+                    <span class="n">read1</span> <span class="o">=</span> <span class="n">combined</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                    <span class="n">read2</span> <span class="o">=</span> <span class="n">combined</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+                <span class="k">elif</span> <span class="n">combined</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_read1</span><span class="p">:</span>
+                    <span class="n">read1</span> <span class="o">=</span> <span class="n">combined</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                    <span class="n">read2</span> <span class="o">=</span> <span class="n">combined</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+                <span class="c1"># both reads have same value, this shouldn&#39;t be. Drop one completely, dont</span>
+                <span class="c1"># bother with overlap</span>
+                <span class="k">elif</span> <span class="n">combined</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_read1</span> <span class="o">==</span> <span class="n">combined</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">is_read1</span><span class="p">:</span>
+                    <span class="n">fixed_read_cpgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">combined</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">1</span><span class="p">])</span>
+                    <span class="k">continue</span>
+
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s2">&quot;Could not determine read 1 or read 2&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Find amount of overlap</span>
+                <span class="n">amount_overlap</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">r1_bps</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">read1</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">r2_bps</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">read2</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+
+                <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">r1_bps</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">min</span><span class="p">(</span><span class="n">r2_bps</span><span class="p">):</span>
+                    <span class="n">trim_direction</span> <span class="o">=</span> <span class="mi">5</span>
+                    <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="n">r2_bps</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">bp</span> <span class="ow">and</span> <span class="n">bp</span> <span class="ow">in</span> <span class="n">r1_bps</span><span class="p">:</span>
+                            <span class="n">amount_overlap</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">trim_direction</span> <span class="o">=</span> <span class="mi">3</span>
+                    <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="n">r1_bps</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">bp</span> <span class="ow">and</span> <span class="n">bp</span> <span class="ow">in</span> <span class="n">r2_bps</span><span class="p">:</span>
+                            <span class="n">amount_overlap</span> <span class="o">+=</span> <span class="mi">1</span>
+
+
+                <span class="c1"># remove the overlap by trimming or discarding</span>
+                <span class="k">if</span> <span class="n">amount_overlap</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">read2</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                    <span class="c1"># discard read 2, only append read 1</span>
+                    <span class="n">fixed_read_cpgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">read1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># trim overlap</span>
+                    <span class="k">if</span> <span class="n">trim_direction</span> <span class="o">==</span> <span class="mi">5</span><span class="p">:</span>
+                        <span class="n">new_read2_cpgs</span> <span class="o">=</span> <span class="n">read2</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">amount_overlap</span><span class="p">:]</span>
+                    <span class="k">elif</span> <span class="n">trim_direction</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                        <span class="n">new_read2_cpgs</span> <span class="o">=</span> <span class="n">read2</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="n">amount_overlap</span><span class="p">]</span>
+                    <span class="c1"># stitch together read1 and read2</span>
+                    <span class="n">read1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">new_read2_cpgs</span><span class="p">)</span>
+                    <span class="n">fixed_read_cpgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">read1</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="c1"># No pair, add to output</span>
+                <span class="n">fixed_read_cpgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">combined</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">fixed_read_cpgs</span></div></div>
+
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">MixtureAnalysis</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Anthony Scott, PhD.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
