@@ -3,6 +3,7 @@ from MixtureAnalysis import ParseBam
 from MixtureAnalysis.CalculateBinCoverage import CalculateCompleteBins
 import os
 import pandas as pd
+from urllib.request import urlretrieve
 
 
 user_home = os.path.expanduser("~")
@@ -10,8 +11,12 @@ test_data_location = os.path.join(user_home, '.MixtureAnalysis') # TODO change t
 
 
 def download_data():
-    print("Download data called")
-    pass
+    print("Downloading test data...")
+    test_data = ["TEST_DATA_A.bam", "TEST_DATA_B.bam", "TEST_DATA_A.bam.bai", "TEST_DATA_B.bam.bai"]
+    for data in test_data:
+        urlretrieve("https://s3.amazonaws.com/canthonyscott-mixture-analysis/{}".format(data),
+                    os.path.join(test_data_location, data))
+    return
 
 
 if not os.path.exists(test_data_location):
@@ -31,11 +36,13 @@ test_bin_bad = "chr1_500"
 
 class TestParseBam(unittest.TestCase):
 
+    # Make sure the test data is available
     def setUp(self):
         self.required_data = [bamA, 'TEST_DATA_B.bam', 'TEST_DATA_A.bam.bai', 'TEST_DATA_B.bam.bai']
         check_data_exists(self.required_data)
         self.parserA = ParseBam.BamFileReadParser(os.path.join(test_data_location, bamA), 20)
 
+    # Make sure the unit tests work at all
     def test_cases_works(self):
         self.assertTrue(True, "Truth isn't truth -Rudy Giuliani")
 
@@ -47,7 +54,7 @@ class TestParseBam(unittest.TestCase):
         self.assertEqual(len(reads), 118, "Reads could not be read from BAM file")
         matrix = self.parserA.create_matrix(reads)
         self.assertIsInstance(matrix, pd.DataFrame, "Reads failing to convert to data frame")
-        self.assertEqual(matrix.shape, (118 ,4), "Dataframe fails to be expected shape")
+        self.assertEqual(matrix.shape, (118, 4), "Dataframe fails to be expected shape")
 
 
 class TestCoverageCalculation(unittest.TestCase):
@@ -55,7 +62,9 @@ class TestCoverageCalculation(unittest.TestCase):
     def setUp(self):
         self.required_data = [bamA]
         check_data_exists(self.required_data)
-        self.calc = CalculateCompleteBins(bam_file=os.path.join(test_data_location, bamA), bin_size=100, output_directory=os.path.join(test_data_location, 'TestCoverageCalculation'))
+        self.calc = CalculateCompleteBins(bam_file=os.path.join(test_data_location, bamA),
+                                          bin_size=100,
+                                          output_directory=os.path.join(test_data_location, 'TestCoverageCalculation'))
 
     def testCoverageCalcLoaded(self):
         self.assertIsInstance(self.calc, CalculateCompleteBins, "Failed to load module")
