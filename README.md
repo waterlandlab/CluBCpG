@@ -17,5 +17,5 @@ Documentation will be added once the package is more complete. This repo is a WO
 * Navigate to folder containing setup.py
 * Execute `pip install .` within that folder to install the package. Requirements will automatically be installed if not already present.
 
-
-```
+## General Workflow
+![pipeline figure](https://github.com/computational-epigenetics-section/MixtureAnalysis/blob/master/docs/pipeline.jpg)
