@@ -5,8 +5,8 @@ import time
 import logging
 import os
 from multiprocessing import Pool
-from MixtureAnalysis.ConnectToCpGNet import TrainWithCpGNet
-from MixtureAnalysis.ParseBam import BamFileReadParser
+from clubcpg.ConnectToCpGNet import TrainWithCpGNet
+from clubcpg.ParseBam import BamFileReadParser
 from CpGNet import CpGNet
 from keras.models import load_model
 import keras.backend as K

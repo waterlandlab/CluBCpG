@@ -4,9 +4,9 @@ from pandas.core.indexes.base import InvalidIndexError
 import numpy as np
 import logging
 import os
-from MixtureAnalysis.ParseBam import BamFileReadParser
-from MixtureAnalysis.OutputComparisonResults import OutputIndividualMatrixData
-from MixtureAnalysis.Imputation import Imputation
+from clubcpg.ParseBam import BamFileReadParser
+from clubcpg.OutputComparisonResults import OutputIndividualMatrixData
+from clubcpg.Imputation import Imputation
 import datetime
 from multiprocessing import Pool
 import time

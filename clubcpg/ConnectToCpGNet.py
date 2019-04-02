@@ -8,7 +8,7 @@ import warnings
 class ImputeWithCpGNet:
     """
     DEPRECATED: Please do not use this class.
-    Class used to connect parts of MixtureAnalysis to the CpGNet package)
+    Class used to connect parts of clubcpg to the CpGNet package)
     """
 
     def __init__(self, cpg_density: int, bin: str, bin_size=100, path_to_models=None):

@@ -1,7 +1,7 @@
 import unittest
-from MixtureAnalysis import ParseBam
-from MixtureAnalysis.CalculateBinCoverage import CalculateCompleteBins
-from MixtureAnalysis.ClusterReads import ClusterReads
+from clubcpg import ParseBam
+from clubcpg.CalculateBinCoverage import CalculateCompleteBins
+from clubcpg.ClusterReads import ClusterReads
 import os
 import pandas as pd
 import numpy as np

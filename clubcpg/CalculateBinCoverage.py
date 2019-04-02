@@ -1,4 +1,4 @@
-from MixtureAnalysis.ParseBam import BamFileReadParser
+from clubcpg.ParseBam import BamFileReadParser
 import os
 import sys
 import logging

@@ -9,7 +9,7 @@ class BamFileReadParser:
     Used to simplify the opening and reading from BAM files. BAMs must be coordinate sorted and indexed.
 
     :Example:
-        >>> from MixtureAnalysis.ParseBam import BamFileReadParser
+        >>> from clubcpg.ParseBam import BamFileReadParser
         >>> parser = BamFileReadParser("/path/to/data.BAM", quality_score=20, 3, 4, 7, 1)
         >>> reads = parser.parse_reads("chr7", 10000, 101000)
         >>> matrix = parser.create_matrix(reads)
