@@ -1,7 +1,7 @@
 import os
 
 
-# This class will be called by CombineClusterCompare to output its multiprocessing results output into csv files
+# This class will be called by ClusterReads to output its multiprocessing results output into csv files
 
 class OutputIndividualMatrixData:
 

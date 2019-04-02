@@ -24,7 +24,7 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("-a", "--input_bam_file",
                             help="Input bam file, coordinate sorted with index present", default=None)
-    arg_parser.add_argument("-c", "--coverage", help="output file from CalculateCompleteBins, filtered for at least 1 read and 2 cpgs", default=None)
+    arg_parser.add_argument("-c", "--coverage", help="output file from CalculateBinCoverage, filtered for at least 1 read and 2 cpgs", default=None)
     arg_parser.add_argument("-m", "--models", help="Path to folder containing saved models", default=None)
     arg_parser.add_argument("-o", "--output", help="folder to save imputed coverage data", default=None)
     arg_parser.add_argument("-n", help="number of cpu cores to use")
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         print("Output folder already exists... no need to create it...")
 
     ### Set up logging ###
-    log_file = os.path.join(output_folder, "ImputeFromModels.{}.{}log".format(args.input_bam_file, chr+"." if chr else ""))
+    log_file = os.path.join(output_folder, "ImputeBinCoverage.{}.{}log".format(args.input_bam_file, chr+"." if chr else ""))
     logging.basicConfig(filename=log_file, level=logging.WARN)
 
     ### Read in coverage file ###

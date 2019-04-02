@@ -45,7 +45,7 @@ class Imputation:
         """Extract CpG matrices from bam file.
         
         Arguments:
-            coverage_data_frame {pd.DataFrame} -- Output of CalculateCompleteBins read in as a csv file
+            coverage_data_frame {pd.DataFrame} -- Output of CalculateBinCoverage read in as a csv file
         
         Keyword Arguments:
             return_bins {bool} -- Return the bin location along with the matrix (default: {False})

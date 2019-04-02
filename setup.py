@@ -11,11 +11,11 @@ setup(name="clubcpg",
       install_requires=['pysam', 'numpy', 'matplotlib', 'scikit-learn',
                         'seaborn', 'scipy', 'pandas', 'fastcluster', 'pebble'],
 
-      scripts=['bin/CalculateCompleteBins',
-               'bin/CombineClusterCompare',
+      scripts=['bin/CalculateBinCoverage',
+               'bin/ClusterReads',
                'bin/TrainModels',
-               'bin/ImputeFromModels',
-               'bin/ImputeCluster'],
+               'bin/ImputeBinCoverage',
+               'bin/ImputeClusterReads'],
 
       test_suite="clubcpg.tests.test_ParseBam",
       )
