@@ -31,7 +31,7 @@ Indices and tables
 
 .. automodule:: clubcpg.ConnectToCpGNet
    :members:
-   :special-memebrs: __init__
+   :special-members: __init__
 
 
 .. automodule:: clubcpg.Imputation
