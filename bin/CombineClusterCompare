@@ -3,7 +3,7 @@
 import sys
 import logging
 import os
-from MixtureAnalysis.ClusterReads import ClusterReads
+from clubcpg.ClusterReads import ClusterReads
 import argparse
 import datetime
 

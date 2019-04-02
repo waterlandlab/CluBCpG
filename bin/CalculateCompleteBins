@@ -3,7 +3,7 @@
 import os
 import logging
 import argparse
-from MixtureAnalysis.CalculateBinCoverage import CalculateCompleteBins
+from clubcpg.CalculateBinCoverage import CalculateCompleteBins
 
 DEBUG = False
 

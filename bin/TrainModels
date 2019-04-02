@@ -3,7 +3,7 @@
 import argparse
 import os
 import pandas as pd
-from MixtureAnalysis.Imputation import Imputation
+from clubcpg.Imputation import Imputation
 
 
 if __name__ == "__main__":

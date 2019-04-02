@@ -7,9 +7,9 @@ import numpy as np
 import sys
 import logging
 import os
-from MixtureAnalysis.ParseBam import BamFileReadParser
-from MixtureAnalysis.OutputComparisonResults import OutputIndividualMatrixData
-from MixtureAnalysis.ClusterReads import ClusterReadsWithImputation
+from clubcpg.ParseBam import BamFileReadParser
+from clubcpg.OutputComparisonResults import OutputIndividualMatrixData
+from clubcpg.ClusterReads import ClusterReadsWithImputation
 import argparse
 import datetime
 from multiprocessing import Pool
