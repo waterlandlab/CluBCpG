@@ -314,7 +314,7 @@ class ClusterReadsWithImputation(ClusterReads):
         return coverage_data[coverage_data['cpgs'] == cpg_density]
 
     def execute(self, return_only=False):
-        
+
         coverage_data = self.get_coverage_data()
 
         # start the main loop for imputation of these CpGs
