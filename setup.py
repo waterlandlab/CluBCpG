@@ -9,7 +9,7 @@ setup(name="clubcpg",
       packages=['clubcpg', 'clubcpg_prelim'],
 
       install_requires=['pysam', 'numpy', 'matplotlib', 'scikit-learn', 'joblib',
-                        'seaborn', 'scipy', 'pandas', 'fastcluster', 'pebble'],
+                        'seaborn', 'scipy', 'pandas', 'fastcluster', 'pebble', 'tqdm'],
 
       scripts=['bin/CalculateBinCoverage',
                'bin/ClusterReads',
