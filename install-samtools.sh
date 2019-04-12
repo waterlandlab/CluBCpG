@@ -2,6 +2,6 @@
 
 set -ex
 wget https://github.com/samtools/samtools/releases/download/1.9/samtools-1.9.tar.bz2
-tar -xzvf samtools-1.9.tar.bz2
+tar -xvf samtools-1.9.tar.bz2
 cd samtools-1.9 && ./configure --prefix=/usr && make && sudo make install
 
