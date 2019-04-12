@@ -2,6 +2,7 @@ language: python
 python:
   - "3.6"
 before_install:
+  - chmod +x install-samtools.sh
   - ./install-samtools.sh
 install:
   - python setup.py install
