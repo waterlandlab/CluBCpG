@@ -9,6 +9,7 @@ from clubcpg.ConnectToCpGNet import TrainWithPReLIM
 from clubcpg.ParseBam import BamFileReadParser
 from clubcpg_prelim import PReLIM
 from pebble import ProcessPool
+from joblib import dump, load
 
 
 class Imputation:
@@ -144,8 +145,8 @@ class Imputation:
             [keras model] -- Returns the trained CpGNet model
         """
 
-        train_net = TrainWithPReLIM(cpg_density=self.cpg_density, save_path=output_folder)
-        model = train_net.train_model(matrices)
+        train_model = TrainWithPReLIM(cpg_density=self.cpg_density, save_path=output_folder)
+        model = train_model.train_model(matrices)
 
         return model
 
@@ -196,7 +197,7 @@ class Imputation:
 
         trained_model = PReLIM(cpgDensity=self.cpg_density)
         print("Successfully loaded model: {}".format(model_path), flush=True)
-        trained_model.model = load_model(model_path)
+        trained_model.model = load(model_path)
 
         for m in matrices:
             # only impute if there is an unknown
