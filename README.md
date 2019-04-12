@@ -1,5 +1,7 @@
 # CluBCpG
 
+[![Build Status](https://travis-ci.com/computational-epigenetics-section/MixtureAnalysis.svg?token=hzxZpQe911awnZXgt6LL&branch=master)](https://travis-ci.com/computational-epigenetics-section/MixtureAnalysis)
+
 Description coming soon
 
 Documentation will be added once the package is more complete. This repo is a WORK IN PROGRESS.
