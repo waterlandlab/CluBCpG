@@ -138,7 +138,7 @@ class PReLIM():
 		X,y = self.get_X_y(bin_matrices, model_file=model_file, verbose=False)
 		
 		# Train the neural network model
-		self.fit(X,y)
+		self.fit(X,y, model_file=model_file, verbose=verbose)
 		
 
 
