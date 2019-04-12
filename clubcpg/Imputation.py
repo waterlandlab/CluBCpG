@@ -5,16 +5,14 @@ import time
 import logging
 import os
 from multiprocessing import Pool
-from clubcpg.ConnectToCpGNet import TrainWithCpGNet
+from clubcpg.ConnectToCpGNet import TrainWithPReLIM
 from clubcpg.ParseBam import BamFileReadParser
-from CpGNet import CpGNet
-from keras.models import load_model
-import keras.backend as K
+from clubcpg_prelim import PReLIM
 from pebble import ProcessPool
 
 
 class Imputation:
-    """The class providing convienent APIs to train models and impute from models using CpGNet
+    """The class providing convienent APIs to train models and impute from models using PReLIM
     """
 
     def __init__(self, cpg_density: int, bam_file: str, mbias_read1_5=None, 
@@ -146,7 +144,7 @@ class Imputation:
             [keras model] -- Returns the trained CpGNet model
         """
 
-        train_net = TrainWithCpGNet(cpg_density=self.cpg_density, save_path=output_folder)
+        train_net = TrainWithPReLIM(cpg_density=self.cpg_density, save_path=output_folder)
         model = train_net.train_model(matrices)
 
         return model
@@ -194,11 +192,9 @@ class Imputation:
             postprocess {bool} -- Round imputed values to 1s and 0s  (default: {True})
         """
 
-        model_path = os.path.join(models_folder, "saved_model_{}_cpgs.h5".format(self.cpg_density))
-        print("Clearning any current tf session...", flush=True)
-        K.clear_session()     
+        model_path = os.path.join(models_folder, "saved_model_{}_cpgs.prelim".format(self.cpg_density))
 
-        trained_model = CpGNet(cpgDensity=self.cpg_density)
+        trained_model = PReLIM(cpgDensity=self.cpg_density)
         print("Successfully loaded model: {}".format(model_path), flush=True)
         trained_model.model = load_model(model_path)
 

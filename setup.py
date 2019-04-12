@@ -8,7 +8,7 @@ setup(name="clubcpg",
       license='MIT',
       packages=['clubcpg'],
 
-      install_requires=['pysam', 'numpy', 'matplotlib', 'scikit-learn',
+      install_requires=['pysam', 'numpy', 'matplotlib', 'scikit-learn', 'joblib',
                         'seaborn', 'scipy', 'pandas', 'fastcluster', 'pebble'],
 
       scripts=['bin/CalculateBinCoverage',
@@ -17,5 +17,5 @@ setup(name="clubcpg",
                'bin/ImputeBinCoverage',
                'bin/ImputeClusterReads'],
 
-      test_suite="clubcpg.tests.test_ParseBam",
+      # test_suite="clubcpg.tests.test_Module.py",
       )
