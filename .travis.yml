@@ -1,8 +1,8 @@
 language: python
 python:
-  - "3.4"
-  - "3.5"
   - "3.6"
-install: 
+before_install:
+  - ./install-samtools.sh
+install:
   - python setup.py install
 script: python -m unittest -v clubcpg/tests/test_Module.py
