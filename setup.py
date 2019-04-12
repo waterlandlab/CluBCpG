@@ -6,7 +6,7 @@ setup(name="clubcpg",
       author="Anthony Scott, PhD",
       author_email="charles.scott@bcm.edu",
       license='MIT',
-      packages=['clubcpg'],
+      packages=['clubcpg', 'clubcpg_prelimgit'],
 
       install_requires=['pysam', 'numpy', 'matplotlib', 'scikit-learn', 'joblib',
                         'seaborn', 'scipy', 'pandas', 'fastcluster', 'pebble'],
