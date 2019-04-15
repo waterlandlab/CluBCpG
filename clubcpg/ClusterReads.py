@@ -390,7 +390,6 @@ class ClusterReadsWithImputation(ClusterReads):
                     matrix_A = pd.DataFrame(matrix_A)
                     matrix_A = matrix_A.dropna()
                     if matrix_A.shape[0] < self.read_depth_req:
-                        # TODO OUTPUT SOME EMTPY RESULT
                         continue
                     if self.bam_b:
                         try:
