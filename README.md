@@ -7,10 +7,8 @@ Description coming soon
 Documentation will be added once the package is more complete. This repo is a WORK IN PROGRESS.
 
 ### Requirements
-* Python3.5+, <3.7
-* All dependencies listed in ```requirements.txt```
-* All of [pysam's dependencies](http://pysam.readthedocs.io/en/latest/#)
-* A pip installed version of PReLIM
+* Python >= 3.5
+* Installation of Samtools on your PATH
 
 ## Temporary usage directions
 ### Install
