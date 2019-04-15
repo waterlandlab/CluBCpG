@@ -1,0 +1,12 @@
+dist: xenial
+language: python
+python:
+  - "3.5"
+  - "3.6"
+  - "3.7"
+before_install:
+  - chmod +x install-samtools.sh
+  - ./install-samtools.sh
+install:
+  - python setup.py install
+script: python -m unittest -v clubcpg/tests/test_Module.py

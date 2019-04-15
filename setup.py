@@ -6,10 +6,10 @@ setup(name="clubcpg",
       author="Anthony Scott, PhD",
       author_email="charles.scott@bcm.edu",
       license='MIT',
-      packages=['clubcpg'],
+      packages=['clubcpg', 'clubcpg_prelim'],
 
-      install_requires=['pysam', 'numpy', 'matplotlib', 'scikit-learn',
-                        'seaborn', 'scipy', 'pandas', 'fastcluster', 'pebble'],
+      install_requires=['pysam', 'numpy', 'matplotlib', 'scikit-learn', 'joblib',
+                        'seaborn', 'scipy', 'pandas', 'fastcluster', 'pebble', 'tqdm'],
 
       scripts=['bin/CalculateBinCoverage',
                'bin/ClusterReads',
@@ -17,5 +17,5 @@ setup(name="clubcpg",
                'bin/ImputeBinCoverage',
                'bin/ImputeClusterReads'],
 
-      test_suite="clubcpg.tests.test_ParseBam",
+      # test_suite="clubcpg.tests.test_Module.py",
       )
