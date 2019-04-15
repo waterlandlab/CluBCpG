@@ -39,7 +39,7 @@ from sklearn.model_selection import GridSearchCV
 # Pickle
 try:
 	import cPickle as p
-except ModuleNotFoundError:
+except ImportError:
 	import pickle as p
 
 
