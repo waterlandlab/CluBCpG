@@ -16,6 +16,12 @@ import tempfile
 class ClusterReads:
     """
     This class is used to take a dataframe or matrix of reads and cluster them
+
+    :Example:
+    >>> from clubcpg.ClusterReads import ClusterReads
+    >>> cluster = ClusterReads(bam_a="/path/to/file.bam", bam_b="/path/to/file.bam", bins_file="/path/to/file.csv", suffix="chr19")
+    >>> cluster.execute()
+
     """
 
     def __init__(self, bam_a: str, bam_b=None, bin_size=100, bins_file=None, output_directory=None, num_processors=1,
@@ -45,6 +51,13 @@ class ClusterReads:
 
     # Remove clusters with less than n members
     def filter_data_frame(self, matrix: pd.DataFrame):
+        """
+        Takes a dataframe of clusters and removes any groups with less than self.cluster_member_min members
+
+        :param matrix: dataframe of clustered reads
+        :type: pd.DataFrame
+        :return: input matrix with some clusters removed
+        """
         output = matrix.copy()
         # duplicate indexes exist from concatenation, reset in the index to prevent dropping unintended rows
         output.reset_index(drop=True, inplace=True)
@@ -113,6 +126,18 @@ class ClusterReads:
 
     # Takes the output of process_bins() and converts it into list of lines of data for output
     def generate_individual_matrix_data(self, filtered_matrix, chromosome, bin_loc):
+        """
+        Take output of process_bins() and converts it into a list of lines of text data for output
+
+        :param filtered_matrix: dataframe returned by :meth:`.ClusterReads.filter_data_frame`
+        :param chromosome: chromosome as "Chr5"
+        :param bin_loc: location representing the bin given as the end coordinate, ie 590000
+        :type filtered_matrix: pd.DataFrame
+        :type chromosome: string
+        :type bin_loc: string
+        :return: comma separated lines extracted from the filtered matrix, containing chromosome and bin info
+        :rtype: list
+        """
         # Individual comparisons data
         lines = []
         unique_groups = self.get_unique_matrices(filtered_matrix)
@@ -249,6 +274,14 @@ class ClusterReads:
         return self.generate_individual_matrix_data(filtered_matrix, chromosome, bin_loc)
 
     def execute(self, return_only=False):
+        """
+        This method will start multiprocessing execution of this class.
+
+        :param return_only: Whether to return the results as a variabel (True) or write to file (False)
+        :type return_only: bool
+        :return: list of lists if :attribute: `return_only` False otherwise None
+        :rtype: list or None
+        """
         start_time = datetime.datetime.now().strftime("%y-%m-%d")
 
         def track_progress(job, update_interval=60):
@@ -281,6 +314,12 @@ class ClusterReadsWithImputation(ClusterReads):
     """
     This class is used to perfom the same clustering, but also enabled the ability to perform imputation during clustering.
     This inherits from :class:`.ClusterReads`
+
+    :Example:
+    >>> from clubcpg.ClusterReads import ClusterReadsWithImputation
+    >>> cluster = ClusterReadsWithImputation(...)
+    >>> cluster.execute()
+
     """
     
     def __init__(self, bam_a: str, bam_b=None, bin_size=100, bins_file=None, output_directory=None, num_processors=1,
