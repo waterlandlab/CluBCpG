@@ -280,7 +280,7 @@ class ClusterReads:
 class ClusterReadsWithImputation(ClusterReads):
     """
     This class is used to perfom the same clustering, but also enabled the ability to perform imputation during clustering.
-    This inherits from :class:`ClusterReads`
+    This inherits from :class:`.ClusterReads`
     """
     
     def __init__(self, bam_a: str, bam_b=None, bin_size=100, bins_file=None, output_directory=None, num_processors=1,
