@@ -21,11 +21,11 @@ setup(name="clubcpg",
           'pebble', 
           'tqdm'],
 
-      scripts=['bin/CalculateBinCoverage',
-               'bin/ClusterReads',
-               'bin/TrainModels',
-               'bin/ImputeBinCoverage',
-               'bin/ImputeClusterReads'],
+      scripts=['bin/clubcpg-coverage',
+               'bin/clubcpg-cluster',
+               'bin/clubcpg-impute-train',
+               'bin/clubcpg-impute-coverage',
+               'bin/clubcpg-impute-cluster'],
 
       # test_suite="clubcpg.tests.test_Module.py",
       )

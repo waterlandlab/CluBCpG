@@ -19,7 +19,7 @@ from joblib import dump, load
 #
 #         Keyword Arguments:
 #             bin_size {int} -- size of bin in base-pairs (default: {100})
-#             path_to_models {[str]} -- Path to directory containing models built by TrainModels scripy (default: {None})
+#             path_to_models {[str]} -- Path to directory containing models built by clubcpg-impute-train scripy (default: {None})
 #
 #         Raises:
 #             AttributeError -- Raised if a path to the models directory is not specified or does not exist

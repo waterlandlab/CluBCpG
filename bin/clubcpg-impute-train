@@ -12,7 +12,7 @@ if __name__ == "__main__":
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument("-a", "--input_bam_file",
                             help="Input bam file, coordinate sorted with index present", default=None)
-    arg_parser.add_argument("-c", "--coverage", help="output file from CalculateBinCoverage, filtered for at least 1 read and 2 cpgs", default=None)
+    arg_parser.add_argument("-c", "--coverage", help="output file from clubcpg-coverage, filtered for at least 1 read and 2 cpgs", default=None)
     arg_parser.add_argument("-o", "--output", help="folder to save generated model files", default=None)
     arg_parser.add_argument("-n", help="number of cpu cores to use")
     arg_parser.add_argument("-l", "--limit_samples", help="Limit the number of samples used to train the model, "
