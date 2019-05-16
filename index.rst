@@ -38,3 +38,7 @@ Indices and tables
    :members:
    :special-members: __init__
 
+.. automodule:: clubcpg_prelim.PReLIM
+   :members:
+   :special-members: __init__
+

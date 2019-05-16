@@ -56,22 +56,6 @@ class CpGBin():
 	""" 
 	Constructor for a bin
 
-	Inputs:
-
-		matrix: numpy array, the bin's CpG matrix.
-		binStartInc: integer, the starting, inclusive, chromosomal index of the bin.
-		binEndInc: integer, the ending, inclusive, chromosomal index of the bin.
-		cpgPositions: array of integers, the chromosomal positions of the CpGs in the bin.
-		sequence: string, nucleotide sequence (A,C,G,T)
-		encoding: array, a reduced representation of the bin's CpG matrix
-		missingToken: integer, the token that represents missing data in the matrix.
-		chromosome: string, the chromosome this bin resides in.
-		binSize: integer, the number of base pairs this bin covers
-		species: string, the speices this bin belongs too.
-		verbose: boolean, print warnings, set to "false" for no error checking and faster speed
-
-		tag1: anything, for custom use.
-		tag2: anything, for custom use.
 	"""
 	def __init__(self, 
 			matrix, 
@@ -88,6 +72,23 @@ class CpGBin():
 			verbose=True, 
 			tag1=None, 
 			tag2=None):
+		"""
+
+		:param matrix: numpy array, the bin's CpG matrix.
+		:param binStartInc: integer, the starting, inclusive, chromosomal index of the bin.
+		:param binEndInc: integer, the ending, inclusive, chromosomal index of the bin.
+		:param cpgPositions: array of integers, the chromosomal positions of the CpGs in the bin.
+		:param sequence: string, nucleotide sequence (A,C,G,T)
+		:param encoding: array, a reduced representation of the bin's CpG matrix
+		:param missingToken: integer, the token that represents missing data in the matrix.
+		:param chromosome: string, the chromosome this bin resides in.
+		:param binSize: integer, the number of base pairs this bin covers
+		:param species: string, the speices this bin belongs too.
+		:param verbose: boolean, print warnings, set to "false" for no error checking and faster speed
+		:param tag1: anything, for custom use.
+		:param tag2: anything, for custom use.
+
+		"""
 
 
 		self.cpgDensity = matrix.shape[1]
@@ -108,9 +109,11 @@ class CpGBin():
 		self.tag2 = tag2
 
 
-
-
 class PReLIM():
+	"""
+	PReLIM imputation class to handle training and predicting from models.
+
+	"""
 	def __init__(self, cpgDensity=2):
 		self.model = None
 		self.cpgDensity = cpgDensity
@@ -120,10 +123,6 @@ class PReLIM():
 		self.methylated = 1
 		self.unmethylated = 0
 		self.unknown = -1
-
-
-
-
 
 	# Train a model
 	def train(self, bin_matrices, model_file="no", verbose=False):
@@ -139,9 +138,6 @@ class PReLIM():
 		
 		# Train the neural network model
 		self.fit(X,y, model_file=model_file, verbose=verbose)
-		
-
-
 
 	def fit(self,
 			X_train,
