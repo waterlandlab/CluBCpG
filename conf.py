@@ -22,9 +22,9 @@ copyright = '2019, Anthony Scott, PhD'
 author = 'Anthony Scott, PhD'
 
 # The short X.Y version
-version = '0.1.9'
+version = '0.1.10'
 # The full version, including alpha,beta,rc tags
-release = '0.1.9'
+release = '0.1.10'
 
 # -- General configuration ---------------------------------------------------
 
