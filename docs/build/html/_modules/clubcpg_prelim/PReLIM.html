@@ -1,0 +1,767 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>clubcpg_prelim.PReLIM &mdash; CluBCpG 0.1.10 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> CluBCpG
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.10
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../intro.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">2. Using CluBCpG</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CluBCpG</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>clubcpg_prelim.PReLIM</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for clubcpg_prelim.PReLIM</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="k">import</span> <span class="n">print_function</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Author: </span>
+<span class="sd">Jack Duryea</span>
+<span class="sd">Waterland Lab</span>
+<span class="sd">Computational Epigenetics Section</span>
+<span class="sd">Baylor College of Medicine</span>
+
+<span class="sd">Created April 2018</span>
+
+<span class="sd">Updated April 11 2019: use random forests as model</span>
+
+
+<span class="sd">PReLIM: Preceise Read Level Imputation of Methylation</span>
+
+<span class="sd">PReLIM imputes missing CpG methylation</span>
+<span class="sd">states in CpG matrices.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># standard imports</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">shuffle</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="c1"># sklearn imports</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="k">import</span> <span class="n">normalize</span>
+<span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="k">import</span> <span class="n">RandomForestClassifier</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">GridSearchCV</span>
+
+<span class="c1"># Pickle</span>
+<span class="k">try</span><span class="p">:</span>
+	<span class="kn">import</span> <span class="nn">cPickle</span> <span class="k">as</span> <span class="nn">p</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+	<span class="kn">import</span> <span class="nn">pickle</span> <span class="k">as</span> <span class="nn">p</span>
+
+
+<span class="c1"># warnings suck, turn them off</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+	<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
+	<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+		<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+		<span class="kn">import</span> <span class="nn">md5</span><span class="o">,</span> <span class="nn">sha</span>
+
+
+<span class="c1"># TODO: most of these fields are redundant in our application</span>
+<div class="viewcode-block" id="CpGBin"><a class="viewcode-back" href="../../API.html#clubcpg_prelim.PReLIM.CpGBin">[docs]</a><span class="k">class</span> <span class="nc">CpGBin</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot; </span>
+<span class="sd">	Constructor for a bin</span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="CpGBin.__init__"><a class="viewcode-back" href="../../API.html#clubcpg_prelim.PReLIM.CpGBin.__init__">[docs]</a>	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+			<span class="n">matrix</span><span class="p">,</span> 
+			<span class="c1">#relative_positions</span>
+			<span class="n">binStartInc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+			<span class="n">binEndInc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+			<span class="n">cpgPositions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+			<span class="n">sequence</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+			<span class="n">encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+			<span class="n">missingToken</span><span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> 
+			<span class="n">chromosome</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+			<span class="n">binSize</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
+			<span class="n">species</span><span class="o">=</span><span class="s2">&quot;MM10&quot;</span><span class="p">,</span> 
+			<span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+			<span class="n">tag1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+			<span class="n">tag2</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">		:param matrix: numpy array, the bin&#39;s CpG matrix.</span>
+<span class="sd">		:param binStartInc: integer, the starting, inclusive, chromosomal index of the bin.</span>
+<span class="sd">		:param binEndInc: integer, the ending, inclusive, chromosomal index of the bin.</span>
+<span class="sd">		:param cpgPositions: array of integers, the chromosomal positions of the CpGs in the bin.</span>
+<span class="sd">		:param sequence: string, nucleotide sequence (A,C,G,T)</span>
+<span class="sd">		:param encoding: array, a reduced representation of the bin&#39;s CpG matrix</span>
+<span class="sd">		:param missingToken: integer, the token that represents missing data in the matrix.</span>
+<span class="sd">		:param chromosome: string, the chromosome this bin resides in.</span>
+<span class="sd">		:param binSize: integer, the number of base pairs this bin covers</span>
+<span class="sd">		:param species: string, the speices this bin belongs too.</span>
+<span class="sd">		:param verbose: boolean, print warnings, set to &quot;false&quot; for no error checking and faster speed</span>
+<span class="sd">		:param tag1: anything, for custom use.</span>
+<span class="sd">		:param tag2: anything, for custom use.</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">cpgDensity</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">readDepth</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+		
+		
+
+		<span class="bp">self</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">binStartInc</span> <span class="o">=</span> <span class="n">binStartInc</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">binEndInc</span> <span class="o">=</span> <span class="n">binEndInc</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cpgPositions</span> <span class="o">=</span> <span class="n">cpgPositions</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">sequence</span> <span class="o">=</span> <span class="n">sequence</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">missingToken</span> <span class="o">=</span> <span class="n">missingToken</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">chromosome</span> <span class="o">=</span> <span class="n">chromosome</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">binSize</span> <span class="o">=</span> <span class="n">binSize</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">species</span> <span class="o">=</span> <span class="n">species</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">tag1</span> <span class="o">=</span> <span class="n">tag1</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">tag2</span> <span class="o">=</span> <span class="n">tag2</span></div></div>
+
+
+<div class="viewcode-block" id="PReLIM"><a class="viewcode-back" href="../../API.html#clubcpg_prelim.PReLIM.PReLIM">[docs]</a><span class="k">class</span> <span class="nc">PReLIM</span><span class="p">():</span>
+	<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">	PReLIM imputation class to handle training and predicting from models.</span>
+
+<span class="sd">	&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="PReLIM.__init__"><a class="viewcode-back" href="../../API.html#clubcpg_prelim.PReLIM.PReLIM.__init__">[docs]</a>	<span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cpgDensity</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="kc">None</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cpgDensity</span> <span class="o">=</span> <span class="n">cpgDensity</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">METHYLATED</span> <span class="o">=</span> <span class="mi">1</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">UNMETHYLATED</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">MISSING</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">methylated</span> <span class="o">=</span> <span class="mi">1</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">unmethylated</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">unknown</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
+
+	<span class="c1"># Train a model</span>
+<div class="viewcode-block" id="PReLIM.train"><a class="viewcode-back" href="../../API.html#clubcpg_prelim.PReLIM.PReLIM.train">[docs]</a>	<span class="k">def</span> <span class="nf">train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bin_matrices</span><span class="p">,</span> <span class="n">model_file</span><span class="o">=</span><span class="s2">&quot;no&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		bin_matrices: list of cpg matrices</span>
+
+<span class="sd">		model_file, string,      The name of the file to save the model to. </span>
+<span class="sd">			If None, then create a file name that includes a timestamp.</span>
+<span class="sd">			If you don&#39;t want to save a file, set this to &quot;no&quot;</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="c1"># bin_matrices: a list of cpg matrices </span>
+		<span class="n">X</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_X_y</span><span class="p">(</span><span class="n">bin_matrices</span><span class="p">,</span> <span class="n">model_file</span><span class="o">=</span><span class="n">model_file</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+		
+		<span class="c1"># Train the neural network model</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">,</span> <span class="n">model_file</span><span class="o">=</span><span class="n">model_file</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PReLIM.fit"><a class="viewcode-back" href="../../API.html#clubcpg_prelim.PReLIM.PReLIM.fit">[docs]</a>	<span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+			<span class="n">X_train</span><span class="p">,</span>
+			<span class="n">y_train</span><span class="p">,</span>
+			<span class="n">n_estimators</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">1000</span><span class="p">],</span>
+			<span class="n">cores</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+			<span class="n">max_depths</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span>
+			<span class="n">model_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+			<span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+			<span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Inputs: </span>
+<span class="sd">		1. X_train,     numpy array, Contains feature vectors.</span>
+<span class="sd">		2. y_train,     numpy array, Contains labels for training data.</span>
+<span class="sd">		3. n_estimators, list, the number of estimators to try during a grid search.</span>
+<span class="sd">		4. max_depths, list, the maximum depths of trees to try during a grid search.</span>
+<span class="sd">		5. cores, the number of cores to use during training, helpful for grid search.</span>
+<span class="sd">		6. model_file, string,      The name of the file to save the model to. </span>
+<span class="sd">			If None, then create a file name that includes a timestamp.</span>
+<span class="sd">			If you don&#39;t want to save a file, set this to &quot;no&quot;</span>
+<span class="sd">	</span>
+<span class="sd">		5-fold validation is built into the grid search</span>
+
+<span class="sd">		Outputs: </span>
+<span class="sd">		The trained model</span>
+
+<span class="sd">		Usage: </span>
+<span class="sd">		model.fit(X_train, y_train)	</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+
+
+		<span class="n">grid_param</span> <span class="o">=</span> <span class="p">{</span>  
+		 <span class="s2">&quot;n_estimators&quot;</span><span class="p">:</span> <span class="n">n_estimators</span><span class="p">,</span>
+		  <span class="s2">&quot;max_depth&quot;</span><span class="p">:</span> <span class="n">max_depths</span><span class="p">,</span>
+		<span class="p">}</span>
+
+		<span class="c1"># Note: let the grid search use a lot of cores, but only use 1 for each forest</span>
+		<span class="c1"># since dispatching can take a lot of time</span>
+		<span class="n">rf</span> <span class="o">=</span> <span class="n">RandomForestClassifier</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">GridSearchCV</span><span class="p">(</span><span class="n">rf</span><span class="p">,</span> <span class="n">grid_param</span><span class="p">,</span> <span class="n">n_jobs</span><span class="o">=</span><span class="n">cores</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+
+		<span class="c1"># save the model</span>
+
+		<span class="k">if</span> <span class="n">model_file</span> <span class="o">==</span> <span class="s2">&quot;no&quot;</span><span class="p">:</span>
+			<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span>
+
+		<span class="k">if</span> <span class="ow">not</span> <span class="n">model_file</span><span class="p">:</span>
+			<span class="n">model_file</span> <span class="o">=</span> <span class="s2">&quot;PReLIM_model&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+
+		<span class="n">p</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">model_file</span><span class="p">,</span><span class="s2">&quot;wb&quot;</span><span class="p">))</span>
+
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span></div>
+
+
+
+
+	<span class="c1"># Feature collection directly from bins</span>
+	<span class="k">def</span> <span class="nf">get_X_y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bin_matrices</span><span class="p">,</span> <span class="n">model_file</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+		<span class="n">bins</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="c1"># convert to bin objects for ease of use</span>
+		<span class="k">for</span> <span class="n">matrix</span> <span class="ow">in</span> <span class="n">bin_matrices</span><span class="p">:</span>
+			<span class="n">mybin</span> <span class="o">=</span> <span class="n">CpGBin</span><span class="p">(</span> <span class="n">matrix</span><span class="o">=</span><span class="n">matrix</span> <span class="p">)</span>
+			<span class="n">bins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">mybin</span> <span class="p">)</span>
+		
+		<span class="c1"># find bins with no missing data</span>
+		<span class="n">complete_bins</span> <span class="o">=</span> <span class="n">_filter_missing_data</span><span class="p">(</span> <span class="n">bins</span> <span class="p">)</span>
+		<span class="n">shuffle</span><span class="p">(</span> <span class="n">complete_bins</span> <span class="p">)</span>
+		
+		<span class="c1"># apply masks</span>
+		<span class="n">masked_bins</span> <span class="o">=</span> <span class="n">_apply_masks</span><span class="p">(</span> <span class="n">complete_bins</span><span class="p">,</span> <span class="n">bins</span> <span class="p">)</span>
+
+		<span class="c1"># extract features</span>
+		<span class="n">X</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_collectFeatures</span><span class="p">(</span> <span class="n">masked_bins</span> <span class="p">)</span> 
+		<span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span> 
+
+
+	<span class="c1"># Return a vector of predicted classes </span>
+<div class="viewcode-block" id="PReLIM.predict_classes"><a class="viewcode-back" href="../../API.html#clubcpg_prelim.PReLIM.PReLIM.predict_classes">[docs]</a>	<span class="k">def</span> <span class="nf">predict_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Inputs: </span>
+<span class="sd">		1. X, numpy array, contains feature vectors</span>
+<span class="sd">		</span>
+<span class="sd">		Outputs: </span>
+<span class="sd">		1. 1-d numpy array of prediction values</span>
+
+<span class="sd">		Usage: </span>
+<span class="sd">		y_pred = CpGNet.predict_classes(X)  </span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span></div>
+	
+	<span class="c1"># Return a vector of probabilities for methylation</span>
+<div class="viewcode-block" id="PReLIM.predict"><a class="viewcode-back" href="../../API.html#clubcpg_prelim.PReLIM.PReLIM.predict">[docs]</a>	<span class="k">def</span> <span class="nf">predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Inputs: </span>
+<span class="sd">		1. X, numpy array, contains feature vectors</span>
+<span class="sd">		</span>
+<span class="sd">		Outputs: </span>
+<span class="sd">		1. 1-d numpy array of predicted class labels</span>
+
+<span class="sd">		Usage: </span>
+<span class="sd">		y_pred = CpGNet.predict(X)  </span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="PReLIM.predict_proba"><a class="viewcode-back" href="../../API.html#clubcpg_prelim.PReLIM.PReLIM.predict_proba">[docs]</a>	<span class="k">def</span> <span class="nf">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Inputs: </span>
+<span class="sd">		1. X, numpy array, contains feature vectors</span>
+<span class="sd">		</span>
+<span class="sd">		Outputs: </span>
+<span class="sd">		1. 1-d numpy array of class predictions </span>
+
+<span class="sd">		Usage: </span>
+<span class="sd">		y_pred = CpGNet.predict(X)  </span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X</span><span class="p">)[:</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+	<span class="c1"># Load a saved model</span>
+<div class="viewcode-block" id="PReLIM.loadWeights"><a class="viewcode-back" href="../../API.html#clubcpg_prelim.PReLIM.PReLIM.loadWeights">[docs]</a>	<span class="k">def</span> <span class="nf">loadWeights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_file</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Inputs:</span>
+<span class="sd">		1. model_file, string, name of file with a saved model</span>
+
+<span class="sd">		Outputs:</span>
+<span class="sd">		None</span>
+
+<span class="sd">		Effects:</span>
+<span class="sd">		self.model is loaded with the provided weights</span>
+<span class="sd">		&quot;&quot;&quot;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">model_file</span><span class="p">,</span><span class="s2">&quot;rb&quot;</span><span class="p">))</span></div>
+
+	
+
+
+
+
+	<span class="k">def</span> <span class="nf">_get_imputation_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">matrix</span><span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">		Returns a vector of features needed for the imputation of this matrix</span>
+
+<span class="sd">		Inputs: </span>
+<span class="sd">		1. matrix, a 2d np array, dtype=float, representing a CpG matrix, 1=methylated, 0=unmethylated, -1=unknown</span>
+
+<span class="sd">		Outputs:</span>
+<span class="sd">		1. A feature vector for the matrix</span>
+<span class="sd">		&#39;&#39;&#39;</span>
+
+		<span class="n">X</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="n">numReads</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+		<span class="n">density</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+		<span class="n">nan_copy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+		<span class="n">nan_copy</span><span class="p">[</span><span class="n">nan_copy</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+		<span class="n">column_means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">nan_copy</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+		<span class="n">row_means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">nan_copy</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+		
+		<span class="n">encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode_input_matrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numReads</span><span class="p">):</span>
+			<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">density</span><span class="p">):</span>
+				<span class="n">observed_state</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+				
+				<span class="k">if</span> <span class="n">observed_state</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+					<span class="k">continue</span>
+
+				<span class="n">row_mean</span> <span class="o">=</span> <span class="n">row_means</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+				<span class="n">col_mean</span> <span class="o">=</span> <span class="n">column_means</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+				
+				<span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">matrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+				<span class="n">row</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+				<span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">row_mean</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">col_mean</span><span class="p">]</span> <span class="o">+</span>  <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">+</span>  <span class="nb">list</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+				<span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+		<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+		<span class="k">return</span> <span class="n">X</span>
+
+	<span class="c1"># Imputes missing values in Bins</span>
+<div class="viewcode-block" id="PReLIM.impute"><a class="viewcode-back" href="../../API.html#clubcpg_prelim.PReLIM.PReLIM.impute">[docs]</a>	<span class="k">def</span> <span class="nf">impute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">):</span>
+		<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">		Inputs: </span>
+<span class="sd">		1. matrix, a 2d np array, dtype=float, representing a CpG matrix, 1=methylated, 0=unmethylated, -1=unknown</span>
+<span class="sd">		</span>
+<span class="sd">		Outputs: </span>
+<span class="sd">		1. A 2d numpy array with predicted probabilities of methylation</span>
+
+<span class="sd">		&quot;&quot;&quot;</span>
+
+		<span class="n">X</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_imputation_features</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+		
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># nothing to impute</span>
+			<span class="k">return</span> <span class="n">matrix</span>
+
+		<span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+		<span class="n">k</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># keep track of prediction index for missing states</span>
+		<span class="n">predicted_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+		<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">predicted_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+			<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">predicted_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+				<span class="k">if</span> <span class="n">predicted_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+					<span class="n">predicted_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+					<span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+
+		<span class="k">return</span> <span class="n">predicted_matrix</span></div>
+
+
+
+
+
+
+
+<div class="viewcode-block" id="PReLIM.impute_many"><a class="viewcode-back" href="../../API.html#clubcpg_prelim.PReLIM.PReLIM.impute_many">[docs]</a>	<span class="k">def</span> <span class="nf">impute_many</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrices</span><span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">		Imputes a bunch of matrices at the same time to help speed up imputation time.</span>
+
+<span class="sd">		Inputs:</span>
+
+<span class="sd">		1. matrices: array-like (i.e. list), where each element is</span>
+<span class="sd">		a 2d np array, dtype=float, representing a CpG matrix, 1=methylated, 0=unmethylated, -1=unknown</span>
+
+<span class="sd">		Outputs:</span>
+
+<span class="sd">		1. A List of 2d numpy arrays with predicted probabilities of methylation for unknown values.</span>
+<span class="sd">		&#39;&#39;&#39;</span>
+
+		<span class="c1"># Extract all features for all matrices so we can predict in bulk, this is where the speedup comes from</span>
+		
+		<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">features</span> <span class="k">for</span> <span class="n">matrix_features</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_imputation_features</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span> <span class="k">for</span> <span class="n">matrix</span> <span class="ow">in</span> <span class="n">matrices</span><span class="p">]</span> <span class="k">for</span> <span class="n">features</span> <span class="ow">in</span> <span class="n">matrix_features</span><span class="p">])</span>
+		
+		<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">matrices</span>
+		
+		<span class="n">predictions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+
+		<span class="n">predicted_matrices</span> <span class="o">=</span> <span class="p">[]</span>
+
+		<span class="c1"># TODO: lots of for-loops here, could be sped up?</span>
+
+		<span class="n">k</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># keep track of prediction index for missing states, order is crucial!</span>
+		<span class="k">for</span> <span class="n">matrix</span> <span class="ow">in</span> <span class="n">matrices</span><span class="p">:</span>
+			<span class="n">predicted_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+			<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">predicted_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+				<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">predicted_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+					<span class="k">if</span> <span class="n">predicted_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+						<span class="n">predicted_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">predictions</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+						<span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+			<span class="n">predicted_matrices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">predicted_matrix</span><span class="p">)</span>
+
+		<span class="k">return</span> <span class="n">predicted_matrices</span></div>
+
+
+
+
+
+
+
+	<span class="c1">### Helper functions, for private use only ###</span>
+
+	<span class="c1"># Returns a matrix encoding of a CpG matrix</span>
+	<span class="k">def</span> <span class="nf">_encode_input_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m</span><span class="p">):</span>
+		<span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+		<span class="n">n_cpgs</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+		<span class="n">matrix</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># deal with -1s</span>
+		<span class="n">base_3_vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n_cpgs</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+		<span class="c1">#</span>
+		<span class="n">encodings</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">base_3_vec</span><span class="p">,</span> <span class="n">matrix</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+		<span class="c1">#</span>
+		<span class="n">encoded_vector_dim</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_cpgs</span><span class="p">)</span>
+		<span class="n">encoded_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">encoded_vector_dim</span><span class="p">)</span>
+		<span class="c1">#</span>
+		<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">encodings</span><span class="p">:</span>
+			<span class="n">encoded_vector</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span> <span class="o">+=</span> <span class="mi">1</span>
+		<span class="c1">#</span>
+		<span class="n">num_reads</span> <span class="o">=</span> <span class="n">encodings</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+		<span class="c1">#</span>
+		<span class="c1"># Now we normalize</span>
+		<span class="n">encoded_vector_norm</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">([</span><span class="n">encoded_vector</span><span class="p">],</span> <span class="n">norm</span><span class="o">=</span><span class="s2">&quot;l1&quot;</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">encoded_vector_norm</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">num_reads</span>
+
+	<span class="c1"># finds the majority class of the given column, discounting the current cpg</span>
+	
+	<span class="k">def</span> <span class="nf">_get_column_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">col_i</span><span class="p">,</span> <span class="n">current_cpg_state</span><span class="p">):</span>
+		<span class="n">sub</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[:,</span> <span class="n">col_i</span><span class="p">]</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mean</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">current_cpg_state</span><span class="p">)</span>
+
+	<span class="c1"># finds the majority class of the given read, discounting the current cpg</span>
+	<span class="k">def</span> <span class="nf">_get_read_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">read_i</span><span class="p">,</span> <span class="n">current_cpg_state</span><span class="p">):</span>
+		<span class="n">sub</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[</span><span class="n">read_i</span><span class="p">,</span> <span class="p">:]</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_mean</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">current_cpg_state</span><span class="p">)</span>
+
+	<span class="k">def</span> <span class="nf">_get_mean</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub_matrix</span><span class="p">,</span> <span class="n">current_cpg_state</span><span class="p">):</span>
+		<span class="n">num_methy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">sub_matrix</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">METHYLATED</span><span class="p">)</span>
+		<span class="n">num_unmethy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">sub_matrix</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">UNMETHYLATED</span><span class="p">)</span>
+
+		<span class="k">if</span> <span class="n">current_cpg_state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">METHYLATED</span><span class="p">:</span>
+			<span class="n">num_methy</span> <span class="o">-=</span> <span class="mi">1</span>
+		<span class="n">num_methy</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_methy</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">current_cpg_state</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">UNMETHYLATED</span><span class="p">:</span>
+			<span class="n">num_unmethy</span> <span class="o">-=</span> <span class="mi">1</span>
+		<span class="n">num_unmethy</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_unmethy</span><span class="p">)</span>
+		<span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_methy</span> <span class="o">+</span> <span class="n">num_unmethy</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+			<span class="k">return</span> <span class="o">-</span><span class="mi">2</span>
+
+		<span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_methy</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">num_methy</span> <span class="o">+</span> <span class="n">num_unmethy</span><span class="p">)</span>
+
+	<span class="c1"># Returns X, y</span>
+	<span class="c1"># note: y can contain the labels 1,0, -1</span>
+	<span class="k">def</span> <span class="nf">_collectFeatures</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bins</span><span class="p">):</span>
+		<span class="n">X</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">Y</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">Bin</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
+			<span class="n">observed_matrix</span> <span class="o">=</span> <span class="n">Bin</span><span class="o">.</span><span class="n">tag2</span><span class="p">[</span><span class="s2">&quot;observed&quot;</span><span class="p">]</span>
+			<span class="n">truth_matrix</span> <span class="o">=</span> <span class="n">Bin</span><span class="o">.</span><span class="n">tag2</span><span class="p">[</span><span class="s2">&quot;truth&quot;</span><span class="p">]</span>
+			<span class="n">encoding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_encode_input_matrix</span><span class="p">(</span><span class="n">observed_matrix</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+			<span class="n">numReads</span> <span class="o">=</span> <span class="n">observed_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+			<span class="n">density</span> <span class="o">=</span> <span class="n">observed_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+			<span class="c1">#positions = Bin.cpgPositions</span>
+			<span class="n">nan_copy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">observed_matrix</span><span class="p">)</span>
+			
+
+			<span class="n">nan_copy</span><span class="p">[</span><span class="n">nan_copy</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span> 
+			<span class="n">column_means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">nan_copy</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+			<span class="n">row_means</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanmean</span><span class="p">(</span><span class="n">nan_copy</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+			<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">numReads</span><span class="p">):</span>
+				<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">density</span><span class="p">):</span>
+					<span class="n">observed_state</span> <span class="o">=</span> <span class="n">observed_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+					<span class="k">if</span> <span class="n">observed_state</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+						<span class="k">continue</span>
+
+					<span class="n">state</span> <span class="o">=</span> <span class="n">truth_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span>
+					<span class="n">Y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+					
+					
+					
+					<span class="n">row_mean</span> <span class="o">=</span> <span class="n">row_means</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+					<span class="n">col_mean</span> <span class="o">=</span> <span class="n">column_means</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+					<span class="c1"># j is the current index in the row</span>
+					
+					<span class="c1"># encoding is the matrix encoding vector</span>
+					<span class="c1"># differences is the difference in positions of the cpgs</span>
+					<span class="n">row</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">observed_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+					<span class="n">row</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+					<span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">row_mean</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">col_mean</span><span class="p">]</span> <span class="o">+</span>  <span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="o">+</span>  <span class="nb">list</span><span class="p">(</span><span class="n">encoding</span><span class="p">)</span>
+					<span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+
+		<span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+		<span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">Y</span><span class="p">)</span>
+		<span class="n">Y</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span></div>
+
+
+
+<span class="c1"># Helper functions</span>
+
+<span class="c1"># returns a list of bins similar to the input</span>
+<span class="c1"># but matrix rows with missing values are removed</span>
+<span class="k">def</span> <span class="nf">_filter_bad_reads</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
+	<span class="n">filtered_bins</span> <span class="o">=</span> <span class="p">[]</span>
+	<span class="k">for</span> <span class="n">Bin</span> <span class="ow">in</span> <span class="n">bins</span><span class="p">:</span>
+		<span class="n">newBin</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">Bin</span><span class="p">)</span>
+		<span class="n">matrix</span> <span class="o">=</span> <span class="n">newBin</span><span class="o">.</span><span class="n">matrix</span>
+
+		<span class="c1"># find rows with missing values</span>
+		<span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">matrix</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+		<span class="n">idx</span> <span class="o">=</span> <span class="n">counts</span> <span class="o">==</span> <span class="mi">0</span>
+		<span class="n">matrix_filtered</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+		<span class="n">newBin</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix_filtered</span>
+		<span class="n">filtered_bins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newBin</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="n">filtered_bins</span>
+
+<span class="c1"># returns a mapping of dimensions to list of masks that can be used on data</span>
+<span class="c1"># of that size.</span>
+<span class="c1"># the missing pattern is in matrix form.</span>
+<span class="c1"># -1 is missing, 2 is known</span>
+<span class="k">def</span> <span class="nf">_extract_masks</span><span class="p">(</span> <span class="n">bins</span><span class="p">):</span>
+	<span class="n">masks</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[])</span>
+	<span class="k">for</span> <span class="n">Bin</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
+		<span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">Bin</span><span class="o">.</span><span class="n">matrix</span><span class="p">)</span>
+		<span class="n">matrix</span><span class="p">[</span><span class="n">matrix</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+
+		<span class="c1">#min_missing = 10</span>
+		<span class="n">min_missing</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># must have at least 1 missing value</span>
+		<span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">matrix</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">min_missing</span><span class="p">:</span>
+			<span class="n">masks</span><span class="p">[</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="n">masks</span>
+
+  
+<span class="k">def</span> <span class="nf">_apply_masks</span><span class="p">(</span> <span class="n">filtered_bins</span><span class="p">,</span> <span class="n">all_bins</span> <span class="p">):</span>
+	
+	<span class="n">masks</span> <span class="o">=</span> <span class="n">_extract_masks</span><span class="p">(</span> <span class="n">all_bins</span> <span class="p">)</span>
+	<span class="n">ready_bins</span> <span class="o">=</span> <span class="p">[]</span>
+
+	<span class="k">for</span> <span class="n">Bin</span> <span class="ow">in</span> <span class="n">filtered_bins</span><span class="p">:</span>
+		<span class="n">truth_matrix</span> <span class="o">=</span> <span class="n">Bin</span><span class="o">.</span><span class="n">matrix</span>
+		<span class="n">m_shape</span> <span class="o">=</span> <span class="n">truth_matrix</span><span class="o">.</span><span class="n">shape</span>
+		<span class="k">if</span> <span class="n">m_shape</span> <span class="ow">in</span> <span class="n">masks</span><span class="p">:</span>
+			<span class="k">if</span> <span class="nb">len</span><span class="p">(</span> <span class="n">masks</span> <span class="p">[</span> <span class="n">m_shape</span> <span class="p">]</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+				<span class="n">mask</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">masks</span><span class="p">[</span><span class="n">m_shape</span><span class="p">])</span>
+				<span class="n">observed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">truth_matrix</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+				<span class="n">Bin</span><span class="o">.</span><span class="n">tag2</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;truth&quot;</span><span class="p">:</span><span class="n">truth_matrix</span><span class="p">,</span> <span class="s2">&quot;observed&quot;</span><span class="p">:</span><span class="n">observed</span><span class="p">,</span> <span class="s2">&quot;mask&quot;</span><span class="p">:</span><span class="n">mask</span><span class="p">}</span>
+				<span class="n">ready_bins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Bin</span><span class="p">)</span>
+
+	<span class="k">return</span> <span class="n">ready_bins</span>
+
+<span class="c1"># get a set of bins with no missing data</span>
+<span class="k">def</span> <span class="nf">_filter_missing_data</span><span class="p">(</span> <span class="n">bins</span><span class="p">,</span> <span class="n">min_read_depth</span><span class="o">=</span><span class="mi">1</span> <span class="p">):</span>
+	<span class="n">cpg_bins_complete</span> <span class="o">=</span> <span class="n">_filter_bad_reads</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+	<span class="c1"># secondary depth filter</span>
+	<span class="n">cpg_bins_complete_depth</span> <span class="o">=</span> <span class="p">[</span><span class="n">bin_</span> <span class="k">for</span> <span class="n">bin_</span> <span class="ow">in</span> <span class="n">cpg_bins_complete</span> <span class="k">if</span> <span class="n">bin_</span><span class="o">.</span><span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">min_read_depth</span><span class="p">]</span>
+	<span class="k">return</span> <span class="n">cpg_bins_complete_depth</span>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Anthony Scott, PhD
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

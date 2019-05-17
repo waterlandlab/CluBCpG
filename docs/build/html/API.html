@@ -1,0 +1,721 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API documentation &mdash; CluBCpG 0.1.10 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="2. Using CluBCpG" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> CluBCpG
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.10
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">1. Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">2. Using CluBCpG</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Reference:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-clubcpg.ParseBam">ClubCpG APIs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-clubcpg_prelim.PReLIM">PReLIM APIs</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CluBCpG</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>API documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/API.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="api-documentation">
+<h1>API documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-clubcpg.ParseBam">
+<span id="clubcpg-apis"></span><h2>ClubCpG APIs<a class="headerlink" href="#module-clubcpg.ParseBam" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="clubcpg.ParseBam.BamFileReadParser">
+<em class="property">class </em><code class="descclassname">clubcpg.ParseBam.</code><code class="descname">BamFileReadParser</code><span class="sig-paren">(</span><em>bamfile</em>, <em>quality_score</em>, <em>read1_5=None</em>, <em>read1_3=None</em>, <em>read2_5=None</em>, <em>read2_3=None</em>, <em>no_overlap=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ParseBam.html#BamFileReadParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ParseBam.BamFileReadParser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to simplify the opening and reading from BAM files. BAMs must be coordinate sorted and indexed.</p>
+<dl class="field-list">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clubcpg.ParseBam</span> <span class="k">import</span> <span class="n">BamFileReadParser</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">parser</span> <span class="o">=</span> <span class="n">BamFileReadParser</span><span class="p">(</span><span class="s2">&quot;/path/to/data.BAM&quot;</span><span class="p">,</span> <span class="n">quality_score</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reads</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_reads</span><span class="p">(</span><span class="s2">&quot;chr7&quot;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">101000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">create_matrix</span><span class="p">(</span><span class="n">reads</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<dl class="method">
+<dt id="clubcpg.ParseBam.BamFileReadParser.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>bamfile</em>, <em>quality_score</em>, <em>read1_5=None</em>, <em>read1_3=None</em>, <em>read2_5=None</em>, <em>read2_3=None</em>, <em>no_overlap=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ParseBam.html#BamFileReadParser.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ParseBam.BamFileReadParser.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class used to read WGBSeq reads from a BAM file, extract methylation, and convert into data frame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bamfile</strong> – Path to bam file location</p></li>
+<li><p><strong>quality_score</strong> – Only include reads &gt;= this fastq quality</p></li>
+<li><p><strong>read1_5</strong> – mbias ignore read1 5’</p></li>
+<li><p><strong>read1_3</strong> – mbias ignore read1 3’</p></li>
+<li><p><strong>read2_5</strong> – mbias ignore read2 5’</p></li>
+<li><p><strong>read2_3</strong> – mbias ignore read2 3’</p></li>
+<li><p><strong>no_overlap</strong> – bool. If overlap exists between two reads, ignore that region from read 2.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.ParseBam.BamFileReadParser.create_matrix">
+<code class="descname">create_matrix</code><span class="sig-paren">(</span><em>read_cpgs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ParseBam.html#BamFileReadParser.create_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ParseBam.BamFileReadParser.create_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converted parsed reads into a pandas dataframe.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>read_cpgs</strong> (<em>iterable</em>) – read CpGs generated by self.parse_reads</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>matrix methylated (1) and unmethylated (0) states</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.ParseBam.BamFileReadParser.fix_read_overlap">
+<code class="descname">fix_read_overlap</code><span class="sig-paren">(</span><em>full_reads</em>, <em>read_cpgs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ParseBam.html#BamFileReadParser.fix_read_overlap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ParseBam.BamFileReadParser.fix_read_overlap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes pysam reads and read_cpgs generated during parse reads and removes any
+overlap between read1 and read2. If possible it also stitches read1 and read2 together to create
+a super read.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>full_reads</strong> – set of reads generated by self.parse_reads()</p></li>
+<li><p><strong>read_cpgs</strong> – todoo</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list in the same format as read_cpgs input, but corrected for paired read overlap</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.ParseBam.BamFileReadParser.parse_reads">
+<code class="descname">parse_reads</code><span class="sig-paren">(</span><em>chromosome: str</em>, <em>start: int</em>, <em>stop: int</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ParseBam.html#BamFileReadParser.parse_reads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ParseBam.BamFileReadParser.parse_reads" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>chromosome</strong> – chromosome as “chr6”</p></li>
+<li><p><strong>start</strong> – start coordinate</p></li>
+<li><p><strong>stop</strong> – end coordinate</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of reads and their positional tags as assigned by bismark</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-clubcpg.ClusterReads"></span><dl class="class">
+<dt id="clubcpg.ClusterReads.ClusterReads">
+<em class="property">class </em><code class="descclassname">clubcpg.ClusterReads.</code><code class="descname">ClusterReads</code><span class="sig-paren">(</span><em>bam_a: str</em>, <em>bam_b=None</em>, <em>bin_size=100</em>, <em>bins_file=None</em>, <em>output_directory=None</em>, <em>num_processors=1</em>, <em>cluster_member_min=4</em>, <em>read_depth_req=10</em>, <em>remove_noise=True</em>, <em>mbias_read1_5=None</em>, <em>mbias_read1_3=None</em>, <em>mbias_read2_5=None</em>, <em>mbias_read2_3=None</em>, <em>suffix=''</em>, <em>no_overlap=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ClusterReads.html#ClusterReads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ClusterReads.ClusterReads" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is used to take a dataframe or matrix of reads and cluster them</p>
+<dl class="field-list simple">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clubcpg.ClusterReads</span> <span class="k">import</span> <span class="n">ClusterReads</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cluster</span> <span class="o">=</span> <span class="n">ClusterReads</span><span class="p">(</span><span class="n">bam_a</span><span class="o">=</span><span class="s2">&quot;/path/to/file.bam&quot;</span><span class="p">,</span> <span class="n">bam_b</span><span class="o">=</span><span class="s2">&quot;/path/to/file.bam&quot;</span><span class="p">,</span> <span class="n">bins_file</span><span class="o">=</span><span class="s2">&quot;/path/to/file.csv&quot;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s2">&quot;chr19&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cluster</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="clubcpg.ClusterReads.ClusterReads.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>bam_a: str</em>, <em>bam_b=None</em>, <em>bin_size=100</em>, <em>bins_file=None</em>, <em>output_directory=None</em>, <em>num_processors=1</em>, <em>cluster_member_min=4</em>, <em>read_depth_req=10</em>, <em>remove_noise=True</em>, <em>mbias_read1_5=None</em>, <em>mbias_read1_3=None</em>, <em>mbias_read2_5=None</em>, <em>mbias_read2_3=None</em>, <em>suffix=''</em>, <em>no_overlap=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ClusterReads.html#ClusterReads.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ClusterReads.ClusterReads.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.ClusterReads.ClusterReads.execute">
+<code class="descname">execute</code><span class="sig-paren">(</span><em>return_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ClusterReads.html#ClusterReads.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ClusterReads.ClusterReads.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will start multiprocessing execution of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>return_only</strong> (<em>bool</em>) – Whether to return the results as a variabel (True) or write to file (False)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of lists if :attribute: <cite>return_only</cite> False otherwise None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.ClusterReads.ClusterReads.filter_data_frame">
+<code class="descname">filter_data_frame</code><span class="sig-paren">(</span><em>matrix: pandas.core.frame.DataFrame</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ClusterReads.html#ClusterReads.filter_data_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ClusterReads.ClusterReads.filter_data_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a dataframe of clusters and removes any groups with less than self.cluster_member_min members</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>matrix</strong> – dataframe of clustered reads</p>
+</dd>
+<dt class="field-even">Type</dt>
+<dd class="field-even"><p>pd.DataFrame</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>input matrix with some clusters removed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.ClusterReads.ClusterReads.generate_individual_matrix_data">
+<code class="descname">generate_individual_matrix_data</code><span class="sig-paren">(</span><em>filtered_matrix</em>, <em>chromosome</em>, <em>bin_loc</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ClusterReads.html#ClusterReads.generate_individual_matrix_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ClusterReads.ClusterReads.generate_individual_matrix_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take output of process_bins() and converts it into a list of lines of text data for output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filtered_matrix</strong> (<em>pd.DataFrame</em>) – dataframe returned by <a class="reference internal" href="#clubcpg.ClusterReads.ClusterReads.filter_data_frame" title="clubcpg.ClusterReads.ClusterReads.filter_data_frame"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ClusterReads.filter_data_frame()</span></code></a></p></li>
+<li><p><strong>chromosome</strong> (<em>string</em>) – chromosome as “Chr5”</p></li>
+<li><p><strong>bin_loc</strong> (<em>string</em>) – location representing the bin given as the end coordinate, ie 590000</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>comma separated lines extracted from the filtered matrix, containing chromosome and bin info</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.ClusterReads.ClusterReads.process_bins">
+<code class="descname">process_bins</code><span class="sig-paren">(</span><em>bin</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ClusterReads.html#ClusterReads.process_bins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ClusterReads.ClusterReads.process_bins" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the main method and should be called using Pool.map It takes one bin location and uses the other helper
+functions to get the reads, form the matrix, cluster it with DBSCAN, and output the cluster data as text lines
+ready to writing to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bin</strong> – string in this format: “chr19_55555”</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of lines representing the cluster data from that bin</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="clubcpg.ClusterReads.ClusterReadsWithImputation">
+<em class="property">class </em><code class="descclassname">clubcpg.ClusterReads.</code><code class="descname">ClusterReadsWithImputation</code><span class="sig-paren">(</span><em>bam_a: str</em>, <em>bam_b=None</em>, <em>bin_size=100</em>, <em>bins_file=None</em>, <em>output_directory=None</em>, <em>num_processors=1</em>, <em>cluster_member_min=4</em>, <em>read_depth_req=10</em>, <em>remove_noise=True</em>, <em>mbias_read1_5=None</em>, <em>mbias_read1_3=None</em>, <em>mbias_read2_5=None</em>, <em>mbias_read2_3=None</em>, <em>suffix=''</em>, <em>no_overlap=True</em>, <em>models_A=None</em>, <em>models_B=None</em>, <em>chunksize=10000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ClusterReads.html#ClusterReadsWithImputation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ClusterReads.ClusterReadsWithImputation" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is used to perfom the same clustering, but also enabled the ability to perform imputation during clustering.
+This inherits from <a class="reference internal" href="#clubcpg.ClusterReads.ClusterReads" title="clubcpg.ClusterReads.ClusterReads"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClusterReads</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clubcpg.ClusterReads</span> <span class="k">import</span> <span class="n">ClusterReadsWithImputation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cluster</span> <span class="o">=</span> <span class="n">ClusterReadsWithImputation</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cluster</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="clubcpg.ClusterReads.ClusterReadsWithImputation.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>bam_a: str</em>, <em>bam_b=None</em>, <em>bin_size=100</em>, <em>bins_file=None</em>, <em>output_directory=None</em>, <em>num_processors=1</em>, <em>cluster_member_min=4</em>, <em>read_depth_req=10</em>, <em>remove_noise=True</em>, <em>mbias_read1_5=None</em>, <em>mbias_read1_3=None</em>, <em>mbias_read2_5=None</em>, <em>mbias_read2_3=None</em>, <em>suffix=''</em>, <em>no_overlap=True</em>, <em>models_A=None</em>, <em>models_B=None</em>, <em>chunksize=10000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ClusterReads.html#ClusterReadsWithImputation.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ClusterReads.ClusterReadsWithImputation.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.ClusterReads.ClusterReadsWithImputation.execute">
+<code class="descname">execute</code><span class="sig-paren">(</span><em>return_only=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ClusterReads.html#ClusterReadsWithImputation.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ClusterReads.ClusterReadsWithImputation.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will start multiprocessing execution of this class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>return_only</strong> (<em>bool</em>) – Whether to return the results as a variabel (True) or write to file (False)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of lists if :attribute: <cite>return_only</cite> False otherwise None</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-clubcpg.ConnectToCpGNet"></span><dl class="class">
+<dt id="clubcpg.ConnectToCpGNet.TrainWithPReLIM">
+<em class="property">class </em><code class="descclassname">clubcpg.ConnectToCpGNet.</code><code class="descname">TrainWithPReLIM</code><span class="sig-paren">(</span><em>cpg_density=None</em>, <em>save_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ConnectToCpGNet.html#TrainWithPReLIM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ConnectToCpGNet.TrainWithPReLIM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to train models using CpGnet</p>
+<dl class="method">
+<dt id="clubcpg.ConnectToCpGNet.TrainWithPReLIM.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>cpg_density=None</em>, <em>save_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ConnectToCpGNet.html#TrainWithPReLIM.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ConnectToCpGNet.TrainWithPReLIM.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to train a CpGNet model from input data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cpg_density</strong> (<em>int</em>) – Number of CpGs</p></li>
+<li><p><strong>save_path</strong> – Location of folder to save the resulting model files. One per cpg density</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.ConnectToCpGNet.TrainWithPReLIM.save_net">
+<code class="descname">save_net</code><span class="sig-paren">(</span><em>model</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ConnectToCpGNet.html#TrainWithPReLIM.save_net"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ConnectToCpGNet.TrainWithPReLIM.save_net" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the network to a file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>model</strong> (<a class="reference internal" href="#module-clubcpg_prelim.PReLIM" title="clubcpg_prelim.PReLIM"><code class="xref py py-class docutils literal notranslate"><span class="pre">clubcpg_prelim.PReLIM</span></code></a>) – The trained PReLIM model. Located at PReLIM.model</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Path to the saved model</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.ConnectToCpGNet.TrainWithPReLIM.train_model">
+<code class="descname">train_model</code><span class="sig-paren">(</span><em>bins: iter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ConnectToCpGNet.html#TrainWithPReLIM.train_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ConnectToCpGNet.TrainWithPReLIM.train_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train the CpGNet model on a list of provided bins</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bins</strong> – iterable containing CpG matrices of 1 (methylated), 0 (unmethylated), and -1 (unknown)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Path to the saved model file</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-clubcpg.Imputation"></span><dl class="class">
+<dt id="clubcpg.Imputation.Imputation">
+<em class="property">class </em><code class="descclassname">clubcpg.Imputation.</code><code class="descname">Imputation</code><span class="sig-paren">(</span><em>cpg_density: int</em>, <em>bam_file: str</em>, <em>mbias_read1_5=None</em>, <em>mbias_read1_3=None</em>, <em>mbias_read2_5=None</em>, <em>mbias_read2_3=None</em>, <em>processes=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/Imputation.html#Imputation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.Imputation.Imputation" title="Permalink to this definition">¶</a></dt>
+<dd><p>The class providing convienent APIs to train models and impute from models using PReLIM</p>
+<dl class="method">
+<dt id="clubcpg.Imputation.Imputation.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>cpg_density: int</em>, <em>bam_file: str</em>, <em>mbias_read1_5=None</em>, <em>mbias_read1_3=None</em>, <em>mbias_read2_5=None</em>, <em>mbias_read2_3=None</em>, <em>processes=-1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/Imputation.html#Imputation.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.Imputation.Imputation.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>[summary]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>{int} -- Number of CpGs this class instance will be used for</strong> (<em>cpg_density</em>) – </p></li>
+<li><p><strong>{str} -- path to the bam file</strong> (<em>bam_file</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>{</strong><strong>[</strong><strong>type</strong><strong>]</strong><strong>} --</strong><strong> [</strong><strong>description</strong><strong>] </strong><strong>(</strong><strong>default</strong> (<em>mbias_read2_3</em>) – {None})</p></li>
+<li><p><strong>{</strong><strong>[</strong><strong>type</strong><strong>]</strong><strong>} --</strong><strong> [</strong><strong>description</strong><strong>] </strong><strong>(</strong><strong>default</strong> – {None})</p></li>
+<li><p><strong>{</strong><strong>[</strong><strong>type</strong><strong>]</strong><strong>} --</strong><strong> [</strong><strong>description</strong><strong>] </strong><strong>(</strong><strong>default</strong> – {None})</p></li>
+<li><p><strong>{</strong><strong>[</strong><strong>type</strong><strong>]</strong><strong>} --</strong><strong> [</strong><strong>description</strong><strong>] </strong><strong>(</strong><strong>default</strong> – {None})</p></li>
+<li><p><strong>{int} -- number</strong><strong> or </strong><strong>CPUs to use when parallelization can be utilized</strong><strong>, </strong><strong>default= All available</strong><strong> (</strong><strong>default</strong> (<em>processes</em>) – {-1})</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.Imputation.Imputation.extract_matrices">
+<code class="descname">extract_matrices</code><span class="sig-paren">(</span><em>coverage_data_frame: pandas.core.frame.DataFrame</em>, <em>sample_limit: int = None</em>, <em>return_bins=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/Imputation.html#Imputation.extract_matrices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.Imputation.Imputation.extract_matrices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract CpG matrices from bam file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>{pd.DataFrame} -- Output of clubcpg-coverage read in as a csv file</strong> (<em>coverage_data_frame</em>) – </p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>{bool} -- Return the bin location along with the matrix</strong><strong> (</strong><strong>default</strong> (<em>return_bins</em>) – {False})</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[tuple] – Returns tuple of (bin, np.array) if returns_bins = True else returns only np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.Imputation.Imputation.impute_from_model">
+<code class="descname">impute_from_model</code><span class="sig-paren">(</span><em>models_folder: str</em>, <em>matrices: iter</em>, <em>postprocess=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/Imputation.html#Imputation.impute_from_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.Imputation.Imputation.impute_from_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generator to provide imputed matrices on-the-fly</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>{str} -- Path to directory containing trained CpGNet models</strong> (<em>models_folder</em>) – </p></li>
+<li><p><strong>{iter} -- An iterable containging n x m matrices with n=cpgs and m=reads</strong> (<em>matrices</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>{bool} -- Round imputed values to 1s and 0s</strong><strong>  (</strong><strong>default</strong> (<em>postprocess</em>) – {True})</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="clubcpg.Imputation.Imputation.postprocess_predictions">
+<em class="property">static </em><code class="descname">postprocess_predictions</code><span class="sig-paren">(</span><em>predicted_matrix</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/Imputation.html#Imputation.postprocess_predictions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.Imputation.Imputation.postprocess_predictions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes array with predicted values and rounds them to 0 or 1 if threshold is exceeded</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>{</strong><strong>[</strong><strong>type</strong><strong>]</strong><strong>} -- matrix generated by imputation</strong> (<em>predicted_matrix</em>) – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[type] – predicted matrix predictions as 1, 0, or NaN</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.Imputation.Imputation.train_model">
+<code class="descname">train_model</code><span class="sig-paren">(</span><em>output_folder: str</em>, <em>matrices: iter</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/Imputation.html#Imputation.train_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.Imputation.Imputation.train_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Train a CpGNet model using <code class="xref py py-class docutils literal notranslate"><span class="pre">TrainWithCpGNet</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>{str} -- Folder to save trained models</strong> (<em>output_folder</em>) – </p></li>
+<li><p><strong>{iter} -- An iterable of CpGMatrices - ideally obtained through Imputation.extract_matrices</strong><strong>(</strong><strong>)</strong> (<em>matrices</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>[keras model] – Returns the trained CpGNet model</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-clubcpg_prelim.PReLIM">
+<span id="prelim-apis"></span><h2>PReLIM APIs<a class="headerlink" href="#module-clubcpg_prelim.PReLIM" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="clubcpg_prelim.PReLIM.CpGBin">
+<em class="property">class </em><code class="descclassname">clubcpg_prelim.PReLIM.</code><code class="descname">CpGBin</code><span class="sig-paren">(</span><em>matrix</em>, <em>binStartInc=None</em>, <em>binEndInc=None</em>, <em>cpgPositions=None</em>, <em>sequence=''</em>, <em>encoding=None</em>, <em>missingToken=-1</em>, <em>chromosome=None</em>, <em>binSize=100</em>, <em>species='MM10'</em>, <em>verbose=True</em>, <em>tag1=None</em>, <em>tag2=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg_prelim/PReLIM.html#CpGBin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg_prelim.PReLIM.CpGBin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for a bin</p>
+<dl class="method">
+<dt id="clubcpg_prelim.PReLIM.CpGBin.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>matrix</em>, <em>binStartInc=None</em>, <em>binEndInc=None</em>, <em>cpgPositions=None</em>, <em>sequence=''</em>, <em>encoding=None</em>, <em>missingToken=-1</em>, <em>chromosome=None</em>, <em>binSize=100</em>, <em>species='MM10'</em>, <em>verbose=True</em>, <em>tag1=None</em>, <em>tag2=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg_prelim/PReLIM.html#CpGBin.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg_prelim.PReLIM.CpGBin.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>matrix</strong> – numpy array, the bin’s CpG matrix.</p></li>
+<li><p><strong>binStartInc</strong> – integer, the starting, inclusive, chromosomal index of the bin.</p></li>
+<li><p><strong>binEndInc</strong> – integer, the ending, inclusive, chromosomal index of the bin.</p></li>
+<li><p><strong>cpgPositions</strong> – array of integers, the chromosomal positions of the CpGs in the bin.</p></li>
+<li><p><strong>sequence</strong> – string, nucleotide sequence (A,C,G,T)</p></li>
+<li><p><strong>encoding</strong> – array, a reduced representation of the bin’s CpG matrix</p></li>
+<li><p><strong>missingToken</strong> – integer, the token that represents missing data in the matrix.</p></li>
+<li><p><strong>chromosome</strong> – string, the chromosome this bin resides in.</p></li>
+<li><p><strong>binSize</strong> – integer, the number of base pairs this bin covers</p></li>
+<li><p><strong>species</strong> – string, the speices this bin belongs too.</p></li>
+<li><p><strong>verbose</strong> – boolean, print warnings, set to “false” for no error checking and faster speed</p></li>
+<li><p><strong>tag1</strong> – anything, for custom use.</p></li>
+<li><p><strong>tag2</strong> – anything, for custom use.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="clubcpg_prelim.PReLIM.PReLIM">
+<em class="property">class </em><code class="descclassname">clubcpg_prelim.PReLIM.</code><code class="descname">PReLIM</code><span class="sig-paren">(</span><em>cpgDensity=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg_prelim/PReLIM.html#PReLIM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg_prelim.PReLIM.PReLIM" title="Permalink to this definition">¶</a></dt>
+<dd><p>PReLIM imputation class to handle training and predicting from models.</p>
+<dl class="method">
+<dt id="clubcpg_prelim.PReLIM.PReLIM.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>cpgDensity=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg_prelim/PReLIM.html#PReLIM.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg_prelim.PReLIM.PReLIM.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg_prelim.PReLIM.PReLIM.fit">
+<code class="descname">fit</code><span class="sig-paren">(</span><em>X_train, y_train, n_estimators=[10, 50, 100, 500, 1000], cores=-1, max_depths=[1, 5, 10, 20, 30], model_file=None, verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg_prelim/PReLIM.html#PReLIM.fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg_prelim.PReLIM.PReLIM.fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs:
+1. X_train,     numpy array, Contains feature vectors.
+2. y_train,     numpy array, Contains labels for training data.
+3. n_estimators, list, the number of estimators to try during a grid search.
+4. max_depths, list, the maximum depths of trees to try during a grid search.
+5. cores, the number of cores to use during training, helpful for grid search.
+6. model_file, string,      The name of the file to save the model to.</p>
+<blockquote>
+<div><p>If None, then create a file name that includes a timestamp.
+If you don’t want to save a file, set this to “no”</p>
+</div></blockquote>
+<p>5-fold validation is built into the grid search</p>
+<p>Outputs:
+The trained model</p>
+<p>Usage:
+model.fit(X_train, y_train)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg_prelim.PReLIM.PReLIM.impute">
+<code class="descname">impute</code><span class="sig-paren">(</span><em>matrix</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg_prelim/PReLIM.html#PReLIM.impute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg_prelim.PReLIM.PReLIM.impute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs:
+1. matrix, a 2d np array, dtype=float, representing a CpG matrix, 1=methylated, 0=unmethylated, -1=unknown</p>
+<p>Outputs:
+1. A 2d numpy array with predicted probabilities of methylation</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg_prelim.PReLIM.PReLIM.impute_many">
+<code class="descname">impute_many</code><span class="sig-paren">(</span><em>matrices</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg_prelim/PReLIM.html#PReLIM.impute_many"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg_prelim.PReLIM.PReLIM.impute_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imputes a bunch of matrices at the same time to help speed up imputation time.</p>
+<p>Inputs:</p>
+<p>1. matrices: array-like (i.e. list), where each element is
+a 2d np array, dtype=float, representing a CpG matrix, 1=methylated, 0=unmethylated, -1=unknown</p>
+<p>Outputs:</p>
+<ol class="arabic simple">
+<li><p>A List of 2d numpy arrays with predicted probabilities of methylation for unknown values.</p></li>
+</ol>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg_prelim.PReLIM.PReLIM.loadWeights">
+<code class="descname">loadWeights</code><span class="sig-paren">(</span><em>model_file</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg_prelim/PReLIM.html#PReLIM.loadWeights"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg_prelim.PReLIM.PReLIM.loadWeights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs:
+1. model_file, string, name of file with a saved model</p>
+<p>Outputs:
+None</p>
+<p>Effects:
+self.model is loaded with the provided weights</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg_prelim.PReLIM.PReLIM.predict">
+<code class="descname">predict</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg_prelim/PReLIM.html#PReLIM.predict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg_prelim.PReLIM.PReLIM.predict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs:
+1. X, numpy array, contains feature vectors</p>
+<p>Outputs:
+1. 1-d numpy array of predicted class labels</p>
+<p>Usage:
+y_pred = CpGNet.predict(X)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg_prelim.PReLIM.PReLIM.predict_classes">
+<code class="descname">predict_classes</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg_prelim/PReLIM.html#PReLIM.predict_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg_prelim.PReLIM.PReLIM.predict_classes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs:
+1. X, numpy array, contains feature vectors</p>
+<p>Outputs:
+1. 1-d numpy array of prediction values</p>
+<p>Usage:
+y_pred = CpGNet.predict_classes(X)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg_prelim.PReLIM.PReLIM.predict_proba">
+<code class="descname">predict_proba</code><span class="sig-paren">(</span><em>X</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg_prelim/PReLIM.html#PReLIM.predict_proba"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg_prelim.PReLIM.PReLIM.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inputs:
+1. X, numpy array, contains feature vectors</p>
+<p>Outputs:
+1. 1-d numpy array of class predictions</p>
+<p>Usage:
+y_pred = CpGNet.predict(X)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg_prelim.PReLIM.PReLIM.train">
+<code class="descname">train</code><span class="sig-paren">(</span><em>bin_matrices</em>, <em>model_file='no'</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg_prelim/PReLIM.html#PReLIM.train"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg_prelim.PReLIM.PReLIM.train" title="Permalink to this definition">¶</a></dt>
+<dd><p>bin_matrices: list of cpg matrices</p>
+<dl class="simple">
+<dt>model_file, string,      The name of the file to save the model to.</dt><dd><p>If None, then create a file name that includes a timestamp.
+If you don’t want to save a file, set this to “no”</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="usage.html" class="btn btn-neutral float-left" title="2. Using CluBCpG" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Anthony Scott, PhD
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
