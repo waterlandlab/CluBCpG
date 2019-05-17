@@ -1,5 +1,8 @@
+Developer Reference
+====================
+
 ClubCpG APIs
-=============
+-------------
 
 .. automodule:: clubcpg.ParseBam
    :members:
@@ -22,7 +25,7 @@ ClubCpG APIs
 
 
 PReLIM APIs
-===========
+------------
 .. automodule:: clubcpg_prelim.PReLIM
    :members:
    :special-members: __init__

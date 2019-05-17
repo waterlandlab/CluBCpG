@@ -19,10 +19,21 @@ Requirements
 Installation
 =============
 
+PyPi install
+-------------
+
 ClubCpG is not yet deposited onto PyPi, but can still be installed using pip. These steps will install CluBCpG.
 
 .. NOTE::
-    While optional, it is highly recommended to install CluBCpG in a virtual environment
+    While optional, it is **highly recommended** to install CluBCpG in a virtual environment.
+    Create and activate that environment now.
+
+0. Create and activate python virtualenv
+
+.. code-block:: bash
+
+    virtualenv ~/venv/clubcpg -p python3
+    source activate ~/venv/clubcpg/bin/activate
 
 1. Clone the public GitHub repo into a local directory
 
@@ -30,7 +41,7 @@ ClubCpG is not yet deposited onto PyPi, but can still be installed using pip. Th
 
     git clone https://github.com/waterlandlab/CluBCpG.git
 
-2. Navigate into the folder containing `setup.py` and run `pip install .`
+2. Navigate into the folder containing ``setup.py`` and run ``pip install .``
 
 .. code-block:: bash
 
