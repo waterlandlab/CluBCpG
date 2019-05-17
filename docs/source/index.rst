@@ -20,16 +20,22 @@ CluBCpG supports both paired-end and single-end data and any read-length. Howeve
 CluBCpG is written 100% in Python.
 
 CluBCpG was created to be primarily utilized as command line based tools, but it does provide a few APIs which may be
-useful on their own for researchers. Those APIs are documented in :ref: `API_reference.rst`
+useful on their own for researchers. Those APIs are documented in :doc:`API`.
 
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :numbered:
+   :caption: User Guide:
 
    intro.rst
    usage.rst
-   API_reference.rst
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Developer Reference:
+
+   API.rst
 
 
 Indices and tables

@@ -19,7 +19,7 @@ Requirements
 Installation
 =============
 
-PyPi install
+pip install
 -------------
 
 ClubCpG is not yet deposited onto PyPi, but can still be installed using pip. These steps will install CluBCpG.
@@ -47,6 +47,10 @@ ClubCpG is not yet deposited onto PyPi, but can still be installed using pip. Th
 
     cd CluBCpg
     pip install .
+
+conda
+------
+Coming soon hopefully
 
 Running Tests
 ==============
