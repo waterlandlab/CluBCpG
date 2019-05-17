@@ -57,6 +57,7 @@ class ClusterReads:
         :param matrix: dataframe of clustered reads
         :type: pd.DataFrame
         :return: input matrix with some clusters removed
+
         """
         output = matrix.copy()
         # duplicate indexes exist from concatenation, reset in the index to prevent dropping unintended rows
@@ -137,6 +138,7 @@ class ClusterReads:
         :type bin_loc: string
         :return: comma separated lines extracted from the filtered matrix, containing chromosome and bin info
         :rtype: list
+
         """
         # Individual comparisons data
         lines = []
@@ -186,6 +188,7 @@ class ClusterReads:
 
         :param bin: string in this format: "chr19_55555"
         :return: a list of lines representing the cluster data from that bin
+
         """
         try:
             chromosome, bin_loc = bin.split("_")
@@ -281,6 +284,7 @@ class ClusterReads:
         :type return_only: bool
         :return: list of lists if :attribute: `return_only` False otherwise None
         :rtype: list or None
+
         """
         start_time = datetime.datetime.now().strftime("%y-%m-%d")
 
@@ -359,7 +363,7 @@ class ClusterReadsWithImputation(ClusterReads):
         # start the main loop for imputation of these CpGs
         final_results_tf = tempfile.TemporaryFile(mode="w+t")
         final_results_tf.write("bin,input_label,methylation,class_label,read_number,cpg_number,cpg_pattern,class_split" + "\n")
-        for i in range(2,7):
+        for i in range(2,6):
             print("Starting Imputation of CpG density {}...".format(i))
 
             imputer_A = Imputation(cpg_density=i, 

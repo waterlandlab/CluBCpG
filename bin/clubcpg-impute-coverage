@@ -76,7 +76,7 @@ if __name__ == "__main__":
     ### Impute from models ###
     # temp file for storage
     tfile = tempfile.TemporaryFile(mode="w+t")
-    for i in range(2,7):
+    for i in range(2,6):
         print("Starting with cpg density: {}...".format(i), flush=True)
         imputer = Imputation(i, args.input_bam_file, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3, processes)
         # Get matrices with unknowns as -1

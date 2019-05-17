@@ -49,7 +49,7 @@ if __name__ == "__main__":
     coverage_data.columns = ['bin', 'reads', 'cpgs']
 
     # Train models
-    for i in range(2,7):
+    for i in range(2,6):
         print("Starting training cpg density: {}".format(i))
         trainer = Imputation(i, args.input_bam_file, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3, processes)
         matrices = trainer.extract_matrices(coverage_data, sample_limit=sample_limit)
