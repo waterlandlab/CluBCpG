@@ -3,41 +3,32 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to CluBCpG's documentation!
+===================================================
+CluBCpG: Cluster-Based analysis of CpG methylation
+===================================================
+
+What is CluBCpG?
 ===================================
+CluBCpG is a software package built to analyze whole genome bisulfite sequencing (WGBS) data.
+This toolkit will divide each chromosome into small user-defined intervals, extract all WGBS reads within those intervals,
+cluster them based on identity, and write a final report to the use containing all identified CpG methylation patterns.
+
+CluBCpG supports both paired-end and single-end data and any read-length. However read lengths of at least
+100 base-pairs is recommended
+
+CluBCpG is written 100% in Python.
+
+CluBCpG was created to be primarily utilized as command line based tools, but it does provide a few APIs which may be
+useful on their own for researchers.
+
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   intro.rst
+   API_reference.rst
 
-ClubCpG APIs
-=============
-.. automodule:: clubcpg.ParseBam
-   :members:
-   :special-members: __init__
-
-
-.. automodule:: clubcpg.ClusterReads
-   :members:
-   :special-members: __init__
-
-
-.. automodule:: clubcpg.ConnectToCpGNet
-   :members:
-   :special-members: __init__
-
-
-.. automodule:: clubcpg.Imputation
-   :members:
-   :special-members: __init__
-
-
-PReLIM APIs
-===========
-.. automodule:: clubcpg_prelim.PReLIM
-   :members:
-   :special-members: __init__
 
 Indices and tables
 ==================
