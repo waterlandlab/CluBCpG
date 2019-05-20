@@ -167,11 +167,193 @@
 <h1>3. Understanding the CluBCpG output data<a class="headerlink" href="#understanding-the-clubcpg-output-data" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="coverage-output">
 <h2>3.1. Coverage output<a class="headerlink" href="#coverage-output" title="Permalink to this headline">¶</a></h2>
-<p>Todo</p>
+<p>The output from <code class="docutils literal notranslate"><span class="pre">clubcpg-coverage</span></code> looks like this:</p>
+<table class="colwidths-given docutils align-center" id="id1">
+<caption><span class="caption-text">clubcpg-coverage output</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 25%" />
+<col style="width: 25%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>bin_id</p></th>
+<th class="head"><p>n_reads</p></th>
+<th class="head"><p>n_cpgs</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>chr19_61300</p></td>
+<td><p>4</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>chr19_61400</p></td>
+<td><p>4</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>chr19_89800</p></td>
+<td><p>25</p></td>
+<td><p>4</p></td>
+</tr>
+</tbody>
+</table>
+<p>Each row represents 1 <strong>bin</strong>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A header row is shown on this table for clarity, however the real csv file generated will not have a header row.</p>
+</div>
+<ul>
+<li><dl>
+<dt>bin_id</dt><dd><p>Represents the unique bin in the genome. The underscore character (<code class="docutils literal notranslate"><span class="pre">__</span></code>) separates the chromosome and the genomic
+coordinate. The genomic coordiate represents the end-point of a bin.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>ex: If <code class="docutils literal notranslate"><span class="pre">--bin_size</span></code> was set to 100, chr19_61300 would represent chr19:61200-61300</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>n_reads</dt><dd><p>Number of reads which fully cover <strong>all</strong> CpGs within the bin</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>n_cpgs</dt><dd><p>Number of CpGs within the bin</p>
+</dd>
+</dl>
+</li>
+</ul>
 </div>
 <div class="section" id="cluster-output">
 <h2>3.2. Cluster output<a class="headerlink" href="#cluster-output" title="Permalink to this headline">¶</a></h2>
-<p>Todo</p>
+<p>The output from <code class="docutils literal notranslate"><span class="pre">clubcpg-cluster</span></code> looks like this:</p>
+<table class="colwidths-given docutils align-center" id="id2">
+<caption><span class="caption-text">clubcpg-cluster output</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+<col style="width: 13%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>bin_id</p></th>
+<th class="head"><p>input_label</p></th>
+<th class="head"><p>methylation</p></th>
+<th class="head"><p>class_label</p></th>
+<th class="head"><p>read_number</p></th>
+<th class="head"><p>cpg_number</p></th>
+<th class="head"><p>cpg_pattern</p></th>
+<th class="head"><p>class_split</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>chr2_10700</p></td>
+<td><p>AB</p></td>
+<td><p>0.8333</p></td>
+<td><p>0</p></td>
+<td><p>6</p></td>
+<td><p>6</p></td>
+<td><p>1;1;1;1;1;0</p></td>
+<td><p>A=5,B=1</p></td>
+</tr>
+<tr class="row-odd"><td><p>chr2_10700</p></td>
+<td><p>A</p></td>
+<td><p>1</p></td>
+<td><p>1</p></td>
+<td><p>12</p></td>
+<td><p>6</p></td>
+<td><p>1;1;1;1;1;1</p></td>
+<td><p>A=12</p></td>
+</tr>
+</tbody>
+</table>
+<p>Each row represents 1 <strong>cluster</strong>.</p>
+<ul>
+<li><dl class="simple">
+<dt>bin_id</dt><dd><p>Represents the unique bin in the genome. The underscore character (<code class="docutils literal notranslate"><span class="pre">__</span></code>) separates the chromosome and the genomic
+coordinate. The genomic coordiate represents the end-point of a bin.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>input_label</dt><dd><p>Represents the input file this cluster was found in</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>Single-file mode</dt><dd><ul>
+<li><p>This will show the BAM file name specified with the <code class="docutils literal notranslate"><span class="pre">-a</span></code> flag.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Two-file mode:</dt><dd><ul>
+<li><p>A = Input BAM specified in the <code class="docutils literal notranslate"><span class="pre">-a</span></code> flag</p></li>
+<li><p>B = Input BAM specified in the <code class="docutils literal notranslate"><span class="pre">-b</span></code></p></li>
+<li><p>AB = found in both input BAM files</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>methylation</dt><dd><p>The methylation level of the CpG pattern found in this cluster</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>class_label</dt><dd><p>A unique identifier for each cluster found within a given bin (only unique within a bin)</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>read_number</dt><dd><p>The number of reads found within this cluster</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>cpg_number</dt><dd><p>The number of CpGs in this cluster</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>cpg_pattern</dt><dd><p>The methylation pattern of the cluster</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>1 = methylated</p></li>
+<li><p>0 = unmethylated</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>class_split</dt><dd><p>The breakdown of how many reads in a given cluster came from each input BAM.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Useful for AB clusters.</p></li>
+<li><p>If cluster is A or B, this number will match the read_number column.</p></li>
+</ul>
+</div></blockquote>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If clustering was performed with <code class="docutils literal notranslate"><span class="pre">--remove_noise</span> <span class="pre">False</span></code> (this is <code class="docutils literal notranslate"><span class="pre">True</span></code> by deafult) you may find clusters with a
+class_label of -1.</p>
+<p>These represents noise reads, which are reads where a given CpG patterns was only observed <strong>ONCE</strong>.</p>
+<p>The <em>read_number</em> column may be of interest to you, but the other columns do <strong>NOT</strong> represent true values. They will
+only represent one of the noise patterns found. These values may be set to <code class="docutils literal notranslate"><span class="pre">null</span></code> in future versions of CluBCpG.</p>
+</div>
 </div>
 </div>
 
