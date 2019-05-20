@@ -20,9 +20,9 @@ def str2bool(v):
 # Input params
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument("-a", "--input_bam_A",
-                        help="First Input bam file, coordinate sorted with index present")
+                        help="Input bam file, coordinate sorted with index present")
 arg_parser.add_argument("-o", "--output_dir",
-                        help="Output directory to save figures, defaults to bam file loaction")
+                        help="Output directory to save results, defaults to bam file loaction")
 arg_parser.add_argument("--bin_size", help="Size of bins to extract and analyze, default=100", default=100)
 arg_parser.add_argument("-n", "--num_processors",
                         help="Number of processors to use for analysis, default=1",
