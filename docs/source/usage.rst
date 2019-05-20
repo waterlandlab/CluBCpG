@@ -1,7 +1,6 @@
 ===============
 Using CluBCpG
 ===============
-.. contents:: Table of Contents
 
 Introduction
 =============
@@ -121,12 +120,12 @@ These options can also be viewed by running ``--help`` after each tool on the co
 
 .. _clubcpg-coverage_tool-label:
 
-clubcpg-coverage
-------------------
+
 .. autoprogram:: clubcpg-coverage:arg_parser
     :prog: clubcpg-coverage
 
-clubcpg-cluster
-------------------
-Words
+
+.. autoprogram:: clubcpg-cluster:arg_parser
+    :prog: clubcpg-cluster
+
 

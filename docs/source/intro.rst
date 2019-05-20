@@ -2,8 +2,6 @@
 Getting Started
 ================
 
-.. contents:: Table of Contents
-
 Requirements
 =============
 

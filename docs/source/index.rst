@@ -24,12 +24,14 @@ useful on their own for researchers. Those APIs are documented in :doc:`API`.
 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :numbered:
    :caption: User Guide Contents:
 
    intro.rst
    usage.rst
+   usage_prelim.rst
+
 
 .. toctree::
    :maxdepth: 2

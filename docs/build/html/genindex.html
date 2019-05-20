@@ -88,6 +88,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">1. Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">2. Using CluBCpG</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_prelim.html">3. Using CluBCpG with PReLIM</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Developer Reference:</span></p>
 <ul>
@@ -176,9 +177,27 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
+    --bin_size &lt;bin_size&gt;
+
+      <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-bin-size">clubcpg-cluster command line option</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-coverage-bin-size">clubcpg-coverage command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --bins &lt;bins&gt;
+
+      <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-bins">clubcpg-cluster command line option</a>
+</li>
+      </ul></li>
+      <li>
     --no_overlap &lt;no_overlap&gt;
 
       <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-no-overlap">clubcpg-cluster command line option</a>
+</li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-no-overlap">clubcpg-coverage command line option</a>
 </li>
       </ul></li>
@@ -186,6 +205,8 @@
     --read1_3 &lt;read1_3&gt;
 
       <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-read1-3">clubcpg-cluster command line option</a>
+</li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-read1-3">clubcpg-coverage command line option</a>
 </li>
       </ul></li>
@@ -193,6 +214,8 @@
     --read1_5 &lt;read1_5&gt;
 
       <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-read1-5">clubcpg-cluster command line option</a>
+</li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-read1-5">clubcpg-coverage command line option</a>
 </li>
       </ul></li>
@@ -200,6 +223,8 @@
     --read2_3 &lt;read2_3&gt;
 
       <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-read2-3">clubcpg-cluster command line option</a>
+</li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-read2-3">clubcpg-coverage command line option</a>
 </li>
       </ul></li>
@@ -207,23 +232,41 @@
     --read2_5 &lt;read2_5&gt;
 
       <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-read2-5">clubcpg-cluster command line option</a>
+</li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-read2-5">clubcpg-coverage command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --remove_noise &lt;remove_noise&gt;
+
+      <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-remove-noise">clubcpg-cluster command line option</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    --suffix &lt;suffix&gt;
+
+      <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-suffix">clubcpg-cluster command line option</a>
 </li>
       </ul></li>
       <li>
     -a &lt;input_bam_a&gt;, --input_bam_A &lt;input_bam_a&gt;
 
       <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-a">clubcpg-cluster command line option</a>
+</li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-a">clubcpg-coverage command line option</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    -bin_size &lt;bin_size&gt;
+    -b &lt;input_bam_b&gt;, --input_bam_B &lt;input_bam_b&gt;
 
       <ul>
-        <li><a href="usage.html#cmdoption-clubcpg-coverage-bin-size">clubcpg-coverage command line option</a>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-b">clubcpg-cluster command line option</a>
 </li>
       </ul></li>
       <li>
@@ -237,13 +280,24 @@
     -h, --help
 
       <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-h">clubcpg-cluster command line option</a>
+</li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-h">clubcpg-coverage command line option</a>
+</li>
+      </ul></li>
+      <li>
+    -m &lt;cluster_member_minimum&gt;, --cluster_member_minimum &lt;cluster_member_minimum&gt;
+
+      <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-m">clubcpg-cluster command line option</a>
 </li>
       </ul></li>
       <li>
     -n &lt;num_processors&gt;, --num_processors &lt;num_processors&gt;
 
       <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-n">clubcpg-cluster command line option</a>
+</li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-n">clubcpg-coverage command line option</a>
 </li>
       </ul></li>
@@ -251,7 +305,16 @@
     -o &lt;output_dir&gt;, --output_dir &lt;output_dir&gt;
 
       <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-o">clubcpg-cluster command line option</a>
+</li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-o">clubcpg-coverage command line option</a>
+</li>
+      </ul></li>
+      <li>
+    -r &lt;read_depth&gt;, --read_depth &lt;read_depth&gt;
+
+      <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-r">clubcpg-cluster command line option</a>
 </li>
       </ul></li>
   </ul></td>
@@ -291,9 +354,48 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
+    clubcpg-cluster command line option
+
+      <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-bin-size">--bin_size &lt;bin_size&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-bins">--bins &lt;bins&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-no-overlap">--no_overlap &lt;no_overlap&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-read1-3">--read1_3 &lt;read1_3&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-read1-5">--read1_5 &lt;read1_5&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-read2-3">--read2_3 &lt;read2_3&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-read2-5">--read2_5 &lt;read2_5&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-remove-noise">--remove_noise &lt;remove_noise&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-suffix">--suffix &lt;suffix&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-a">-a &lt;input_bam_a&gt;, --input_bam_A &lt;input_bam_a&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-b">-b &lt;input_bam_b&gt;, --input_bam_B &lt;input_bam_b&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-h">-h, --help</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-m">-m &lt;cluster_member_minimum&gt;, --cluster_member_minimum &lt;cluster_member_minimum&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-n">-n &lt;num_processors&gt;, --num_processors &lt;num_processors&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-o">-o &lt;output_dir&gt;, --output_dir &lt;output_dir&gt;</a>
+</li>
+        <li><a href="usage.html#cmdoption-clubcpg-cluster-r">-r &lt;read_depth&gt;, --read_depth &lt;read_depth&gt;</a>
+</li>
+      </ul></li>
+      <li>
     clubcpg-coverage command line option
 
       <ul>
+        <li><a href="usage.html#cmdoption-clubcpg-coverage-bin-size">--bin_size &lt;bin_size&gt;</a>
+</li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-no-overlap">--no_overlap &lt;no_overlap&gt;</a>
 </li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-read1-3">--read1_3 &lt;read1_3&gt;</a>
@@ -305,8 +407,6 @@
         <li><a href="usage.html#cmdoption-clubcpg-coverage-read2-5">--read2_5 &lt;read2_5&gt;</a>
 </li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-a">-a &lt;input_bam_a&gt;, --input_bam_A &lt;input_bam_a&gt;</a>
-</li>
-        <li><a href="usage.html#cmdoption-clubcpg-coverage-bin-size">-bin_size &lt;bin_size&gt;</a>
 </li>
         <li><a href="usage.html#cmdoption-clubcpg-coverage-chr">-chr &lt;chromosome&gt;, --chromosome &lt;chromosome&gt;</a>
 </li>
