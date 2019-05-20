@@ -120,7 +120,6 @@ These options can also be viewed by running ``--help`` after each tool on the co
 
 .. _clubcpg-coverage_tool-label:
 
-
 .. autoprogram:: clubcpg-coverage:arg_parser
     :prog: clubcpg-coverage
 

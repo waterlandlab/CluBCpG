@@ -88,7 +88,8 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="intro.html">1. Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">2. Using CluBCpG</a></li>
-<li class="toctree-l1"><a class="reference internal" href="usage_prelim.html">3. Using CluBCpG with PReLIM</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output_data.html">3. Understanding the CluBCpG output data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_prelim.html">4. Using CluBCpG with PReLIM</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Developer Reference:</span></p>
 <ul>
@@ -166,7 +167,7 @@ This toolkit will divide each chromosome into small user-defined intervals, extr
 cluster them based on identity, and write a final report to the use containing all identified CpG methylation patterns.</p>
 <p>CluBCpG supports both paired-end and single-end data and any read-length. However, a read length of at least
 100 base-pairs is recommended</p>
-<p>CluBCpG is written 100% in Python.</p>
+<p>CluBCpG is written 100% in Python, but CluBCpG requires no knowledge of python (or any programming language) to use.</p>
 <p>CluBCpG was created to be primarily utilized as command line based tools, but it does provide a few APIs which may be
 useful on their own for researchers. Those APIs are documented in <a class="reference internal" href="API.html"><span class="doc">API documentation</span></a>.</p>
 <div class="toctree-wrapper compound">
@@ -193,8 +194,13 @@ useful on their own for researchers. Those APIs are documented in <a class="refe
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="usage_prelim.html">3. Using CluBCpG with PReLIM</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage_prelim.html#introduction">3.1. Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output_data.html">3. Understanding the CluBCpG output data</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="output_data.html#coverage-output">3.1. Coverage output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="output_data.html#cluster-output">3.2. Cluster output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage_prelim.html">4. Using CluBCpG with PReLIM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage_prelim.html#introduction">4.1. Introduction</a></li>
 </ul>
 </li>
 </ul>

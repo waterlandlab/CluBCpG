@@ -17,7 +17,7 @@ cluster them based on identity, and write a final report to the use containing a
 CluBCpG supports both paired-end and single-end data and any read-length. However, a read length of at least
 100 base-pairs is recommended
 
-CluBCpG is written 100% in Python.
+CluBCpG is written 100% in Python, but CluBCpG requires no knowledge of python (or any programming language) to use.
 
 CluBCpG was created to be primarily utilized as command line based tools, but it does provide a few APIs which may be
 useful on their own for researchers. Those APIs are documented in :doc:`API`.
@@ -30,6 +30,7 @@ useful on their own for researchers. Those APIs are documented in :doc:`API`.
 
    intro.rst
    usage.rst
+   output_data.rst
    usage_prelim.rst
 
 
