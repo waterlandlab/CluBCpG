@@ -9,7 +9,9 @@ Requirements
 
 * Python 3.5+ (Fully tested on Python 3.5, 3.6, and 3.7)
 * Installation of samtools on your PATH
-* nix operating system (Ubuntu, CentOS, MacOS (presumably, but not tested on Mac)
+* Any \*nix operating system
+
+    * (tested on Ubuntu, CentOS, RHEL)
 
 .. NOTE::
     CluBCpG utilized Pysam, which is a wrapper around the htslib and samtools C-APIs, to read from BAM files. These tools
@@ -28,7 +30,7 @@ ClubCpG is not yet deposited onto PyPi, but can still be installed using pip. Th
     While optional, it is **highly recommended** to install CluBCpG in a virtual environment.
     Create and activate that environment now.
 
-0. Create and activate python virtualenv
+0. (Optional) Create and activate python virtualenv
 
 .. code-block:: bash
 

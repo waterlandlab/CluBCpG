@@ -85,7 +85,7 @@
               
             
             
-              <p class="caption"><span class="caption-text">User Guide:</span></p>
+              <p class="caption"><span class="caption-text">User Guide Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">1. Getting Started</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#requirements">1.1. Requirements</a></li>
@@ -187,10 +187,16 @@
 </div>
 <div class="section" id="requirements">
 <h2><a class="toc-backref" href="#id2">1.1. Requirements</a><a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
+<ul>
 <li><p>Python 3.5+ (Fully tested on Python 3.5, 3.6, and 3.7)</p></li>
 <li><p>Installation of samtools on your PATH</p></li>
-<li><p>nix operating system (Ubuntu, CentOS, MacOS (presumably, but not tested on Mac)</p></li>
+<li><p>Any *nix operating system</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>(tested on Ubuntu, CentOS, RHEL)</p></li>
+</ul>
+</div></blockquote>
+</li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -209,7 +215,7 @@ do not support Windows, therefore, CluBCpG cannot be run on Windows.</p>
 Create and activate that environment now.</p>
 </div>
 <ol class="arabic simple" start="0">
-<li><p>Create and activate python virtualenv</p></li>
+<li><p>(Optional) Create and activate python virtualenv</p></li>
 </ol>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>virtualenv ~/venv/clubcpg -p python3
 <span class="nb">source</span> activate ~/venv/clubcpg/bin/activate

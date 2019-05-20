@@ -65,30 +65,66 @@ can be utilized for both of these steps using ``samtools sort`` and ``samtools i
 Typical workflow
 =================
 
-0. Obtain your correctly processed BAM file(s)
+1. Obtain your correctly processed BAM file(s)
 
     * ClubCpG accepts one or two BAM files for processing
 
-1. Use ``clubcpg-coverage`` to calculate the number of reads fully covering all bins across the genome.
+2. Use ``clubcpg-coverage`` to calculate the number of reads fully covering all bins across the genome.
 
     a) This process should be performed on individual chromosomes
 
     .. HINT::
         This is an excellent step to parallelize if running in a HPC environment. ``clubcpg-coverage``
-        has a flag, ``-n`` to specify the number of CPUs to use during processing
+        has a flag, ``-n`` to specify the number of CPUs to use during processing. This also works if running on one
+        machine with multiple cores.
 
         Additionally, each chromosome can be run on an independent compute node. No need to split the BAM file. CluBCpG
-        will only operate on the chromosome specified with the ``-chr`` flag.
+        will only operate on the chromosome specified with the ``-chr`` flag. (See :ref:`clubcpg-coverage_tool-label`)
+
+3. Filter the generated csv file for desired number of reads and CpG densities
+
+    a. The output is csv file that does not have a header but the columns contain the following data:
+    ``bin id``, ``number of reads``, ``number of cpgs``.
+
+    b. You can filter this however you like. We recommend >= 10 reads and >= 2 cpgs.
+
+    c) `bash` and `awk` can be used to filter the output using the following one-liner:
+
+    .. code-block:: bash
+
+        cat CompleteBins.yourfilename.chr19.csv | awk -F "," '$2>=10 && $3>=2' > CompleteBins.yourfilename.chr19.filtered.csv
+
+    .. NOTE::
+        If you running CluBCpG on two BAM files, this step only needs to be performed on the first BAM file.
+
+4. Use ``clubcpg-cluster`` to perform cluster analysis
+
+    a. Here you provide your filtered csv file from the previous step into this clustering step using the ``--bins`` flag. This accelerates the
+    analysis by only reading bins which have already been pre-determined to meet coverage requirements.
+
+    b. If running two bam files: If the coverage requirements were met in the first BAM, but not the second BAM, the bin
+    will be ignored and not included in the final report.
+
+    .. HINT::
+        Here is another opportunity for parallelization. ``clubcpb-cluster`` also can be run with the ``-n`` flag to
+        select the number of CPU cores. But if you have a separate csv file for each chromosome from step 2/3, you can run
+        each of these separately on multiple nodes.
+
+        Just use the ``--suffix`` flag to append on the chromosome
+        information into the filename of the final report.
 
 .. _command_line_tools_label:
 
 Command line tools
 ====================
-Words
+These options can also be viewed by running ``--help`` after each tool on the command line.
+
+.. _clubcpg-coverage_tool-label:
 
 clubcpg-coverage
 ------------------
-Words
+.. autoprogram:: clubcpg-coverage:arg_parser
+    :prog: clubcpg-coverage
 
 clubcpg-cluster
 ------------------

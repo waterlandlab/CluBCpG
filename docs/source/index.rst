@@ -26,7 +26,7 @@ useful on their own for researchers. Those APIs are documented in :doc:`API`.
 .. toctree::
    :maxdepth: 2
    :numbered:
-   :caption: User Guide:
+   :caption: User Guide Contents:
 
    intro.rst
    usage.rst
