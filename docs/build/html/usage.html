@@ -1,0 +1,536 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2. Using CluBCpG &mdash; CluBCpG 0.1.10 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="3. Understanding the CluBCpG output data" href="output_data.html" />
+    <link rel="prev" title="1. Getting Started" href="intro.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> CluBCpG
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.10
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">User Guide Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">1. Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">2. Using CluBCpG</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">2.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#sequencing-data-pre-processing">2.2. Sequencing data pre-processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#typical-workflow">2.3. Typical workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-tools">2.4. Command line tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clubcpg-coverage">2.4.1. clubcpg-coverage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clubcpg-cluster">2.4.2. clubcpg-cluster</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="output_data.html">3. Understanding the CluBCpG output data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_prelim.html">4. Using CluBCpG with PReLIM</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Developer Reference:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="API.html">API documentation</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CluBCpG</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>2. Using CluBCpG</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="using-clubcpg">
+<h1>2. Using CluBCpG<a class="headerlink" href="#using-clubcpg" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>2.1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>After installing CluBCpG to your python environment there should not be a new set of command line tools on your PATH.
+They all begin with <code class="docutils literal notranslate"><span class="pre">clubcpg-</span></code>. Each one of them comes with a help command which displays the command line
+arguments each tool accepts.</p>
+<p>For example you can run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>clubcpg-coverage --help
+</pre></div>
+</div>
+</div></blockquote>
+<p>and display the following</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: clubcpg-coverage [-h] [-a INPUT_BAM_A] [-o OUTPUT_DIR]</span>
+<span class="go">                        [-bin_size BIN_SIZE] [-n NUM_PROCESSORS]</span>
+<span class="go">                        [-chr CHROMOSOME] [--read1_5 READ1_5]</span>
+<span class="go">                        [--read1_3 READ1_3] [--read2_5 READ2_5]</span>
+<span class="go">                        [--read2_3 READ2_3] [--no_overlap [NO_OVERLAP]]</span>
+
+<span class="go">optional arguments:</span>
+<span class="go">  -h, --help            show this help message and exit</span>
+<span class="go">  -a INPUT_BAM_A, --input_bam_A INPUT_BAM_A</span>
+<span class="go">                        First Input bam file, coordinate sorted with index</span>
+<span class="go">                        present</span>
+<span class="go">  -o OUTPUT_DIR, --output_dir OUTPUT_DIR</span>
+<span class="go">                        Output directory to save figures, defaults to bam file</span>
+<span class="go">                        loaction</span>
+<span class="go">  -bin_size BIN_SIZE    Size of bins to extract and analyze, default=100</span>
+<span class="go">  -n NUM_PROCESSORS, --num_processors NUM_PROCESSORS</span>
+<span class="go">                        Number of processors to use for analysis, default=1</span>
+<span class="go">  -chr CHROMOSOME, --chromosome CHROMOSOME</span>
+<span class="go">                        Chromosome to analyze, example: &#39;chr19&#39;, required</span>
+<span class="go">  --read1_5 READ1_5     integer, read1 5&#39; m-bias ignore bp, default=0</span>
+<span class="go">  --read1_3 READ1_3     integer, read1 3&#39; m-bias ignore bp, default=0</span>
+<span class="go">  --read2_5 READ2_5     integer, read2 5&#39; m-bias ignore bp, default=0</span>
+<span class="go">  --read2_3 READ2_3     integer, read2 3&#39; m-bias ignore bp, default=0</span>
+<span class="go">  --no_overlap [NO_OVERLAP]</span>
+<span class="go">                        bool, remove any overlap between paired reads and</span>
+<span class="go">                        stitch reads together when possible, default=True</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>details of each flag are elaborated upon below in <a class="reference internal" href="#command-line-tools-label"><span class="std std-ref">Command line tools</span></a>.</p>
+</div>
+<div class="section" id="sequencing-data-pre-processing">
+<h2>2.2. Sequencing data pre-processing<a class="headerlink" href="#sequencing-data-pre-processing" title="Permalink to this headline">¶</a></h2>
+<p>CluBCpG uses BAM files generated by standard bioinformatics pipelines. For the most part you can generate this BAM file
+in any way you see fit. However CluBCpG does have a few requirements:</p>
+<ol class="arabic">
+<li><p>The bisulfite read mapping should be performed with <code class="docutils literal notranslate"><span class="pre">Bismark</span></code></p>
+<blockquote>
+<div><div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>CluBCpG compatibility has <strong>NOT</strong> been tested with other bisulfite read mappers.</p>
+</div>
+</div></blockquote>
+</li>
+</ol>
+<p>2. The BAM file should be <strong>cooridinate sorted</strong> and have an index file (<code class="docutils literal notranslate"><span class="pre">.bai</span></code>) present in its directory. Samtools
+can be utilized for both of these steps using <code class="docutils literal notranslate"><span class="pre">samtools</span> <span class="pre">sort</span></code> and <code class="docutils literal notranslate"><span class="pre">samtools</span> <span class="pre">index</span></code>.</p>
+</div>
+<div class="section" id="typical-workflow">
+<h2>2.3. Typical workflow<a class="headerlink" href="#typical-workflow" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p>Obtain your correctly processed BAM file(s)</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>ClubCpG accepts one or two BAM files for processing</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">clubcpg-coverage</span></code> to calculate the number of reads fully covering all bins across the genome.</p>
+<blockquote>
+<div><ol class="loweralpha simple">
+<li><p>This process should be performed on individual chromosomes</p></li>
+</ol>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>This is an excellent step to parallelize if running in a HPC environment. <code class="docutils literal notranslate"><span class="pre">clubcpg-coverage</span></code>
+has a flag, <code class="docutils literal notranslate"><span class="pre">-n</span></code> to specify the number of CPUs to use during processing. This also works if running on one
+machine with multiple cores.</p>
+<p>Additionally, each chromosome can be run on an independent compute node. No need to split the BAM file. CluBCpG
+will only operate on the chromosome specified with the <code class="docutils literal notranslate"><span class="pre">-chr</span></code> flag. (See <a class="reference internal" href="#clubcpg-coverage-tool-label"><span class="std std-ref">clubcpg-coverage</span></a>)</p>
+</div>
+</div></blockquote>
+</li>
+<li><p>Filter the generated csv file for desired number of reads and CpG densities</p>
+<blockquote>
+<div><p>a. The output is csv file that does not have a header but the columns contain the following data:
+<code class="docutils literal notranslate"><span class="pre">bin</span> <span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">number</span> <span class="pre">of</span> <span class="pre">reads</span></code>, <code class="docutils literal notranslate"><span class="pre">number</span> <span class="pre">of</span> <span class="pre">cpgs</span></code>.</p>
+<ol class="loweralpha simple" start="2">
+<li><p>You can filter this however you like. We recommend &gt;= 10 reads and &gt;= 2 cpgs.</p></li>
+</ol>
+<ol class="loweralpha simple" start="3">
+<li><p><cite>bash</cite> and <cite>awk</cite> can be used to filter the output using the following one-liner:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat CompleteBins.yourfilename.chr19.csv <span class="p">|</span> awk -F <span class="s2">&quot;,&quot;</span> <span class="s1">&#39;$2&gt;=10 &amp;&amp; $3&gt;=2&#39;</span> &gt; CompleteBins.yourfilename.chr19.filtered.csv
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you running CluBCpG on two BAM files, this step only needs to be performed on the first BAM file.</p>
+</div>
+</div></blockquote>
+</li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">clubcpg-cluster</span></code> to perform cluster analysis</p>
+<blockquote>
+<div><p>a. Here you provide your filtered csv file from the previous step into this clustering step using the <code class="docutils literal notranslate"><span class="pre">--bins</span></code> flag. This accelerates the
+analysis by only reading bins which have already been pre-determined to meet coverage requirements.</p>
+<p>b. If running two bam files: If the coverage requirements were met in the first BAM, but not the second BAM, the bin
+will be ignored and not included in the final report.</p>
+<div class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>Here is another opportunity for parallelization. <code class="docutils literal notranslate"><span class="pre">clubcpb-cluster</span></code> also can be run with the <code class="docutils literal notranslate"><span class="pre">-n</span></code> flag to
+select the number of CPU cores. But if you have a separate csv file for each chromosome from step 2/3, you can run
+each of these separately on multiple nodes.</p>
+<p>Just use the <code class="docutils literal notranslate"><span class="pre">--suffix</span></code> flag to append on the chromosome
+information into the filename of the final report.</p>
+</div>
+</div></blockquote>
+</li>
+</ol>
+</div>
+<div class="section" id="command-line-tools">
+<span id="command-line-tools-label"></span><h2>2.4. Command line tools<a class="headerlink" href="#command-line-tools" title="Permalink to this headline">¶</a></h2>
+<p>These options can also be viewed by running <code class="docutils literal notranslate"><span class="pre">--help</span></code> after each tool on the command line.</p>
+<div class="section" id="clubcpg-coverage">
+<span id="clubcpg-coverage-tool-label"></span><h3>2.4.1. clubcpg-coverage<a class="headerlink" href="#clubcpg-coverage" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: clubcpg-coverage [-h] [-a INPUT_BAM_A] [-o OUTPUT_DIR]</span>
+<span class="go">                        [--bin_size BIN_SIZE] [-n NUM_PROCESSORS]</span>
+<span class="go">                        [-chr CHROMOSOME] [--read1_5 READ1_5]</span>
+<span class="go">                        [--read1_3 READ1_3] [--read2_5 READ2_5]</span>
+<span class="go">                        [--read2_3 READ2_3] [--no_overlap [NO_OVERLAP]]</span>
+</pre></div>
+</div>
+<dl class="option">
+<dt id="cmdoption-clubcpg-coverage-h">
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-clubcpg-coverage-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-coverage-a">
+<code class="descname">-a</code><code class="descclassname"> &lt;input_bam_a&gt;</code><code class="descclassname">, </code><code class="descname">--input_bam_A</code><code class="descclassname"> &lt;input_bam_a&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-coverage-a" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input bam file, coordinate sorted with index present</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-coverage-o">
+<code class="descname">-o</code><code class="descclassname"> &lt;output_dir&gt;</code><code class="descclassname">, </code><code class="descname">--output_dir</code><code class="descclassname"> &lt;output_dir&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-coverage-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output directory to save results, defaults to bam file loaction</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-coverage-bin-size">
+<code class="descname">--bin_size</code><code class="descclassname"> &lt;bin_size&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-coverage-bin-size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of bins to extract and analyze, default=100</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-coverage-n">
+<code class="descname">-n</code><code class="descclassname"> &lt;num_processors&gt;</code><code class="descclassname">, </code><code class="descname">--num_processors</code><code class="descclassname"> &lt;num_processors&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-coverage-n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of processors to use for analysis, default=1</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-coverage-chr">
+<code class="descname">-chr</code><code class="descclassname"> &lt;chromosome&gt;</code><code class="descclassname">, </code><code class="descname">--chromosome</code><code class="descclassname"> &lt;chromosome&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-coverage-chr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Chromosome to analyze, example: ‘chr19’, required</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-coverage-read1-5">
+<code class="descname">--read1_5</code><code class="descclassname"> &lt;read1_5&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-coverage-read1-5" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read1 5’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-coverage-read1-3">
+<code class="descname">--read1_3</code><code class="descclassname"> &lt;read1_3&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-coverage-read1-3" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read1 3’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-coverage-read2-5">
+<code class="descname">--read2_5</code><code class="descclassname"> &lt;read2_5&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-coverage-read2-5" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read2 5’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-coverage-read2-3">
+<code class="descname">--read2_3</code><code class="descclassname"> &lt;read2_3&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-coverage-read2-3" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read2 3’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-coverage-no-overlap">
+<code class="descname">--no_overlap</code><code class="descclassname"> &lt;no_overlap&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-coverage-no-overlap" title="Permalink to this definition">¶</a></dt>
+<dd><p>bool, remove any overlap between paired reads and stitch reads together when possible, default=True</p>
+</dd></dl>
+
+</div>
+<div class="section" id="clubcpg-cluster">
+<h3>2.4.2. clubcpg-cluster<a class="headerlink" href="#clubcpg-cluster" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: clubcpg-cluster [-h] [-a INPUT_BAM_A] [-b INPUT_BAM_B] [--bins BINS]</span>
+<span class="go">                       [-o OUTPUT_DIR] [--bin_size BIN_SIZE]</span>
+<span class="go">                       [-m CLUSTER_MEMBER_MINIMUM] [-r READ_DEPTH]</span>
+<span class="go">                       [-n NUM_PROCESSORS] [--read1_5 READ1_5]</span>
+<span class="go">                       [--read1_3 READ1_3] [--read2_5 READ2_5]</span>
+<span class="go">                       [--read2_3 READ2_3] [--no_overlap [NO_OVERLAP]]</span>
+<span class="go">                       [--remove_noise [REMOVE_NOISE]] [--suffix SUFFIX]</span>
+</pre></div>
+</div>
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-h">
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-clubcpg-cluster-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-a">
+<code class="descname">-a</code><code class="descclassname"> &lt;input_bam_a&gt;</code><code class="descclassname">, </code><code class="descname">--input_bam_A</code><code class="descclassname"> &lt;input_bam_a&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-a" title="Permalink to this definition">¶</a></dt>
+<dd><p>First Input bam file, coordinate sorted with index present, REQUIRED</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-b">
+<code class="descname">-b</code><code class="descclassname"> &lt;input_bam_b&gt;</code><code class="descclassname">, </code><code class="descname">--input_bam_B</code><code class="descclassname"> &lt;input_bam_b&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-b" title="Permalink to this definition">¶</a></dt>
+<dd><p>Second Input bam file, coordinate sorted with index present, OPTIONAL</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-bins">
+<code class="descname">--bins</code><code class="descclassname"> &lt;bins&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-bins" title="Permalink to this definition">¶</a></dt>
+<dd><p>File with each line being one bin to extract and analyze, generated by clubcpg-coverage, REQUIRED</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-o">
+<code class="descname">-o</code><code class="descclassname"> &lt;output_dir&gt;</code><code class="descclassname">, </code><code class="descname">--output_dir</code><code class="descclassname"> &lt;output_dir&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output directory to save results, defaults to bam file location</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-bin-size">
+<code class="descname">--bin_size</code><code class="descclassname"> &lt;bin_size&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-bin-size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of bins to extract and analyze, default=100</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-m">
+<code class="descname">-m</code><code class="descclassname"> &lt;cluster_member_minimum&gt;</code><code class="descclassname">, </code><code class="descname">--cluster_member_minimum</code><code class="descclassname"> &lt;cluster_member_minimum&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-m" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum number of reads a cluster should have for it to be considered, default=4</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-r">
+<code class="descname">-r</code><code class="descclassname"> &lt;read_depth&gt;</code><code class="descclassname">, </code><code class="descname">--read_depth</code><code class="descclassname"> &lt;read_depth&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-r" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum number of reads covering all CpGs that the bins should have to analyze, default=10</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-n">
+<code class="descname">-n</code><code class="descclassname"> &lt;num_processors&gt;</code><code class="descclassname">, </code><code class="descname">--num_processors</code><code class="descclassname"> &lt;num_processors&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of processors to use for analysis, default=1</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-read1-5">
+<code class="descname">--read1_5</code><code class="descclassname"> &lt;read1_5&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-read1-5" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read1 5’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-read1-3">
+<code class="descname">--read1_3</code><code class="descclassname"> &lt;read1_3&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-read1-3" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read1 3’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-read2-5">
+<code class="descname">--read2_5</code><code class="descclassname"> &lt;read2_5&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-read2-5" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read2 5’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-read2-3">
+<code class="descname">--read2_3</code><code class="descclassname"> &lt;read2_3&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-read2-3" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read2 3’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-no-overlap">
+<code class="descname">--no_overlap</code><code class="descclassname"> &lt;no_overlap&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-no-overlap" title="Permalink to this definition">¶</a></dt>
+<dd><p>bool, remove any overlap between paired reads and stitch reads together when possible, default=True</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-remove-noise">
+<code class="descname">--remove_noise</code><code class="descclassname"> &lt;remove_noise&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-remove-noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>bool, Discard the cluster containing noise points (-1) after clustering, default=True</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-cluster-suffix">
+<code class="descname">--suffix</code><code class="descclassname"> &lt;suffix&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-cluster-suffix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Any additional info to include in the output file name, chromosome for example</p>
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="output_data.html" class="btn btn-neutral float-right" title="3. Understanding the CluBCpG output data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="intro.html" class="btn btn-neutral float-left" title="1. Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Anthony Scott, PhD
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

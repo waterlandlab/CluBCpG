@@ -16,7 +16,7 @@ if __name__ == "__main__":
     arg_parser.add_argument("-o", "--output", help="folder to save generated model files", default=None)
     arg_parser.add_argument("-n", help="number of cpu cores to use")
     arg_parser.add_argument("-l", "--limit_samples", help="Limit the number of samples used to train the model, "
-                                                          "this will speed up training. default=100000", default=100000)
+                                                          "this will speed up training. default=50000", default=50000)
     arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
     arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     coverage_data.columns = ['bin', 'reads', 'cpgs']
 
     # Train models
-    for i in range(2,7):
+    for i in range(2,6):
         print("Starting training cpg density: {}".format(i))
         trainer = Imputation(i, args.input_bam_file, mbias_read1_5, mbias_read1_3, mbias_read2_5, mbias_read2_3, processes)
         matrices = trainer.extract_matrices(coverage_data, sample_limit=sample_limit)

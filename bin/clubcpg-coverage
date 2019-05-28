@@ -8,37 +8,37 @@ from clubcpg.CalculateBinCoverage import CalculateCompleteBins
 DEBUG = False
 
 
+def str2bool(v):
+    if v.lower() == 'true':
+        return True
+    elif v.lower() == 'false':
+        return False
+    else:
+        raise argparse.ArgumentTypeError("Boolean value expected.")
+
+
+# Input params
+arg_parser = argparse.ArgumentParser()
+arg_parser.add_argument("-a", "--input_bam_A",
+                        help="Input bam file, coordinate sorted with index present")
+arg_parser.add_argument("-o", "--output_dir",
+                        help="Output directory to save results, defaults to bam file loaction")
+arg_parser.add_argument("--bin_size", help="Size of bins to extract and analyze, default=100", default=100)
+arg_parser.add_argument("-n", "--num_processors",
+                        help="Number of processors to use for analysis, default=1",
+                        default=1)
+arg_parser.add_argument("-chr", "--chromosome",
+                        help="Chromosome to analyze, example: 'chr19', required", default=None)
+
+arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=0", default=0)
+arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
+arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
+arg_parser.add_argument("--read2_3", help="integer, read2 3' m-bias ignore bp, default=0", default=0)
+arg_parser.add_argument("--no_overlap", help="bool, remove any overlap between paired reads and stitch"
+                                             " reads together when possible, default=True",
+                        type=str2bool, const=True, default='True', nargs='?')
+
 if __name__ == "__main__":
-
-    def str2bool(v):
-        if v.lower() == 'true':
-            return True
-        elif v.lower() == 'false':
-            return False
-        else:
-            raise argparse.ArgumentTypeError("Boolean value expected.")
-
-    # Input params
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("-a", "--input_bam_A",
-                            help="First Input bam file, coordinate sorted with index present")
-    arg_parser.add_argument("-o", "--output_dir",
-                            help="Output directory to save figures, defaults to bam file loaction")
-    arg_parser.add_argument("-bin_size", help="Size of bins to extract and analyze, default=100", default=100)
-    arg_parser.add_argument("-n", "--num_processors",
-                            help="Number of processors to use for analysis, default=1",
-                            default=1)
-    arg_parser.add_argument("-chr", "--chromosome",
-                            help="Chromosome to analyze, example: 'chr19', required", default=None)
-
-    arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=0", default=0)
-    arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
-    arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
-    arg_parser.add_argument("--read2_3", help="integer, read2 3' m-bias ignore bp, default=0", default=0)
-    arg_parser.add_argument("--no_overlap", help="bool, remove any overlap between paired reads and stitch"
-                                                 " reads together when possible, default=True",
-                            type=str2bool, const=True, default='True', nargs='?')
-
 
     # Extract arguments from command line and set as correct types
     args = arg_parser.parse_args()
