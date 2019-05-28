@@ -71,7 +71,7 @@ class CalculateCompleteBins:
 
         # if matrix is empty, attempt to create it with correction before giving up
         if len(matrix) == 0:
-            logging.info("Attempting correction of CpG positions in bin {}".format(bin))
+            # logging.info("Attempting correction of CpG positions in bin {}".format(bin))
             reads = parser.correct_cpg_positions(reads)
             matrix = parser.create_matrix(reads)
             matrix = matrix.dropna()
