@@ -235,7 +235,8 @@ class BamFileReadParser:
 
         return fixed_read_cpgs
 
-    def correct_cpg_positions(self, output: list):
+    @staticmethod
+    def correct_cpg_positions(output: list):
         """
         For some reason, Bismark alignment produces instances where a CpG site location is incorrect by 1 bp, even
         after accounting for DNA strand alignmment. This function fixes this. If two cpgs have positions such as 4, 5
@@ -276,6 +277,8 @@ class BamFileReadParser:
                     else:
                         corrected_item.append(cpg)
                 corrected_output.append(corrected_item)
+            else:
+                corrected_output.append(item)
 
         return corrected_output
 
