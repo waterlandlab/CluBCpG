@@ -1,6 +1,6 @@
 # CluBCpG
 
-[![Build Status](https://travis-ci.com/computational-epigenetics-section/MixtureAnalysis.svg?token=hzxZpQe911awnZXgt6LL&branch=master)](https://travis-ci.com/computational-epigenetics-section/MixtureAnalysis)
+[![Build Status](https://travis-ci.com/waterlandlab/CluBCpG.svg?branch=master)](https://travis-ci.com/waterlandlab/CluBCpG)
 
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/waterlandlab/CluBCpG.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/waterlandlab/CluBCpG/context:python)
 
