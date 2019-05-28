@@ -111,7 +111,7 @@ class TestClustering(unittest.TestCase):
         self.matrix_A['input'] = labels_A
         self.matrix_B['input'] = labels_B
         self.full_matrix = pd.concat([self.matrix_A, self.matrix_B])
-        self.data_to_cluster = np.matrix(self.full_matrix)[:, :-1]
+        self.data_to_cluster = np.array(self.full_matrix)[:, :-1]
         clf = DBSCAN(min_samples=2)
         labels = clf.fit_predict(self.data_to_cluster)
         self.full_matrix['class'] = labels
