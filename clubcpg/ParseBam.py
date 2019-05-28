@@ -235,4 +235,52 @@ class BamFileReadParser:
 
         return fixed_read_cpgs
 
+    @staticmethod
+    def correct_cpg_positions(output: list):
+        """
+        For some reason, Bismark alignment produces instances where a CpG site location is incorrect by 1 bp, even
+        after accounting for DNA strand alignmment. This function fixes this. If two cpgs have positions such as 4, 5
+        (which is impossible because there needs to by a G between them) this function will convert all 5s to 4s. This
+        really only needs to be applied to matrices which are empty after dropna() is called.
+
+        :param output: a list of lists of tuples. The output of self.parse_reads()
+
+        :return: list of the same style, execpt the first position in the tuple will have a corrected CpG position.
+
+        """
+        # find all cpg positions
+        cpg_positions = []
+        for item in output:
+            if item:
+                for cpg in item:
+                    cpg_positions.append(cpg[0])
+        cpg_positions = sorted(list(set(cpg_positions)))
+
+        # determine corrections
+        corrections = {}
+        for x in range(len(cpg_positions)):
+            try:
+                if cpg_positions[x + 1] == cpg_positions[x] + 1:
+                    corrections[cpg_positions[x + 1]] = cpg_positions[x]
+            except IndexError:  # end of cpg position list
+                pass
+
+        # correct items
+        corrected_output = []
+        for item in output:
+            corrected_item = []
+            if item:
+                for cpg in item:
+                    if cpg[0] in corrections.keys():
+                        new_cpg = (corrections[cpg[0]], cpg[1])
+                        corrected_item.append(new_cpg)
+                    else:
+                        corrected_item.append(cpg)
+                corrected_output.append(corrected_item)
+            else:
+                corrected_output.append(item)
+
+        return corrected_output
+
+
 

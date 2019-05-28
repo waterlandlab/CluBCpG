@@ -200,6 +200,23 @@
 </dd></dl>
 
 <dl class="method">
+<dt id="clubcpg.ParseBam.BamFileReadParser.correct_cpg_positions">
+<code class="descname">correct_cpg_positions</code><span class="sig-paren">(</span><em>output: list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ParseBam.html#BamFileReadParser.correct_cpg_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ParseBam.BamFileReadParser.correct_cpg_positions" title="Permalink to this definition">¶</a></dt>
+<dd><p>For some reason, Bismark alignment produces instances where a CpG site location is incorrect by 1 bp, even
+after accounting for DNA strand alignmment. This function fixes this. If two cpgs have positions such as 4, 5
+(which is impossible because there needs to by a G between them) this function will convert all 5s to 4s. This
+really only needs to be applied to matrices which are empty after dropna() is called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>output</strong> – a list of lists of tuples. The output of self.parse_reads()</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of the same style, execpt the first position in the tuple will have a corrected CpG position.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="clubcpg.ParseBam.BamFileReadParser.create_matrix">
 <code class="descname">create_matrix</code><span class="sig-paren">(</span><em>read_cpgs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ParseBam.html#BamFileReadParser.create_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ParseBam.BamFileReadParser.create_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converted parsed reads into a pandas dataframe.</p>
@@ -248,6 +265,96 @@ a super read.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>List of reads and their positional tags as assigned by bismark</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-clubcpg.CalculateBinCoverage"></span><dl class="class">
+<dt id="clubcpg.CalculateBinCoverage.CalculateCompleteBins">
+<em class="property">class </em><code class="descclassname">clubcpg.CalculateBinCoverage.</code><code class="descname">CalculateCompleteBins</code><span class="sig-paren">(</span><em>bam_file: str</em>, <em>bin_size: int</em>, <em>output_directory: str</em>, <em>number_of_processors=1</em>, <em>mbias_read1_5=None</em>, <em>mbias_read1_3=None</em>, <em>mbias_read2_5=None</em>, <em>mbias_read2_3=None</em>, <em>no_overlap=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/CalculateBinCoverage.html#CalculateCompleteBins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.CalculateBinCoverage.CalculateCompleteBins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to calculate the number of reads covering all CpGs</p>
+<dl class="method">
+<dt id="clubcpg.CalculateBinCoverage.CalculateCompleteBins.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>bam_file: str</em>, <em>bin_size: int</em>, <em>output_directory: str</em>, <em>number_of_processors=1</em>, <em>mbias_read1_5=None</em>, <em>mbias_read1_3=None</em>, <em>mbias_read2_5=None</em>, <em>mbias_read2_3=None</em>, <em>no_overlap=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/CalculateBinCoverage.html#CalculateCompleteBins.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.CalculateBinCoverage.CalculateCompleteBins.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is initialized with a path to a bam file and a bin size</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bam_file</strong> – One of the BAM files for analysis to be performed</p></li>
+<li><p><strong>bin_size</strong> – Size of the bins for the analysis, integer</p></li>
+</ul>
+</dd>
+<dt class="field-even">Number_of_processors</dt>
+<dd class="field-even"><p>How many CPUs to use for parallel computation, default=1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.CalculateBinCoverage.CalculateCompleteBins.analyze_bins">
+<code class="descname">analyze_bins</code><span class="sig-paren">(</span><em>individual_chrom=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/CalculateBinCoverage.html#CalculateCompleteBins.analyze_bins"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.CalculateBinCoverage.CalculateCompleteBins.analyze_bins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Main function in class. Run the Complete analysis on the data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>individual_chrom</strong> – Chromosome to analyze: ie “chr7”</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>filename of the generated report</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.CalculateBinCoverage.CalculateCompleteBins.calculate_bin_coverage">
+<code class="descname">calculate_bin_coverage</code><span class="sig-paren">(</span><em>bin</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/CalculateBinCoverage.html#CalculateCompleteBins.calculate_bin_coverage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.CalculateBinCoverage.CalculateCompleteBins.calculate_bin_coverage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take a single bin, return a matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>bin</strong> – Bin should be passed as “Chr19_4343343”</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>pd.DataFrame with rows containing NaNs dropped</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.CalculateBinCoverage.CalculateCompleteBins.generate_bins_list">
+<code class="descname">generate_bins_list</code><span class="sig-paren">(</span><em>chromosome_len_dict: dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/CalculateBinCoverage.html#CalculateCompleteBins.generate_bins_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.CalculateBinCoverage.CalculateCompleteBins.generate_bins_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a dict of lists of all bins according to desired bin size for all chromosomes in the passed dict</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>chromosome_len_dict</strong> – A dict of chromosome length sizes from get_chromosome_lenghts, cleaned up by remove_scaffolds() if desired</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>dict with each key being a chromosome. ex: chr1</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="clubcpg.CalculateBinCoverage.CalculateCompleteBins.get_chromosome_lengths">
+<code class="descname">get_chromosome_lengths</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/CalculateBinCoverage.html#CalculateCompleteBins.get_chromosome_lengths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.CalculateBinCoverage.CalculateCompleteBins.get_chromosome_lengths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get dictionary containing lengths of the chromosomes. Uses bam file for reference</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Dictionary of chromosome lengths, ex: {“chrX”: 222222}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="clubcpg.CalculateBinCoverage.CalculateCompleteBins.remove_scaffolds">
+<em class="property">static </em><code class="descname">remove_scaffolds</code><span class="sig-paren">(</span><em>chromosome_len_dict</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/CalculateBinCoverage.html#CalculateCompleteBins.remove_scaffolds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.CalculateBinCoverage.CalculateCompleteBins.remove_scaffolds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dict containing only the standard chromosomes starting with “chr”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>chromosome_len_dict</strong> – A dict generated by get_chromosome_lenghts()</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dict containing only chromosomes starting with “chr”</p>
 </dd>
 </dl>
 </dd></dl>

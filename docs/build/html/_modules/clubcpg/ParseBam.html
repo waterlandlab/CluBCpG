@@ -391,7 +391,52 @@
                 <span class="c1"># No pair, add to output</span>
                 <span class="n">fixed_read_cpgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">combined</span><span class="p">[</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="mi">1</span><span class="p">])</span>
 
-        <span class="k">return</span> <span class="n">fixed_read_cpgs</span></div></div>
+        <span class="k">return</span> <span class="n">fixed_read_cpgs</span></div>
+
+<div class="viewcode-block" id="BamFileReadParser.correct_cpg_positions"><a class="viewcode-back" href="../../API.html#clubcpg.ParseBam.BamFileReadParser.correct_cpg_positions">[docs]</a>    <span class="k">def</span> <span class="nf">correct_cpg_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        For some reason, Bismark alignment produces instances where a CpG site location is incorrect by 1 bp, even</span>
+<span class="sd">        after accounting for DNA strand alignmment. This function fixes this. If two cpgs have positions such as 4, 5</span>
+<span class="sd">        (which is impossible because there needs to by a G between them) this function will convert all 5s to 4s. This</span>
+<span class="sd">        really only needs to be applied to matrices which are empty after dropna() is called.</span>
+
+<span class="sd">        :param output: a list of lists of tuples. The output of self.parse_reads()</span>
+
+<span class="sd">        :return: list of the same style, execpt the first position in the tuple will have a corrected CpG position.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># find all cpg positions</span>
+        <span class="n">cpg_positions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">cpg</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="n">cpg_positions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cpg</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">cpg_positions</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">cpg_positions</span><span class="p">)))</span>
+
+        <span class="c1"># determine corrections</span>
+        <span class="n">corrections</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cpg_positions</span><span class="p">)):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">cpg_positions</span><span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">cpg_positions</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">corrections</span><span class="p">[</span><span class="n">cpg_positions</span><span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cpg_positions</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;End of positions&quot;</span><span class="p">)</span>
+
+        <span class="c1"># correct items</span>
+        <span class="n">corrected_output</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+            <span class="n">corrected_item</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">cpg</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">cpg</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">corrections</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">new_cpg</span> <span class="o">=</span> <span class="p">(</span><span class="n">corrections</span><span class="p">[</span><span class="n">cpg</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">cpg</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">corrected_item</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_cpg</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">corrected_item</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cpg</span><span class="p">)</span>
+                <span class="n">corrected_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">corrected_item</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">corrected_output</span></div></div>
+
 
 
 </pre></div>

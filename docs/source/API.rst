@@ -8,6 +8,9 @@ ClubCpG APIs
    :members:
    :special-members: __init__
 
+.. automodule:: clubcpg.CalculateBinCoverage
+    :members:
+    :special-members: __init__
 
 .. automodule:: clubcpg.ClusterReads
    :members:

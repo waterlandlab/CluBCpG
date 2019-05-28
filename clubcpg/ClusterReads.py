@@ -254,7 +254,7 @@ class ClusterReads:
             full_matrix = matrix_A
 
         # Get data without labels for clustering
-        data_to_cluster = np.matrix(full_matrix)[:, :-1]
+        data_to_cluster = np.array(full_matrix)[:, :-1]
 
         # Create DBSCAN classifier and cluster add cluster classes to df
         clf = DBSCAN(min_samples=2)
@@ -466,7 +466,7 @@ class ClusterReadsWithImputation(ClusterReads):
                         full_matrix = matrix_A
 
                     # get data to cluster
-                    data_to_cluster = np.matrix(full_matrix)[:,:-1]
+                    data_to_cluster = np.array(full_matrix)[:,:-1]
                     clf = DBSCAN(min_samples=2)
                     try:
                         labels = clf.fit_predict(data_to_cluster)
