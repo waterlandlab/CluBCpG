@@ -199,9 +199,9 @@
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="clubcpg.ParseBam.BamFileReadParser.correct_cpg_positions">
-<code class="descname">correct_cpg_positions</code><span class="sig-paren">(</span><em>output: list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ParseBam.html#BamFileReadParser.correct_cpg_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ParseBam.BamFileReadParser.correct_cpg_positions" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">correct_cpg_positions</code><span class="sig-paren">(</span><em>output: list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ParseBam.html#BamFileReadParser.correct_cpg_positions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ParseBam.BamFileReadParser.correct_cpg_positions" title="Permalink to this definition">¶</a></dt>
 <dd><p>For some reason, Bismark alignment produces instances where a CpG site location is incorrect by 1 bp, even
 after accounting for DNA strand alignmment. This function fixes this. If two cpgs have positions such as 4, 5
 (which is impossible because there needs to by a G between them) this function will convert all 5s to 4s. This

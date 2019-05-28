@@ -393,7 +393,8 @@
 
         <span class="k">return</span> <span class="n">fixed_read_cpgs</span></div>
 
-<div class="viewcode-block" id="BamFileReadParser.correct_cpg_positions"><a class="viewcode-back" href="../../API.html#clubcpg.ParseBam.BamFileReadParser.correct_cpg_positions">[docs]</a>    <span class="k">def</span> <span class="nf">correct_cpg_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+<div class="viewcode-block" id="BamFileReadParser.correct_cpg_positions"><a class="viewcode-back" href="../../API.html#clubcpg.ParseBam.BamFileReadParser.correct_cpg_positions">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">correct_cpg_positions</span><span class="p">(</span><span class="n">output</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        For some reason, Bismark alignment produces instances where a CpG site location is incorrect by 1 bp, even</span>
 <span class="sd">        after accounting for DNA strand alignmment. This function fixes this. If two cpgs have positions such as 4, 5</span>
@@ -419,8 +420,8 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">cpg_positions</span><span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">cpg_positions</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
                     <span class="n">corrections</span><span class="p">[</span><span class="n">cpg_positions</span><span class="p">[</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="n">cpg_positions</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;End of positions&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>  <span class="c1"># end of cpg position list</span>
+                <span class="k">pass</span>
 
         <span class="c1"># correct items</span>
         <span class="n">corrected_output</span> <span class="o">=</span> <span class="p">[]</span>
@@ -434,6 +435,8 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">corrected_item</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cpg</span><span class="p">)</span>
                 <span class="n">corrected_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">corrected_item</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">corrected_output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">corrected_output</span></div></div>
 

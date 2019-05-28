@@ -16,7 +16,6 @@ ClubCpG APIs
    :members:
    :special-members: __init__
 
-
 .. automodule:: clubcpg.ConnectToCpGNet
    :members:
    :special-members: __init__
