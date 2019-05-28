@@ -262,8 +262,8 @@ class BamFileReadParser:
             try:
                 if cpg_positions[x + 1] == cpg_positions[x] + 1:
                     corrections[cpg_positions[x + 1]] = cpg_positions[x]
-            except IndexError:
-                print("End of positions")
+            except IndexError:  # end of cpg position list
+                pass
 
         # correct items
         corrected_output = []
