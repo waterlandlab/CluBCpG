@@ -425,8 +425,8 @@ class ClusterReadsWithImputation(ClusterReads):
 
                 # Combine and cluster as normal
                 # Maybe do this in the future
-                def _multiprocess_cluster_work(bin_):
-                    pass
+                # def _multiprocess_cluster_work(bin_):
+                #     pass
 
                 for bin_ in data_imputed_A_dict.keys():
                     matrix_A = data_imputed_A_dict[bin_]
