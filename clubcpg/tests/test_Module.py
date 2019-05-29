@@ -41,6 +41,16 @@ test_bin = "chr1_910700"
 test_bin_bad = "chr1_500"
 
 
+class TestTests(unittest.TestCase):
+    """
+    Test that tests are even working correctly
+    """
+
+    # Make sure the unit tests work at all
+    def test_cases_works(self):
+        self.assertTrue(True, "Truth isn't truth -Rudy Giuliani, https://www.youtube.com/watch?v=CljsZ7lgbtw")
+
+
 class TestParseBam(unittest.TestCase):
     """
     Test that the PraseBam class can function
@@ -52,9 +62,6 @@ class TestParseBam(unittest.TestCase):
         check_data_exists(self.required_data)
         self.parserA = ParseBam.BamFileReadParser(os.path.join(test_data_location, bamA), 20)
 
-    # Make sure the unit tests work at all
-    def test_cases_works(self):
-        self.assertTrue(True, "Truth isn't truth -Rudy Giuliani, https://www.youtube.com/watch?v=CljsZ7lgbtw")
 
     def test_parser_loaded(self):
         self.assertIsInstance(self.parserA, ParseBam.BamFileReadParser, "Failed to load Parser object")
