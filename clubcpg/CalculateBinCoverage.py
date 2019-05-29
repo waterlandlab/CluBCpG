@@ -78,6 +78,9 @@ class CalculateCompleteBins:
                 logging.error("Invalid Index error when creating matrices at bin {}".format(bin))
                 logging.debug(str(e))
                 return bin, original_matrix
+            except ValueError as e:
+                logging.error("Matrix concat error ar bin {}".format(bin))
+                logging.debug(str(e))
 
             matrix = matrix.dropna()
             if len(matrix) > 0:
