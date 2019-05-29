@@ -12,6 +12,7 @@ class BamFileReadParser:
         >>> from clubcpg.ParseBam import BamFileReadParser
         >>> parser = BamFileReadParser("/path/to/data.BAM", quality_score=20, 3, 4, 7, 1)
         >>> reads = parser.parse_reads("chr7", 10000, 101000)
+        >>> reads = parser.correct_cpg_positions(reads) # This step is optional
         >>> matrix = parser.create_matrix(reads)
 
 
@@ -217,7 +218,6 @@ class BamFileReadParser:
                         if bp and bp in r2_bps:
                             amount_overlap += 1
 
-
                 # remove the overlap by trimming or discarding
                 if amount_overlap == len(read2[1]):
                     # discard read 2, only append read 1
@@ -244,7 +244,7 @@ class BamFileReadParser:
         For some reason, Bismark alignment produces instances where a CpG site location is incorrect by 1 bp, even
         after accounting for DNA strand alignmment. This function fixes this. If two cpgs have positions such as 4, 5
         (which is impossible because there needs to by a G between them) this function will convert all 5s to 4s. This
-        really only needs to be applied to matrices which are empty after dropna() is called.
+        only needs to be applied to matrices which are empty after dropna() is called.
 
         :param output: a list of lists of tuples. The output of self.parse_reads()
 
