@@ -269,6 +269,8 @@ class ClusterReads:
 
         if not self.single_file_mode:
             try:
+                # ensure they have the same CpG positions
+                matrix_B.columns = matrix_A.columns
                 full_matrix = pd.concat([matrix_A, matrix_B])
             except ValueError as e:
                 logging.error("Matrix concat error in bin {}".format(bin))
