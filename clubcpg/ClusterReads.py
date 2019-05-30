@@ -179,6 +179,20 @@ class ClusterReads:
 
         return lines
 
+    @staticmethod
+    def attempt_cpg_position_correction(reads, parser: BamFileReadParser):
+        """
+        Take the reads and a parser object, attempted cpg position correction and return corrected reads
+
+        :param reads: parsed reads from BamFileReadParser
+        :param parser: an instance of the BamFileReadParser object
+        :return: reads with CpG positions corrected
+
+        """
+
+        corrected_reads = parser.correct_cpg_positions(reads)
+        return corrected_reads
+
     # MAIN METHOD
     def process_bins(self, bin):
         """
@@ -209,11 +223,21 @@ class ClusterReads:
         # This try/catch block returns None for a bin if any discrepancies in the data format of the bins are detected.
         # The Nones are filtered out during the output of the data
         try:
-            #create matrix  drop NA
+            # create matrix  drop NA
             # This matrix is actually a pandas dataframe
             matrix_A = bam_parser_A.create_matrix(reads_A).dropna()
+
+            # Attempt to correct CpG Position if necessary
+            if len(matrix_A) == 0:
+                reads_A = self.attempt_cpg_position_correction(reads_A, bam_parser_A)
+                matrix_A = bam_parser_A.create_matrix(reads_A).dropna()
             if not self.single_file_mode:
                 matrix_B = bam_parser_B.create_matrix(reads_B).dropna()
+
+                # attempt to correct CpG position in B if necessary
+                if len(matrix_B) == 0:
+                    reads_B = self.attempt_cpg_position_correction(reads_B, bam_parser_B)
+                    matrix_B = bam_parser_B.create_matrix(reads_B).dropna()
 
         except ValueError as e:
             logging.error("ValueError when creating matrix at bin {}. Stack trace will be below if log level=DEBUG".format(bin))
