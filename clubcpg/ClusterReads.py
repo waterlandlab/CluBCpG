@@ -271,7 +271,7 @@ class ClusterReads:
             try:
                 # ensure they have the same CpG positions
                 matrix_B.columns = matrix_A.columns
-                full_matrix = pd.concat([matrix_A, matrix_B])
+                full_matrix = pd.concat([matrix_A, matrix_B], sort=False)
             except ValueError as e:
                 logging.error("Matrix concat error in bin {}".format(bin))
                 # logging.debug(str(e))
