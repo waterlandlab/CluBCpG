@@ -33,11 +33,23 @@ def check_data_exists(required_data):
         if data not in os.listdir(test_data_location):
             download_data()
 
+
 bamA = "TEST_DATA_A.bam"
 bamB = "TEST_DATA_B.bam"
 TEST_BINS="TEST_BINS.csv"
 test_bin = "chr1_910700"
 test_bin_bad = "chr1_500"
+
+
+class TestTests(unittest.TestCase):
+    """
+    Test that tests are even working correctly
+    """
+
+    # Make sure the unit tests work at all
+    def test_cases_works(self):
+        self.assertTrue(True, "Truth isn't truth -Rudy Giuliani, https://www.youtube.com/watch?v=CljsZ7lgbtw")
+
 
 class TestParseBam(unittest.TestCase):
     """
@@ -50,9 +62,6 @@ class TestParseBam(unittest.TestCase):
         check_data_exists(self.required_data)
         self.parserA = ParseBam.BamFileReadParser(os.path.join(test_data_location, bamA), 20)
 
-    # Make sure the unit tests work at all
-    def test_cases_works(self):
-        self.assertTrue(True, "Truth isn't truth -Rudy Giuliani, https://www.youtube.com/watch?v=CljsZ7lgbtw")
 
     def test_parser_loaded(self):
         self.assertIsInstance(self.parserA, ParseBam.BamFileReadParser, "Failed to load Parser object")
@@ -86,6 +95,7 @@ class TestCoverageCalculation(unittest.TestCase):
         self.assertIsInstance(matrix, pd.DataFrame, "matrix failed to return correctly")
         bad_result = self.calc.calculate_bin_coverage(test_bin_bad)
         self.assertIsNone(bad_result, "empty bin shouldn't have returned data")
+        self.assertEqual(matrix.shape, (21, 4), "Failed to calculate correct number of reads and CpGs in matrix")
 
 
 class TestClustering(unittest.TestCase):
@@ -117,7 +127,6 @@ class TestClustering(unittest.TestCase):
         self.full_matrix['class'] = labels
         self.filtered = self.cluster.filter_data_frame(self.full_matrix)
 
-
     def testExtractedReads(self):
         self.assertIsInstance(self.matrix_A, pd.DataFrame, "Failed to convert reads into matrix")
         self.assertIsInstance(self.matrix_B, pd.DataFrame, "Failed to convert reads into matrix")
@@ -127,7 +136,6 @@ class TestClustering(unittest.TestCase):
         self.assertEqual(self.matrix_A.shape, (21, 5), "Failed to add labels to matrix")
         self.assertEqual(self.full_matrix.shape, (61, 6), "Failed to add cluster labels to matrix")
         self.assertIsInstance(self.cluster, ClusterReads, "Failed to load clustering class")
-
 
     def testPostClusterFiltering(self):
         self.assertEqual(self.filtered.shape, (56, 6), "Matrix did not filter correctly")

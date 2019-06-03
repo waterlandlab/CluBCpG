@@ -1,13 +1,11 @@
 from clubcpg.ParseBam import BamFileReadParser
 import os
-import sys
 import logging
 from multiprocessing import Pool
 import numpy as np
-import pandas as pd
-import argparse
 from collections import defaultdict
 import time
+from pandas.core.indexes.base import InvalidIndexError
 
 
 class CalculateCompleteBins:
@@ -71,9 +69,19 @@ class CalculateCompleteBins:
 
         # if matrix is empty, attempt to create it with correction before giving up
         if len(matrix) == 0:
+            original_matrix = matrix.copy()
             # logging.info("Attempting correction of CpG positions in bin {}".format(bin))
             reads = parser.correct_cpg_positions(reads)
-            matrix = parser.create_matrix(reads)
+            try:
+                matrix = parser.create_matrix(reads)
+            except InvalidIndexError as e:
+                logging.error("Invalid Index error when creating matrices at bin {}".format(bin))
+                logging.debug(str(e))
+                return bin, original_matrix
+            except ValueError as e:
+                logging.error("Matrix concat error ar bin {}".format(bin))
+                logging.debug(str(e))
+
             matrix = matrix.dropna()
             if len(matrix) > 0:
                 logging.info("Correction attempt at bin {}: SUCCESS".format(bin))
