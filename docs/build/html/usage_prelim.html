@@ -95,6 +95,16 @@
 <li class="toctree-l2"><a class="reference internal" href="#typical-imputation-workflow">4.2. Typical imputation workflow</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#calculate-bin-coverage">4.2.1. Calculate bin coverage</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#filter-outputs">4.2.2. Filter outputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#train-a-prelim-model">4.2.3. Train a PReLIM model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#compute-coverage-gains">4.2.4. Compute coverage gains</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#filter-imputed-coverage-output">4.2.5. Filter imputed coverage output</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#perform-clustering-with-imputation">4.2.6. Perform clustering with imputation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-tools">4.3. Command line tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clubcpg-impute-train">4.3.1. clubcpg-impute-train</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clugcpg-impute-coverage">4.3.2. clugcpg-impute-coverage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clubcpg-impute-cluster">4.3.3. clubcpg-impute-cluster</a></li>
 </ul>
 </li>
 </ul>
@@ -175,8 +185,14 @@
 bundled with CluBCpG.</p>
 <p>Imputation with PReLIM is taken care of behind the scenes and CluBCpG includes three command line scripts to perform
 analysis with imputation.</p>
-<p>Usage is almost identical to standard CluBCpG usage, but includes one extra step and requires the use of a
+<p>Usage is almost identical to standard CluBCpG pipeline, but includes one extra step and requires the use of a
 couple extra command line flags.</p>
+<p>The documentation included in this section mostly highlights the differences and additional steps needed to run CluBCpG with
+PReLIM imputation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is highly recommended that you have read <a class="reference internal" href="usage.html#using-clubcpg-label"><span class="std std-ref">Using CluBCpG</span></a> first.</p>
+</div>
 <p>The command-tools provided are <code class="docutils literal notranslate"><span class="pre">clubcpg-impute-coverage</span></code>, <code class="docutils literal notranslate"><span class="pre">clubcpg-impute-train</span></code>, and <code class="docutils literal notranslate"><span class="pre">clubcpg-impute-cluster</span></code></p>
 </div>
 <div class="section" id="typical-imputation-workflow">
@@ -196,6 +212,328 @@ couple extra command line flags.</p>
 <p class="admonition-title">Note</p>
 <p>PReLIM requires at least 1 read fully covering all CpGs in a bin</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Differing from the typical workflow, if you intend to analyze two BAM files with imputation, you will want to perform this process on both BAM files.
+This is because you will train an imputation model using both BAM files separately. This improves the accuracy of the imputations.</p>
+</div>
+</div>
+<div class="section" id="train-a-prelim-model">
+<h3>4.2.3. Train a PReLIM model<a class="headerlink" href="#train-a-prelim-model" title="Permalink to this headline">¶</a></h3>
+<p>Now <code class="docutils literal notranslate"><span class="pre">clubcpg-impute-train</span></code> can be used to automatically train multiple imputation models using PReLIM. For each BAM file, a random set of bins
+will be selected from the filtered coverage file provided.</p>
+<p>The number of randomly sampled bins can be set using the <code class="docutils literal notranslate"><span class="pre">-l</span></code> flag.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Increasing the number of bins will drastically increase the run-time of this process and can consume a lot of memory, potentially crashing PReLIM.
+When testing we found there was no improvement in accuracy above 10,000 bins.</p>
+</div>
+<p>Models bins containing 2-5 CpGs will be automatically trained and saved in the folder designated by <code class="docutils literal notranslate"><span class="pre">-o</span></code>. Do <strong>NOT</strong> rename them.</p>
+</div>
+<div class="section" id="compute-coverage-gains">
+<h3>4.2.4. Compute coverage gains<a class="headerlink" href="#compute-coverage-gains" title="Permalink to this headline">¶</a></h3>
+<p>Now with the trained models saved, the post-imputation coverage can be calculated using <code class="docutils literal notranslate"><span class="pre">clubcpg-impute-coverage</span></code>. This
+functions almost identically to <code class="docutils literal notranslate"><span class="pre">clubcpg-coverage</span></code> except:</p>
+<ul>
+<li><p>you need to provide the folder containing the saved models using the <code class="docutils literal notranslate"><span class="pre">-m</span></code> flag.</p></li>
+<li><p>You also need to provide the coverage file filtered for &gt;= 1 reads with the <code class="docutils literal notranslate"><span class="pre">-c</span></code> flag.</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>This accelerates the process by skipping bins which cannot be imputed upon do to lack of coverage.</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+<p>This will create an output file identical to <code class="docutils literal notranslate"><span class="pre">clubcpg-coverage</span></code>, except the values represent the number of reads post-imputation</p>
+</div>
+<div class="section" id="filter-imputed-coverage-output">
+<h3>4.2.5. Filter imputed coverage output<a class="headerlink" href="#filter-imputed-coverage-output" title="Permalink to this headline">¶</a></h3>
+<p>Filter this csv output however you wish. Again, we recommend 10 reads and 2 cpgs. See <a class="reference internal" href="usage.html#typical-filter-label"><span class="std std-ref">Filter output</span></a> for more details.</p>
+</div>
+<div class="section" id="perform-clustering-with-imputation">
+<h3>4.2.6. Perform clustering with imputation<a class="headerlink" href="#perform-clustering-with-imputation" title="Permalink to this headline">¶</a></h3>
+<p>Using <code class="docutils literal notranslate"><span class="pre">clubcpg-impute-cluster</span></code> you can now perform read clustering. This also functions almost identically to the standard method.
+However, you must also point it to the folder containing the models.</p>
+<p>Here you use the <code class="docutils literal notranslate"><span class="pre">--models_A</span></code> and <code class="docutils literal notranslate"><span class="pre">--models_B</span></code> flags to point the tool to PReLIM models for input <code class="docutils literal notranslate"><span class="pre">-a</span></code> and <code class="docutils literal notranslate"><span class="pre">-b</span></code> respectively. Imputation on each file
+is performed independent of the other.</p>
+</div>
+</div>
+<div class="section" id="command-line-tools">
+<h2>4.3. Command line tools<a class="headerlink" href="#command-line-tools" title="Permalink to this headline">¶</a></h2>
+<p>These options can also be viewed by running <code class="docutils literal notranslate"><span class="pre">--help</span></code> after each tool on the command line.</p>
+<div class="section" id="clubcpg-impute-train">
+<h3>4.3.1. clubcpg-impute-train<a class="headerlink" href="#clubcpg-impute-train" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: clubcpg-impute-train [-h] [-a INPUT_BAM_FILE] [-c COVERAGE] [-o OUTPUT]</span>
+<span class="go">                            [-n N] [-l LIMIT_SAMPLES] [--read1_5 READ1_5]</span>
+<span class="go">                            [--read1_3 READ1_3] [--read2_5 READ2_5]</span>
+<span class="go">                            [--read2_3 READ2_3]</span>
+</pre></div>
+</div>
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-train-h">
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-clubcpg-impute-train-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-train-a">
+<code class="descname">-a</code><code class="descclassname"> &lt;input_bam_file&gt;</code><code class="descclassname">, </code><code class="descname">--input_bam_file</code><code class="descclassname"> &lt;input_bam_file&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-train-a" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input bam file, coordinate sorted with index present</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-train-c">
+<code class="descname">-c</code><code class="descclassname"> &lt;coverage&gt;</code><code class="descclassname">, </code><code class="descname">--coverage</code><code class="descclassname"> &lt;coverage&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-train-c" title="Permalink to this definition">¶</a></dt>
+<dd><p>output file from clubcpg-coverage, filtered for at least 1 read and 2 cpgs</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-train-o">
+<code class="descname">-o</code><code class="descclassname"> &lt;output&gt;</code><code class="descclassname">, </code><code class="descname">--output</code><code class="descclassname"> &lt;output&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-train-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>folder to save generated model files</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-train-n">
+<code class="descname">-n</code><code class="descclassname"> &lt;n&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-train-n" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of cpu cores to use</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-train-l">
+<code class="descname">-l</code><code class="descclassname"> &lt;limit_samples&gt;</code><code class="descclassname">, </code><code class="descname">--limit_samples</code><code class="descclassname"> &lt;limit_samples&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-train-l" title="Permalink to this definition">¶</a></dt>
+<dd><p>Limit the number of samples used to train the model, this will speed up training. default=50000</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-train-read1-5">
+<code class="descname">--read1_5</code><code class="descclassname"> &lt;read1_5&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-train-read1-5" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read1 5’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-train-read1-3">
+<code class="descname">--read1_3</code><code class="descclassname"> &lt;read1_3&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-train-read1-3" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read1 3’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-train-read2-5">
+<code class="descname">--read2_5</code><code class="descclassname"> &lt;read2_5&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-train-read2-5" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read2 5’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-train-read2-3">
+<code class="descname">--read2_3</code><code class="descclassname"> &lt;read2_3&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-train-read2-3" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read2 3’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+</div>
+<div class="section" id="clugcpg-impute-coverage">
+<h3>4.3.2. clugcpg-impute-coverage<a class="headerlink" href="#clugcpg-impute-coverage" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: clugcpg-impute-coverage [-h] [-a INPUT_BAM_FILE] [-c COVERAGE]</span>
+<span class="go">                               [-m MODELS] [-o OUTPUT] [-n N]</span>
+<span class="go">                               [-chr CHROMOSOME] [--read1_5 READ1_5]</span>
+<span class="go">                               [--read1_3 READ1_3] [--read2_5 READ2_5]</span>
+<span class="go">                               [--read2_3 READ2_3]</span>
+</pre></div>
+</div>
+<dl class="option">
+<dt id="cmdoption-clugcpg-impute-coverage-h">
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-clugcpg-impute-coverage-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clugcpg-impute-coverage-a">
+<code class="descname">-a</code><code class="descclassname"> &lt;input_bam_file&gt;</code><code class="descclassname">, </code><code class="descname">--input_bam_file</code><code class="descclassname"> &lt;input_bam_file&gt;</code><a class="headerlink" href="#cmdoption-clugcpg-impute-coverage-a" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input bam file, coordinate sorted with index present</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clugcpg-impute-coverage-c">
+<code class="descname">-c</code><code class="descclassname"> &lt;coverage&gt;</code><code class="descclassname">, </code><code class="descname">--coverage</code><code class="descclassname"> &lt;coverage&gt;</code><a class="headerlink" href="#cmdoption-clugcpg-impute-coverage-c" title="Permalink to this definition">¶</a></dt>
+<dd><p>output file from clubcpg-coverage, filtered for at least 1 read and 2 cpgs</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clugcpg-impute-coverage-m">
+<code class="descname">-m</code><code class="descclassname"> &lt;models&gt;</code><code class="descclassname">, </code><code class="descname">--models</code><code class="descclassname"> &lt;models&gt;</code><a class="headerlink" href="#cmdoption-clugcpg-impute-coverage-m" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to folder containing saved models</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clugcpg-impute-coverage-o">
+<code class="descname">-o</code><code class="descclassname"> &lt;output&gt;</code><code class="descclassname">, </code><code class="descname">--output</code><code class="descclassname"> &lt;output&gt;</code><a class="headerlink" href="#cmdoption-clugcpg-impute-coverage-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>folder to save imputed coverage data</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clugcpg-impute-coverage-n">
+<code class="descname">-n</code><code class="descclassname"> &lt;n&gt;</code><a class="headerlink" href="#cmdoption-clugcpg-impute-coverage-n" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of cpu cores to use</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clugcpg-impute-coverage-chr">
+<code class="descname">-chr</code><code class="descclassname"> &lt;chromosome&gt;</code><code class="descclassname">, </code><code class="descname">--chromosome</code><code class="descclassname"> &lt;chromosome&gt;</code><a class="headerlink" href="#cmdoption-clugcpg-impute-coverage-chr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional, perform only on one chromosome. Default=all chromosomes provided in -c. Example: ‘chr7’</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clugcpg-impute-coverage-read1-5">
+<code class="descname">--read1_5</code><code class="descclassname"> &lt;read1_5&gt;</code><a class="headerlink" href="#cmdoption-clugcpg-impute-coverage-read1-5" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read1 5’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clugcpg-impute-coverage-read1-3">
+<code class="descname">--read1_3</code><code class="descclassname"> &lt;read1_3&gt;</code><a class="headerlink" href="#cmdoption-clugcpg-impute-coverage-read1-3" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read1 3’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clugcpg-impute-coverage-read2-5">
+<code class="descname">--read2_5</code><code class="descclassname"> &lt;read2_5&gt;</code><a class="headerlink" href="#cmdoption-clugcpg-impute-coverage-read2-5" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read2 5’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clugcpg-impute-coverage-read2-3">
+<code class="descname">--read2_3</code><code class="descclassname"> &lt;read2_3&gt;</code><a class="headerlink" href="#cmdoption-clugcpg-impute-coverage-read2-3" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read2 3’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+</div>
+<div class="section" id="clubcpg-impute-cluster">
+<h3>4.3.3. clubcpg-impute-cluster<a class="headerlink" href="#clubcpg-impute-cluster" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">usage: clubcpg-impute-cluster [-h] [-a INPUT_BAM_A] [-b INPUT_BAM_B]</span>
+<span class="go">                              [--bins BINS] [-o OUTPUT_DIR]</span>
+<span class="go">                              [--bin_size BIN_SIZE]</span>
+<span class="go">                              [-m CLUSTER_MEMBER_MINIMUM] [-r READ_DEPTH]</span>
+<span class="go">                              [-n NUM_PROCESSORS] [--read1_5 READ1_5]</span>
+<span class="go">                              [--read1_3 READ1_3] [--read2_5 READ2_5]</span>
+<span class="go">                              [--read2_3 READ2_3] [--no_overlap [NO_OVERLAP]]</span>
+<span class="go">                              [--remove_noise [REMOVE_NOISE]]</span>
+<span class="go">                              [--suffix SUFFIX] [--models_A MODELS_A]</span>
+<span class="go">                              [--models_B MODELS_B] [--chunksize CHUNKSIZE]</span>
+</pre></div>
+</div>
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-h">
+<code class="descname">-h</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--help</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-h" title="Permalink to this definition">¶</a></dt>
+<dd><p>show this help message and exit</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-a">
+<code class="descname">-a</code><code class="descclassname"> &lt;input_bam_a&gt;</code><code class="descclassname">, </code><code class="descname">--input_bam_A</code><code class="descclassname"> &lt;input_bam_a&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-a" title="Permalink to this definition">¶</a></dt>
+<dd><p>First Input bam file, coordinate sorted with index present, REQUIRED</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-b">
+<code class="descname">-b</code><code class="descclassname"> &lt;input_bam_b&gt;</code><code class="descclassname">, </code><code class="descname">--input_bam_B</code><code class="descclassname"> &lt;input_bam_b&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-b" title="Permalink to this definition">¶</a></dt>
+<dd><p>Second Input bam file, coordinate sorted with index present, OPTIONAL</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-bins">
+<code class="descname">--bins</code><code class="descclassname"> &lt;bins&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-bins" title="Permalink to this definition">¶</a></dt>
+<dd><p>File with each line being one bin to extract and analyze, generated by clubcpg-coverage, REQUIRED</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-o">
+<code class="descname">-o</code><code class="descclassname"> &lt;output_dir&gt;</code><code class="descclassname">, </code><code class="descname">--output_dir</code><code class="descclassname"> &lt;output_dir&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Output directory to save figures, defaults to bam file location</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-bin-size">
+<code class="descname">--bin_size</code><code class="descclassname"> &lt;bin_size&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-bin-size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Size of bins to extract and analyze, default=100</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-m">
+<code class="descname">-m</code><code class="descclassname"> &lt;cluster_member_minimum&gt;</code><code class="descclassname">, </code><code class="descname">--cluster_member_minimum</code><code class="descclassname"> &lt;cluster_member_minimum&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-m" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minimum number of members a cluster should have for it to be considered, default=4</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-r">
+<code class="descname">-r</code><code class="descclassname"> &lt;read_depth&gt;</code><code class="descclassname">, </code><code class="descname">--read_depth</code><code class="descclassname"> &lt;read_depth&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-r" title="Permalink to this definition">¶</a></dt>
+<dd><p>Minium number of reads covering all CpGs that the bins should have to analyze, default=10</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-n">
+<code class="descname">-n</code><code class="descclassname"> &lt;num_processors&gt;</code><code class="descclassname">, </code><code class="descname">--num_processors</code><code class="descclassname"> &lt;num_processors&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-n" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of processors to use for analysis, default=1</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-read1-5">
+<code class="descname">--read1_5</code><code class="descclassname"> &lt;read1_5&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-read1-5" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read1 5’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-read1-3">
+<code class="descname">--read1_3</code><code class="descclassname"> &lt;read1_3&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-read1-3" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read1 3’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-read2-5">
+<code class="descname">--read2_5</code><code class="descclassname"> &lt;read2_5&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-read2-5" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read2 5’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-read2-3">
+<code class="descname">--read2_3</code><code class="descclassname"> &lt;read2_3&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-read2-3" title="Permalink to this definition">¶</a></dt>
+<dd><p>integer, read2 3’ m-bias ignore bp, default=0</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-no-overlap">
+<code class="descname">--no_overlap</code><code class="descclassname"> &lt;no_overlap&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-no-overlap" title="Permalink to this definition">¶</a></dt>
+<dd><p>bool, remove any overlap between paired reads and stitch reads together when possible, default=True</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-remove-noise">
+<code class="descname">--remove_noise</code><code class="descclassname"> &lt;remove_noise&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-remove-noise" title="Permalink to this definition">¶</a></dt>
+<dd><p>bool, Discard the cluster containing noise points (-1) after clustering, default=True</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-suffix">
+<code class="descname">--suffix</code><code class="descclassname"> &lt;suffix&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-suffix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Any additional info to include in the output file name, chromosome for example</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-models-a">
+<code class="descname">--models_A</code><code class="descclassname"> &lt;models_a&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-models-a" title="Permalink to this definition">¶</a></dt>
+<dd><p>Models to impute for input_bam_A, OPTIONAL</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-models-b">
+<code class="descname">--models_B</code><code class="descclassname"> &lt;models_b&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-models-b" title="Permalink to this definition">¶</a></dt>
+<dd><p>Models to impute for imput_bam_B, OPTIONAL</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-clubcpg-impute-cluster-chunksize">
+<code class="descname">--chunksize</code><code class="descclassname"> &lt;chunksize&gt;</code><a class="headerlink" href="#cmdoption-clubcpg-impute-cluster-chunksize" title="Permalink to this definition">¶</a></dt>
+<dd><p>How large of chunks to split bins into during imputation. Higher will go faster, but uses more memory</p>
+</dd></dl>
+
 </div>
 </div>
 </div>

@@ -1,3 +1,5 @@
+.. _using_CluBCpG_label:
+
 ===============
 Using CluBCpG
 ===============
@@ -91,6 +93,8 @@ Use ``clubcpg-coverage`` to calculate the number of reads fully covering all bin
     .. NOTE::
         If you running CluBCpG on two BAM files, this step only needs to be performed on the first BAM file.
 
+
+.. _typical_filter_label:
 
 Filter output
 **************

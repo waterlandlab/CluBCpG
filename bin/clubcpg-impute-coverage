@@ -15,26 +15,25 @@ def create_dictionary(bins, matrices):
 
     return output
 
+### Get Input params ###
+arg_parser = argparse.ArgumentParser()
+arg_parser.add_argument("-a", "--input_bam_file",
+                        help="Input bam file, coordinate sorted with index present", default=None)
+arg_parser.add_argument("-c", "--coverage", help="output file from clubcpg-coverage, "
+                                                 "filtered for at least 1 read and 2 cpgs",
+                        default=None)
+arg_parser.add_argument("-m", "--models", help="Path to folder containing saved models", default=None)
+arg_parser.add_argument("-o", "--output", help="folder to save imputed coverage data", default=None)
+arg_parser.add_argument("-n", help="number of cpu cores to use")
+arg_parser.add_argument("-chr", "--chromosome", help="Optional, perform only on one chromosome. "
+                                      "Default=all chromosomes provided in -c. Example: 'chr7'",
+                        default=None)
+arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=0", default=0)
+arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
+arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
+arg_parser.add_argument("--read2_3", help="integer, read2 3' m-bias ignore bp, default=0", default=0)
 
 if __name__ == "__main__":
-
-    ### Get Input params ###
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument("-a", "--input_bam_file",
-                            help="Input bam file, coordinate sorted with index present", default=None)
-    arg_parser.add_argument("-c", "--coverage", help="output file from clubcpg-coverage, "
-                                                     "filtered for at least 1 read and 2 cpgs",
-                            default=None)
-    arg_parser.add_argument("-m", "--models", help="Path to folder containing saved models", default=None)
-    arg_parser.add_argument("-o", "--output", help="folder to save imputed coverage data", default=None)
-    arg_parser.add_argument("-n", help="number of cpu cores to use")
-    arg_parser.add_argument("-chr", "--chromosome", help="Optional, perform only on one chromosome. "
-                                          "Default=all chromosomes provided in -c. Example: 'chr7'",
-                            default=None)
-    arg_parser.add_argument("--read1_5", help="integer, read1 5' m-bias ignore bp, default=0", default=0)
-    arg_parser.add_argument("--read1_3", help="integer, read1 3' m-bias ignore bp, default=0", default=0)
-    arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, default=0", default=0)
-    arg_parser.add_argument("--read2_3", help="integer, read2 3' m-bias ignore bp, default=0", default=0)
 
     # Extract arguments from command line and set as correct types
     args = arg_parser.parse_args()

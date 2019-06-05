@@ -37,7 +37,7 @@ class CalculateCompleteBins:
 
     def calculate_bin_coverage(self, bin):
         """
-        Take a single bin, return a matrix
+        Take a single bin, return a matrix. This is passed to a multiprocessing Pool.
 
         :param bin: Bin should be passed as "Chr19_4343343"
         :return: pd.DataFrame with rows containing NaNs dropped
@@ -143,7 +143,6 @@ class CalculateCompleteBins:
                 logging.info("Tasks remaining = {0}".format(
                     job._number_left * job._chunksize))
                 time.sleep(update_interval)
-
 
         # Get and clean dict of chromosome lenghts, convert to list of bins
         print("Getting Chromosome lengths from bam files...", flush=True)
