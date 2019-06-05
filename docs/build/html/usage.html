@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>2. Using CluBCpG &mdash; CluBCpG 0.1.10 documentation</title>
+  <title>2. Using CluBCpG &mdash; CluBCpG 0.1.11 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.10
+                0.1.11
               </div>
             
           
@@ -224,7 +224,8 @@ in any way you see fit. However CluBCpG does have a few requirements:</p>
 <blockquote>
 <div><div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>CluBCpG compatibility has <strong>NOT</strong> been tested with other bisulfite read mappers.</p>
+<p>CluBCpG compatibility has <strong>NOT</strong> been tested with other bisulfite read mappers. It may work fine.
+It may initiate the end of the universe. I don’t know, because it hasn’t been tested.</p>
 </div>
 </div></blockquote>
 </li>
@@ -233,7 +234,7 @@ in any way you see fit. However CluBCpG does have a few requirements:</p>
 can be utilized for both of these steps using <code class="docutils literal notranslate"><span class="pre">samtools</span> <span class="pre">sort</span></code> and <code class="docutils literal notranslate"><span class="pre">samtools</span> <span class="pre">index</span></code>.</p>
 </div>
 <div class="section" id="typical-workflow">
-<h2>2.3. Typical workflow<a class="headerlink" href="#typical-workflow" title="Permalink to this headline">¶</a></h2>
+<span id="typical-workflow-label"></span><h2>2.3. Typical workflow<a class="headerlink" href="#typical-workflow" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic">
 <li><p>Obtain your correctly processed BAM file(s)</p>
 <blockquote>
@@ -250,10 +251,14 @@ can be utilized for both of these steps using <code class="docutils literal notr
 <div class="admonition hint">
 <p class="admonition-title">Hint</p>
 <p>This is an excellent step to parallelize if running in a HPC environment. <code class="docutils literal notranslate"><span class="pre">clubcpg-coverage</span></code>
-has a flag, <code class="docutils literal notranslate"><span class="pre">-n</span></code> to specify the number of CPUs to use during processing. This also works if running on one
+has a flag, <code class="docutils literal notranslate"><span class="pre">-n</span></code> to specify the number of CPU cores to use during processing. This also works if running on one
 machine with multiple cores.</p>
 <p>Additionally, each chromosome can be run on an independent compute node. No need to split the BAM file. CluBCpG
 will only operate on the chromosome specified with the <code class="docutils literal notranslate"><span class="pre">-chr</span></code> flag. (See <a class="reference internal" href="#clubcpg-coverage-tool-label"><span class="std std-ref">clubcpg-coverage</span></a>)</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you running CluBCpG on two BAM files, this step only needs to be performed on the first BAM file.</p>
 </div>
 </div></blockquote>
 </li>
@@ -269,10 +274,6 @@ will only operate on the chromosome specified with the <code class="docutils lit
 </ol>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat CompleteBins.yourfilename.chr19.csv <span class="p">|</span> awk -F <span class="s2">&quot;,&quot;</span> <span class="s1">&#39;$2&gt;=10 &amp;&amp; $3&gt;=2&#39;</span> &gt; CompleteBins.yourfilename.chr19.filtered.csv
 </pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If you running CluBCpG on two BAM files, this step only needs to be performed on the first BAM file.</p>
 </div>
 </div></blockquote>
 </li>

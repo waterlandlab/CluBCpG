@@ -55,11 +55,13 @@ in any way you see fit. However CluBCpG does have a few requirements:
 1. The bisulfite read mapping should be performed with ``Bismark``
 
     .. WARNING::
-        CluBCpG compatibility has **NOT** been tested with other bisulfite read mappers.
+        CluBCpG compatibility has **NOT** been tested with other bisulfite read mappers. It may work fine.
+        It may initiate the end of the universe. I don't know, because it hasn't been tested.
 
 2. The BAM file should be **cooridinate sorted** and have an index file (``.bai``) present in its directory. Samtools
 can be utilized for both of these steps using ``samtools sort`` and ``samtools index``.
 
+.. _typical_workflow_label:
 
 Typical workflow
 =================
@@ -74,11 +76,15 @@ Typical workflow
 
     .. HINT::
         This is an excellent step to parallelize if running in a HPC environment. ``clubcpg-coverage``
-        has a flag, ``-n`` to specify the number of CPUs to use during processing. This also works if running on one
+        has a flag, ``-n`` to specify the number of CPU cores to use during processing. This also works if running on one
         machine with multiple cores.
 
         Additionally, each chromosome can be run on an independent compute node. No need to split the BAM file. CluBCpG
         will only operate on the chromosome specified with the ``-chr`` flag. (See :ref:`clubcpg-coverage_tool-label`)
+
+    .. NOTE::
+        If you running CluBCpG on two BAM files, this step only needs to be performed on the first BAM file.
+
 
 3. Filter the generated csv file for desired number of reads and CpG densities
 
@@ -93,8 +99,6 @@ Typical workflow
 
         cat CompleteBins.yourfilename.chr19.csv | awk -F "," '$2>=10 && $3>=2' > CompleteBins.yourfilename.chr19.filtered.csv
 
-    .. NOTE::
-        If you running CluBCpG on two BAM files, this step only needs to be performed on the first BAM file.
 
 4. Use ``clubcpg-cluster`` to perform cluster analysis
 

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>clubcpg.CalculateBinCoverage &mdash; CluBCpG 0.1.10 documentation</title>
+  <title>clubcpg.CalculateBinCoverage &mdash; CluBCpG 0.1.11 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.10
+                0.1.11
               </div>
             
           
@@ -158,14 +158,12 @@
   <h1>Source code for clubcpg.CalculateBinCoverage</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">clubcpg.ParseBam</span> <span class="k">import</span> <span class="n">BamFileReadParser</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Pool</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
 <span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">pandas.core.indexes.base</span> <span class="k">import</span> <span class="n">InvalidIndexError</span>
 
 
 <div class="viewcode-block" id="CalculateCompleteBins"><a class="viewcode-back" href="../../API.html#clubcpg.CalculateBinCoverage.CalculateCompleteBins">[docs]</a><span class="k">class</span> <span class="nc">CalculateCompleteBins</span><span class="p">:</span>
@@ -229,9 +227,19 @@
 
         <span class="c1"># if matrix is empty, attempt to create it with correction before giving up</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">original_matrix</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="c1"># logging.info(&quot;Attempting correction of CpG positions in bin {}&quot;.format(bin))</span>
             <span class="n">reads</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">correct_cpg_positions</span><span class="p">(</span><span class="n">reads</span><span class="p">)</span>
-            <span class="n">matrix</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">create_matrix</span><span class="p">(</span><span class="n">reads</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">matrix</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">create_matrix</span><span class="p">(</span><span class="n">reads</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">InvalidIndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Invalid Index error when creating matrices at bin </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">bin</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="k">return</span> <span class="nb">bin</span><span class="p">,</span> <span class="n">original_matrix</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Matrix concat error ar bin </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">bin</span><span class="p">))</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+
             <span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Correction attempt at bin </span><span class="si">{}</span><span class="s2">: SUCCESS&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">bin</span><span class="p">))</span>

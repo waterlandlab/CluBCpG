@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API documentation &mdash; CluBCpG 0.1.10 documentation</title>
+  <title>API documentation &mdash; CluBCpG 0.1.11 documentation</title>
   
 
   
@@ -60,7 +60,7 @@
             
             
               <div class="version">
-                0.10
+                0.1.11
               </div>
             
           
@@ -175,6 +175,7 @@
 <dd class="field-odd"><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">clubcpg.ParseBam</span> <span class="k">import</span> <span class="n">BamFileReadParser</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">parser</span> <span class="o">=</span> <span class="n">BamFileReadParser</span><span class="p">(</span><span class="s2">&quot;/path/to/data.BAM&quot;</span><span class="p">,</span> <span class="n">quality_score</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">reads</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_reads</span><span class="p">(</span><span class="s2">&quot;chr7&quot;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">101000</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">reads</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">correct_cpg_positions</span><span class="p">(</span><span class="n">reads</span><span class="p">)</span> <span class="c1"># This step is optional</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">create_matrix</span><span class="p">(</span><span class="n">reads</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -205,7 +206,7 @@
 <dd><p>For some reason, Bismark alignment produces instances where a CpG site location is incorrect by 1 bp, even
 after accounting for DNA strand alignmment. This function fixes this. If two cpgs have positions such as 4, 5
 (which is impossible because there needs to by a G between them) this function will convert all 5s to 4s. This
-really only needs to be applied to matrices which are empty after dropna() is called.</p>
+only needs to be applied to matrices which are empty after dropna() is called.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>output</strong> – a list of lists of tuples. The output of self.parse_reads()</p>
@@ -378,6 +379,23 @@ a super read.</p>
 <dt id="clubcpg.ClusterReads.ClusterReads.__init__">
 <code class="descname">__init__</code><span class="sig-paren">(</span><em>bam_a: str</em>, <em>bam_b=None</em>, <em>bin_size=100</em>, <em>bins_file=None</em>, <em>output_directory=None</em>, <em>num_processors=1</em>, <em>cluster_member_min=4</em>, <em>read_depth_req=10</em>, <em>remove_noise=True</em>, <em>mbias_read1_5=None</em>, <em>mbias_read1_3=None</em>, <em>mbias_read2_5=None</em>, <em>mbias_read2_3=None</em>, <em>suffix=''</em>, <em>no_overlap=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ClusterReads.html#ClusterReads.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ClusterReads.ClusterReads.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize self.  See help(type(self)) for accurate signature.</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="clubcpg.ClusterReads.ClusterReads.attempt_cpg_position_correction">
+<em class="property">static </em><code class="descname">attempt_cpg_position_correction</code><span class="sig-paren">(</span><em>reads</em>, <em>parser: clubcpg.ParseBam.BamFileReadParser</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/clubcpg/ClusterReads.html#ClusterReads.attempt_cpg_position_correction"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#clubcpg.ClusterReads.ClusterReads.attempt_cpg_position_correction" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take the reads and a parser object, attempted cpg position correction and return corrected reads</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reads</strong> – parsed reads from BamFileReadParser</p></li>
+<li><p><strong>parser</strong> – an instance of the BamFileReadParser object</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>reads with CpG positions corrected</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">

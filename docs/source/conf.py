@@ -21,9 +21,9 @@ project = 'CluBCpG'
 copyright = '2019, Anthony Scott, PhD'
 author = 'Anthony Scott, PhD'
 
-version = '0.10'
+version = '0.1.11'
 # The full version, including alpha/beta/rc tags
-release = '0.1.10'
+release = '0.1.11'
 
 
 # -- General configuration ---------------------------------------------------

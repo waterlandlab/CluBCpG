@@ -26,7 +26,6 @@ ClubCpG is not yet deposited onto PyPi, but can still be installed using pip. Th
 
 .. NOTE::
     While optional, it is **highly recommended** to install CluBCpG in a virtual environment.
-    Create and activate that environment now.
 
 0. (Optional) Create and activate python virtualenv
 

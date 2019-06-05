@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>clubcpg.ClusterReads &mdash; CluBCpG 0.1.10 documentation</title>
+  <title>clubcpg.ClusterReads &mdash; CluBCpG 0.1.11 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.10
+                0.1.11
               </div>
             
           
@@ -337,6 +337,20 @@
 
         <span class="k">return</span> <span class="n">lines</span></div>
 
+<div class="viewcode-block" id="ClusterReads.attempt_cpg_position_correction"><a class="viewcode-back" href="../../API.html#clubcpg.ClusterReads.ClusterReads.attempt_cpg_position_correction">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">attempt_cpg_position_correction</span><span class="p">(</span><span class="n">reads</span><span class="p">,</span> <span class="n">parser</span><span class="p">:</span> <span class="n">BamFileReadParser</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Take the reads and a parser object, attempted cpg position correction and return corrected reads</span>
+
+<span class="sd">        :param reads: parsed reads from BamFileReadParser</span>
+<span class="sd">        :param parser: an instance of the BamFileReadParser object</span>
+<span class="sd">        :return: reads with CpG positions corrected</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">corrected_reads</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">correct_cpg_positions</span><span class="p">(</span><span class="n">reads</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">corrected_reads</span></div>
+
     <span class="c1"># MAIN METHOD</span>
 <div class="viewcode-block" id="ClusterReads.process_bins"><a class="viewcode-back" href="../../API.html#clubcpg.ClusterReads.ClusterReads.process_bins">[docs]</a>    <span class="k">def</span> <span class="nf">process_bins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">bin</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -367,11 +381,21 @@
         <span class="c1"># This try/catch block returns None for a bin if any discrepancies in the data format of the bins are detected.</span>
         <span class="c1"># The Nones are filtered out during the output of the data</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="c1">#create matrix  drop NA</span>
+            <span class="c1"># create matrix  drop NA</span>
             <span class="c1"># This matrix is actually a pandas dataframe</span>
             <span class="n">matrix_A</span> <span class="o">=</span> <span class="n">bam_parser_A</span><span class="o">.</span><span class="n">create_matrix</span><span class="p">(</span><span class="n">reads_A</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+            <span class="c1"># Attempt to correct CpG Position if necessary</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix_A</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">reads_A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attempt_cpg_position_correction</span><span class="p">(</span><span class="n">reads_A</span><span class="p">,</span> <span class="n">bam_parser_A</span><span class="p">)</span>
+                <span class="n">matrix_A</span> <span class="o">=</span> <span class="n">bam_parser_A</span><span class="o">.</span><span class="n">create_matrix</span><span class="p">(</span><span class="n">reads_A</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_file_mode</span><span class="p">:</span>
                 <span class="n">matrix_B</span> <span class="o">=</span> <span class="n">bam_parser_B</span><span class="o">.</span><span class="n">create_matrix</span><span class="p">(</span><span class="n">reads_B</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+                <span class="c1"># attempt to correct CpG position in B if necessary</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrix_B</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">reads_B</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attempt_cpg_position_correction</span><span class="p">(</span><span class="n">reads_B</span><span class="p">,</span> <span class="n">bam_parser_B</span><span class="p">)</span>
+                    <span class="n">matrix_B</span> <span class="o">=</span> <span class="n">bam_parser_B</span><span class="o">.</span><span class="n">create_matrix</span><span class="p">(</span><span class="n">reads_B</span><span class="p">)</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
 
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;ValueError when creating matrix at bin </span><span class="si">{}</span><span class="s2">. Stack trace will be below if log level=DEBUG&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">bin</span><span class="p">))</span>
@@ -403,7 +427,9 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">single_file_mode</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">full_matrix</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">matrix_A</span><span class="p">,</span> <span class="n">matrix_B</span><span class="p">])</span>
+                <span class="c1"># ensure they have the same CpG positions</span>
+                <span class="n">matrix_B</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">matrix_A</span><span class="o">.</span><span class="n">columns</span>
+                <span class="n">full_matrix</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">matrix_A</span><span class="p">,</span> <span class="n">matrix_B</span><span class="p">],</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Matrix concat error in bin </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">bin</span><span class="p">))</span>
                 <span class="c1"># logging.debug(str(e))</span>
@@ -583,8 +609,8 @@
 
                 <span class="c1"># Combine and cluster as normal</span>
                 <span class="c1"># Maybe do this in the future</span>
-                <span class="k">def</span> <span class="nf">_multiprocess_cluster_work</span><span class="p">(</span><span class="n">bin_</span><span class="p">):</span>
-                    <span class="k">pass</span>
+                <span class="c1"># def _multiprocess_cluster_work(bin_):</span>
+                <span class="c1">#     pass</span>
 
                 <span class="k">for</span> <span class="n">bin_</span> <span class="ow">in</span> <span class="n">data_imputed_A_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                     <span class="n">matrix_A</span> <span class="o">=</span> <span class="n">data_imputed_A_dict</span><span class="p">[</span><span class="n">bin_</span><span class="p">]</span>

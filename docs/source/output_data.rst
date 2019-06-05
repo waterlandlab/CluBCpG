@@ -18,7 +18,7 @@ The output from ``clubcpg-coverage`` looks like this:
       - 1
     * - chr19_61400
       - 4
-      - 0
+      - 2
     * - chr19_89800
       - 25
       - 4

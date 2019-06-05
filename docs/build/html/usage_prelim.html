@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>4. Using CluBCpG with PReLIM &mdash; CluBCpG 0.1.10 documentation</title>
+  <title>4. Using CluBCpG with PReLIM &mdash; CluBCpG 0.1.11 documentation</title>
   
 
   
@@ -61,7 +61,7 @@
             
             
               <div class="version">
-                0.10
+                0.1.11
               </div>
             
           
@@ -92,6 +92,7 @@
 <li class="toctree-l1"><a class="reference internal" href="output_data.html">3. Understanding the CluBCpG output data</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">4. Using CluBCpG with PReLIM</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#introduction">4.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#typical-imputation-workflow">4.2. Typical imputation workflow</a></li>
 </ul>
 </li>
 </ul>
@@ -166,7 +167,28 @@
 <h1>4. Using CluBCpG with PReLIM<a class="headerlink" href="#using-clubcpg-with-prelim" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>4.1. Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>PReLIM exists as its own stand-alone package, but for simplicity and compatibility, a version of PReLIM comes
+bundled with CluBCpG.</p>
+<p>Imputation with PReLIM is taken care of behind the scenes and CluBCpG includes three command line scripts to perform
+analysis with imputation.</p>
+<p>Usage is almost identical to standard CluBCpG usage, but includes one extra step and requires the use of a
+couple extra command line flags.</p>
+<p>The command-tools provided are <code class="docutils literal notranslate"><span class="pre">clubcpg-impute-coverage</span></code>, <code class="docutils literal notranslate"><span class="pre">clubcpg-impute-train</span></code>, and <code class="docutils literal notranslate"><span class="pre">clubcpg-impute-cluster</span></code></p>
+</div>
+<div class="section" id="typical-imputation-workflow">
+<h2>4.2. Typical imputation workflow<a class="headerlink" href="#typical-imputation-workflow" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">clubcpg-coverage</span></code> to calculate bin coverage as performed in the standard workflow. (<a class="reference internal" href="usage.html#typical-workflow-label"><span class="std std-ref">Typical workflow</span></a>)</p></li>
+<li><p>Filter these csv outputs for &gt;= 1 reads and &gt;= 2 CpGs. The following one-liner will filter it correctly:</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat CompleteBins.yourfilename.chr19.csv <span class="p">|</span> awk -F <span class="s2">&quot;,&quot;</span> <span class="s1">&#39;$2&gt;=1 &amp;&amp; $3&gt;=2&#39;</span> &gt; CompleteBins.yourfilename.chr19.filtered.csv
+</pre></div>
+</div>
 <p>Words</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PReLIM requires at least 1 read fully covering all CpGs in a bin</p>
+</div>
 </div>
 </div>
 

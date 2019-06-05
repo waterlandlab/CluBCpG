@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>clubcpg.Imputation &mdash; CluBCpG 0.1.10 documentation</title>
+  <title>clubcpg.Imputation &mdash; CluBCpG 0.1.11 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.10
+                0.1.11
               </div>
             
           
@@ -158,16 +158,13 @@
   <h1>Source code for clubcpg.Imputation</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
-<span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">multiprocessing</span> <span class="k">import</span> <span class="n">Pool</span>
 <span class="kn">from</span> <span class="nn">clubcpg.ConnectToCpGNet</span> <span class="k">import</span> <span class="n">TrainWithPReLIM</span>
 <span class="kn">from</span> <span class="nn">clubcpg.ParseBam</span> <span class="k">import</span> <span class="n">BamFileReadParser</span>
 <span class="kn">from</span> <span class="nn">clubcpg_prelim</span> <span class="k">import</span> <span class="n">PReLIM</span>
 <span class="kn">from</span> <span class="nn">pebble</span> <span class="k">import</span> <span class="n">ProcessPool</span>
-<span class="kn">from</span> <span class="nn">joblib</span> <span class="k">import</span> <span class="n">dump</span><span class="p">,</span> <span class="n">load</span>
+<span class="kn">from</span> <span class="nn">joblib</span> <span class="k">import</span> <span class="n">load</span>
 
 
 <div class="viewcode-block" id="Imputation"><a class="viewcode-back" href="../../API.html#clubcpg.Imputation.Imputation">[docs]</a><span class="k">class</span> <span class="nc">Imputation</span><span class="p">:</span>
