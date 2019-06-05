@@ -18,9 +18,15 @@ The command-tools provided are ``clubcpg-impute-coverage``, ``clubcpg-impute-tra
 Typical imputation workflow
 ============================
 
-1. Use ``clubcpg-coverage`` to calculate bin coverage as performed in the standard workflow. (:ref:`typical_workflow_label`)
+Calculate bin coverage
+***********************
 
-2. Filter these csv outputs for >= 1 reads and >= 2 CpGs. The following one-liner will filter it correctly:
+Use ``clubcpg-coverage`` to calculate bin coverage as performed in the standard workflow. (:ref:`typical_workflow_label`)
+
+Filter outputs
+***************
+
+Filter these csv outputs for >= 1 reads and >= 2 CpGs. The following one-liner will filter it correctly:
 
 .. code-block:: bash
 

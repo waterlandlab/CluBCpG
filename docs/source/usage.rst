@@ -66,11 +66,17 @@ can be utilized for both of these steps using ``samtools sort`` and ``samtools i
 Typical workflow
 =================
 
-1. Obtain your correctly processed BAM file(s)
+Prepare your data
+******************
+
+Obtain your correctly processed BAM file(s)
 
     * ClubCpG accepts one or two BAM files for processing
 
-2. Use ``clubcpg-coverage`` to calculate the number of reads fully covering all bins across the genome.
+Calculate bin coverage
+***********************
+
+Use ``clubcpg-coverage`` to calculate the number of reads fully covering all bins across the genome.
 
     a) This process should be performed on individual chromosomes
 
@@ -86,7 +92,10 @@ Typical workflow
         If you running CluBCpG on two BAM files, this step only needs to be performed on the first BAM file.
 
 
-3. Filter the generated csv file for desired number of reads and CpG densities
+Filter output
+**************
+
+Filter the generated csv file for desired number of reads and CpG densities
 
     a. The output is csv file that does not have a header but the columns contain the following data:
     ``bin id``, ``number of reads``, ``number of cpgs``.
@@ -100,7 +109,10 @@ Typical workflow
         cat CompleteBins.yourfilename.chr19.csv | awk -F "," '$2>=10 && $3>=2' > CompleteBins.yourfilename.chr19.filtered.csv
 
 
-4. Use ``clubcpg-cluster`` to perform cluster analysis
+Perform clustering
+*******************
+
+Use ``clubcpg-cluster`` to perform cluster analysis
 
     a. Here you provide your filtered csv file from the previous step into this clustering step using the ``--bins`` flag. This accelerates the
     analysis by only reading bins which have already been pre-determined to meet coverage requirements.
