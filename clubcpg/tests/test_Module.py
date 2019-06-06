@@ -2,11 +2,14 @@ import unittest
 from clubcpg import ParseBam
 from clubcpg.CalculateBinCoverage import CalculateCompleteBins
 from clubcpg.ClusterReads import ClusterReads
+from clubcpg.Imputation import Imputation
+from clubcpg_prelim import PReLIM
 import os
 import pandas as pd
 import numpy as np
 from urllib.request import urlretrieve
 from sklearn.cluster import DBSCAN
+from joblib import load
 
 
 user_home = os.path.expanduser("~")
@@ -15,7 +18,8 @@ test_data_location = os.path.join(user_home, '.CluBCpG')
 
 def download_data():
     print("Downloading test data...")
-    test_data = ["TEST_DATA_A.bam", "TEST_DATA_B.bam", "TEST_DATA_A.bam.bai", "TEST_DATA_B.bam.bai", "TEST_BINS.csv"]
+    test_data = ["TEST_DATA_A.bam", "TEST_DATA_B.bam", "TEST_DATA_A.bam.bai",
+                 "TEST_DATA_B.bam.bai", "TEST_BINS.csv", "TEST_MODEL.prelim"]
     for data in test_data:
         urlretrieve("https://s3.amazonaws.com/canthonyscott-mixture-analysis/{}".format(data),
                     os.path.join(test_data_location, data)) # todo should update this S3 bucketname
@@ -39,6 +43,7 @@ bamB = "TEST_DATA_B.bam"
 TEST_BINS="TEST_BINS.csv"
 test_bin = "chr1_910700"
 test_bin_bad = "chr1_500"
+prelim_model = "TEST_MODEL.prelim"
 
 
 class TestTests(unittest.TestCase):
@@ -141,6 +146,25 @@ class TestClustering(unittest.TestCase):
         self.assertEqual(self.filtered.shape, (56, 6), "Matrix did not filter correctly")
         self.assertEqual(len(self.cluster.get_common_matrices(self.filtered)), 4, "Failed to get common matrices")
         self.assertEqual(len(self.cluster.get_unique_matrices(self.filtered)), 2, "Failed to get unique matrices")
+
+
+class TestImpuation(unittest.TestCase):
+
+    def setUp(self):
+        self.required_data = [bamA, prelim_model]
+        check_data_exists(self.required_data)
+        parser = ParseBam.BamFileReadParser(os.path.join(test_data_location, bamA), 20)
+        reads = parser.parse_reads("chr1", 910600, 910700)
+        self.matrix = parser.create_matrix(reads).dropna(how="all")
+        self.imputer = Imputation(4, os.path.join(test_data_location, bamA))
+        self.prelim = PReLIM(4)
+        self.prelim.model = load(os.path.join(test_data_location, prelim_model))
+        self.predictions = self.prelim.impute(np.array(self.matrix.fillna(-1)))
+        self.imputed_matrix = self.imputer.postprocess_predictions(self.predictions)
+        self.imputed_matrix = pd.DataFrame(self.imputed_matrix).dropna()
+
+    def testImputedResults(self):
+        self.assertEqual(self.imputed_matrix.shape, (92, 4))
 
 
 if __name__ == "__main__":
