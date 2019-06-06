@@ -136,7 +136,7 @@ if __name__ == "__main__":
         no_overlap=no_overlap,
     )
 
-    logging.debug(args)
+    logging.info(args)
 
     cluster_reads.execute()
 
