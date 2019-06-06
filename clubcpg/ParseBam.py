@@ -10,7 +10,7 @@ class BamFileReadParser:
 
     :Example:
         >>> from clubcpg.ParseBam import BamFileReadParser
-        >>> parser = BamFileReadParser("/path/to/data.BAM", quality_score=20, 3, 4, 7, 1)
+        >>> parser = BamFileReadParser("/path/to/data.BAM", quality_score=20, read1_5=3, read1_3=4, read2_5=7, read2_3=1)
         >>> reads = parser.parse_reads("chr7", 10000, 101000)
         >>> reads = parser.correct_cpg_positions(reads) # This step is optional
         >>> matrix = parser.create_matrix(reads)
@@ -48,8 +48,10 @@ class BamFileReadParser:
             self.mbias_filtering = False
 
         self.OpenBamFile = pysam.AlignmentFile(bamfile, 'rb')
-        # Check for presnece of index file
-        assert self.OpenBamFile.check_index(), "Can't find index file. Please run samtools index to generate it."
+        # Check for presence of index file
+        index_present = self.OpenBamFile.check_index()
+        if not index_present:
+            raise FileNotFoundError("BAM file index is not found. Please create it using samtools index")
 
     # From open bam file, get locaiton of first read from the provided chromosome
     def get_location_of_first_read(self, chromosome: str):
