@@ -20,9 +20,7 @@ states in CpG matrices.
 """
 
 # standard imports
-import warnings
 import numpy as np
-import sys
 from tqdm import tqdm
 import copy
 import time
