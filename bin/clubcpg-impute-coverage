@@ -49,7 +49,7 @@ if __name__ == "__main__":
         print("Output folder already exists... no need to create it...")
 
     ### Set up logging ###
-    log_file = os.path.join(output_folder, "clubcpg-impute-coverage.{}.{}log".format(args.input_bam_file, chr+"." if chr else "")) #todo fix this to inputbam base name
+    log_file = os.path.join(output_folder, "clubcpg-impute-coverage.{}.{}log".format(args.input_bam_file, args.chr+"." if args.chr else "")) #todo fix this to inputbam base name
     logging.basicConfig(filename=log_file, level=logging.WARN)
 
     # log all passed command line arguments
