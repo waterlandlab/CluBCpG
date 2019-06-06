@@ -26,7 +26,6 @@ import sys
 from tqdm import tqdm
 import copy
 import time
-from random import shuffle
 
 from collections import defaultdict
 import random
@@ -41,14 +40,6 @@ try:
 	import cPickle as p
 except ImportError:
 	import pickle as p
-
-
-# warnings suck, turn them off
-if sys.version_info[0] < 3:
-	warnings.simplefilter("ignore", DeprecationWarning)
-	with warnings.catch_warnings():
-		warnings.filterwarnings("ignore", category=DeprecationWarning)
-		import md5, sha
 
 
 # TODO: most of these fields are redundant in our application
@@ -207,7 +198,7 @@ class PReLIM():
 		
 		# find bins with no missing data
 		complete_bins = _filter_missing_data( bins )
-		shuffle( complete_bins )
+		random.shuffle( complete_bins )
 		
 		# apply masks
 		masked_bins = _apply_masks( complete_bins, bins )
