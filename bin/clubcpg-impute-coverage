@@ -34,19 +34,9 @@ arg_parser.add_argument("--read2_5", help="integer, read2 5' m-bias ignore bp, d
 arg_parser.add_argument("--read2_3", help="integer, read2 3' m-bias ignore bp, default=0", default=0)
 
 if __name__ == "__main__":
-
     # Extract arguments from command line and set as correct types
     args = arg_parser.parse_args()
 
-    # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
-    mbias_read1_5 = int(args.read1_5)
-    mbias_read1_3 = int(args.read1_3)
-    mbias_read2_5 = int(args.read2_5)
-    mbias_read2_3 = int(args.read2_3)
-    processes = int(args.n)
-    models = args.models
-    chr = args.chr
-    
     # Set output dir
     if not args.output:
         output_folder = os.path.dirname(args.input_bam_file)
@@ -61,6 +51,18 @@ if __name__ == "__main__":
     ### Set up logging ###
     log_file = os.path.join(output_folder, "clubcpg-impute-coverage.{}.{}log".format(args.input_bam_file, chr+"." if chr else "")) #todo fix this to inputbam base name
     logging.basicConfig(filename=log_file, level=logging.WARN)
+
+    # log all passed command line arguments
+    logging.debug(args)
+
+    # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
+    mbias_read1_5 = int(args.read1_5)
+    mbias_read1_3 = int(args.read1_3)
+    mbias_read2_5 = int(args.read2_5)
+    mbias_read2_3 = int(args.read2_3)
+    processes = int(args.n)
+    models = args.models
+    chr = args.chr
 
     ### Read in coverage file ###
     coverage_data = pd.read_csv(args.coverage, header=None)
