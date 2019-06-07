@@ -13,7 +13,6 @@ A Python object representing information about a
 bin and its meta data. Very useful for storing information and working with it.
 Can be saved as a pickle file.
 """
-import numpy as np
 
 class Bin():
 	""" 

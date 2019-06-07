@@ -53,10 +53,10 @@ if __name__ == "__main__":
 
     # Set up logging
     log_file = os.path.join(output_folder, "clubcpg-impute-coverage.{}.{}log".format(args.input_bam_file, chr+"." if chr else "")) #todo fix this to inputbam base name
-    logging.basicConfig(filename=log_file, level=logging.WARN)
+    logging.basicConfig(filename=log_file, level=logging.DEBUG)
 
     # log all passed command line arguments
-    logging.debug(args)
+    logging.info(args)
 
     # Get the mbias inputs and adjust to work correctly, 0s should be converted to None
     mbias_read1_5 = int(args.read1_5)
