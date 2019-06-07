@@ -21,3 +21,8 @@ Full documentation is available on [ReadTheDocs](https://clubcpg.readthedocs.io/
 * Navigate to folder containing setup.py
 * Execute `pip install .` within that folder to install the package. Requirements will automatically be installed if not already present.
 
+## Help! This isnt working.
+Open an [Issue](https://github.com/waterlandlab/CluBCpG/issues/new/choose)
+
+## Can you make it do this?
+Open a [Feature Request](https://github.com/waterlandlab/CluBCpG/issues/new/choose)
