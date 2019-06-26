@@ -1,10 +1,9 @@
 from setuptools import setup
-from clubcpg.__init__ import __version__, __author__
 
 setup(name="clubcpg",
-      version=__version__,
+      version="0.1.13",
       description="Package to identify epialleles using read clustering from WGBS data", # todo update this
-      author=__author__,
+      author="C. Anthony Scott, PhD",
       author_email="charles.scott@bcm.edu",
       license='MIT',
       packages=['clubcpg', 'clubcpg_prelim'],
