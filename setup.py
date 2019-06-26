@@ -1,5 +1,5 @@
 from setuptools import setup
-from clubcpg import __version__, __author__
+from clubcpg.__init__ import __version__, __author__
 
 setup(name="clubcpg",
       version=__version__,
