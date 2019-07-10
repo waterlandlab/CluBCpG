@@ -1,8 +1,13 @@
 from setuptools import setup
 
+with open("README.md", "r") as f:
+    long_description = f.read()
+
 setup(name="clubcpg",
-      version="0.1.13",
-      description="Package to identify epialleles using read clustering from WGBS data", # todo update this
+      version="0.1.14",
+      description="CluBCpG is a software package built to analyze whole genome bisulfite sequencing (WGBS) data",
+
+
       author="C. Anthony Scott, PhD",
       author_email="charles.scott@bcm.edu",
       license='MIT',
@@ -10,8 +15,7 @@ setup(name="clubcpg",
 
       install_requires=[
           'pysam', 
-          'numpy', 
-          'matplotlib>3,<3.1', 
+          'numpy',
           'scikit-learn==0.21.2',
           'joblib',
           'seaborn', 
@@ -20,6 +24,16 @@ setup(name="clubcpg",
           'fastcluster', 
           'pebble', 
           'tqdm'],
+
+      classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: POSIX :: Linux",
+        "Operating System :: POSIX",
+        "Intended Audience :: Science/Research",
+        "Natural Language :: English",
+        "Topic :: Scientific/Engineering :: Bio-Informatics"
+      ],
 
       scripts=[
           'bin/clubcpg-coverage',
