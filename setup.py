@@ -1,15 +1,16 @@
 from setuptools import setup
 
-with open("README.md", "r") as f:
+with open("README.md", "rt") as f:
     long_description = f.read()
 
 setup(name="clubcpg",
-      version="0.1.14",
+      version="0.1.16",
       description="CluBCpG is a software package built to analyze whole genome bisulfite sequencing (WGBS) data",
-
-
+      long_description=long_description,
+      long_description_content_type="text/markdown",
       author="C. Anthony Scott, PhD",
       author_email="charles.scott@bcm.edu",
+      url="https://github.com/waterlandlab/CluBCpG",
       license='MIT',
       packages=['clubcpg', 'clubcpg_prelim'],
 
@@ -22,7 +23,8 @@ setup(name="clubcpg",
           'pandas', 
           'fastcluster', 
           'pebble', 
-          'tqdm'],
+          'tqdm'
+      ],
 
       classifiers=[
         "Programming Language :: Python :: 3",
