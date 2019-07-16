@@ -178,3 +178,10 @@ debug.py
 .pytest_cache/
 
 _build/
+
+# Setup stuff
+clubcpg.egg-info/
+dist/
+build/
+
+
