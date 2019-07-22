@@ -16,10 +16,8 @@ Full documentation is available on [ReadTheDocs](https://clubcpg.readthedocs.io/
 * Installation of Samtools on your PATH
 
 ### Install
-* Clone or download the master branch to your local machine
 * __(Optional, but HIGHLY recommended)__ Create a new python virtual environment and activate that virualenv
-* Navigate to folder containing setup.py
-* Execute `pip install .` within that folder to install the package. Requirements will automatically be installed if not already present.
+* Execute `pip install clubcpg` to install the package. Requirements will automatically be installed if not already present.
 
 ## Help! This isnt working.
 Open an [Issue](https://github.com/waterlandlab/CluBCpG/issues/new/choose)

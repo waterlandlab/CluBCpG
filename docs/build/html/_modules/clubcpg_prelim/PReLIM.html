@@ -178,13 +178,10 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># standard imports</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">tqdm</span> <span class="k">import</span> <span class="n">tqdm</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">random</span> <span class="k">import</span> <span class="n">shuffle</span>
 
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
 <span class="kn">import</span> <span class="nn">random</span>
@@ -199,14 +196,6 @@
 	<span class="kn">import</span> <span class="nn">cPickle</span> <span class="k">as</span> <span class="nn">p</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
 	<span class="kn">import</span> <span class="nn">pickle</span> <span class="k">as</span> <span class="nn">p</span>
-
-
-<span class="c1"># warnings suck, turn them off</span>
-<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
-	<span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span><span class="p">)</span>
-	<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-		<span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
-		<span class="kn">import</span> <span class="nn">md5</span><span class="o">,</span> <span class="nn">sha</span>
 
 
 <span class="c1"># TODO: most of these fields are redundant in our application</span>
@@ -365,7 +354,7 @@
 		
 		<span class="c1"># find bins with no missing data</span>
 		<span class="n">complete_bins</span> <span class="o">=</span> <span class="n">_filter_missing_data</span><span class="p">(</span> <span class="n">bins</span> <span class="p">)</span>
-		<span class="n">shuffle</span><span class="p">(</span> <span class="n">complete_bins</span> <span class="p">)</span>
+		<span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span> <span class="n">complete_bins</span> <span class="p">)</span>
 		
 		<span class="c1"># apply masks</span>
 		<span class="n">masked_bins</span> <span class="o">=</span> <span class="n">_apply_masks</span><span class="p">(</span> <span class="n">complete_bins</span><span class="p">,</span> <span class="n">bins</span> <span class="p">)</span>

@@ -168,7 +168,7 @@
 
 <span class="sd">    :Example:</span>
 <span class="sd">        &gt;&gt;&gt; from clubcpg.ParseBam import BamFileReadParser</span>
-<span class="sd">        &gt;&gt;&gt; parser = BamFileReadParser(&quot;/path/to/data.BAM&quot;, quality_score=20, 3, 4, 7, 1)</span>
+<span class="sd">        &gt;&gt;&gt; parser = BamFileReadParser(&quot;/path/to/data.BAM&quot;, quality_score=20, read1_5=3, read1_3=4, read2_5=7, read2_3=1)</span>
 <span class="sd">        &gt;&gt;&gt; reads = parser.parse_reads(&quot;chr7&quot;, 10000, 101000)</span>
 <span class="sd">        &gt;&gt;&gt; reads = parser.correct_cpg_positions(reads) # This step is optional</span>
 <span class="sd">        &gt;&gt;&gt; matrix = parser.create_matrix(reads)</span>
@@ -206,8 +206,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">mbias_filtering</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">OpenBamFile</span> <span class="o">=</span> <span class="n">pysam</span><span class="o">.</span><span class="n">AlignmentFile</span><span class="p">(</span><span class="n">bamfile</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span>
-        <span class="c1"># Check for presnece of index file</span>
-        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">OpenBamFile</span><span class="o">.</span><span class="n">check_index</span><span class="p">(),</span> <span class="s2">&quot;Can&#39;t find index file. Please run samtools index to generate it.&quot;</span></div>
+        <span class="c1"># Check for presence of index file</span>
+        <span class="n">index_present</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">OpenBamFile</span><span class="o">.</span><span class="n">check_index</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">index_present</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">&quot;BAM file index is not found. Please create it using samtools index&quot;</span><span class="p">)</span></div>
 
     <span class="c1"># From open bam file, get locaiton of first read from the provided chromosome</span>
     <span class="k">def</span> <span class="nf">get_location_of_first_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chromosome</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>

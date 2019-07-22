@@ -34,18 +34,12 @@ ClubCpG is not yet deposited onto PyPi, but can still be installed using pip. Th
     virtualenv ~/venv/clubcpg -p python3
     source activate ~/venv/clubcpg/bin/activate
 
-1. Clone the public GitHub repo into a local directory
+1. Install CluBCpG with the following command
 
 .. code-block:: bash
 
-    git clone https://github.com/waterlandlab/CluBCpG.git
+    pip install clubcpg
 
-2. Navigate into the folder containing ``setup.py`` and run ``pip install .``
-
-.. code-block:: bash
-
-    cd CluBCpg
-    pip install .
 
 conda
 ------
