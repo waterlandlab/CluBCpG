@@ -22,7 +22,7 @@ Installation
 pip install
 -------------
 
-ClubCpG is not yet deposited onto PyPi, but can still be installed using pip. These steps will install CluBCpG.
+These steps will install CluBCpG.
 
 .. NOTE::
     While optional, it is **highly recommended** to install CluBCpG in a virtual environment.
@@ -43,7 +43,7 @@ ClubCpG is not yet deposited onto PyPi, but can still be installed using pip. Th
 
 conda
 ------
-Coming soon hopefully
+Coming soon
 
 Running Tests
 ==============
