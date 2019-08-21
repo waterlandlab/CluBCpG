@@ -54,6 +54,10 @@ arg_parser.add_argument("--suffix",
                         help="Any additional info to include in the output file name, chromosome for example",
                         default=None)
 
+arg_parser.add_argument("--permute", help="Randomly shuffle the input file label on the reads prior to clustering. "
+                                          "Has no effect if only analyzing one file",
+                        default='False', type=str2bool, const=False, nargs="?")
+
 if __name__ == "__main__":
 
     args = arg_parser.parse_args()
@@ -72,6 +76,7 @@ if __name__ == "__main__":
     mbias_read2_5 = int(args.read2_5)
     mbias_read2_3 = int(args.read2_3)
     remove_noise = args.remove_noise
+    permute = args.permute
     if args.suffix:
         suffix = str(args.suffix)
         suffix = "." + suffix
@@ -134,6 +139,7 @@ if __name__ == "__main__":
         mbias_read2_3=mbias_read2_3,
         suffix=suffix,
         no_overlap=no_overlap,
+        permute_labels=permute
     )
 
     logging.info(args)

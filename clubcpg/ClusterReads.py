@@ -11,6 +11,7 @@ import datetime
 from multiprocessing import Pool
 import time
 import tempfile
+from sklearn.utils import shuffle
 
 
 class ClusterReads:
@@ -26,7 +27,7 @@ class ClusterReads:
 
     def __init__(self, bam_a: str, bam_b=None, bin_size=100, bins_file=None, output_directory=None, num_processors=1,
         cluster_member_min=4, read_depth_req=10, remove_noise=True, mbias_read1_5=None, 
-        mbias_read1_3=None, mbias_read2_5=None, mbias_read2_3=None, suffix="", no_overlap=True):
+        mbias_read1_3=None, mbias_read2_5=None, mbias_read2_3=None, suffix="", no_overlap=True, permute_labels=False):
 
         self.bam_a = bam_a
         self.bam_b = bam_b
@@ -43,6 +44,7 @@ class ClusterReads:
         self.mbias_read2_3 = mbias_read2_3
         self.suffix = suffix
         self.no_overlap = no_overlap
+        self.permute_labels = permute_labels
         
         if bam_b:
             self.single_file_mode = False
@@ -278,6 +280,10 @@ class ClusterReads:
                 return None
         else:
             full_matrix = matrix_A
+
+        if self.permute_labels:
+            # Randomly permute the input labels, has no effect in single file mode
+            full_matrix['input'] = shuffle(full_matrix['input'].values)
 
         # Get data without labels for clustering
         data_to_cluster = np.array(full_matrix)[:, :-1]
