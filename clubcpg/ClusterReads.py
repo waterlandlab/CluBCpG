@@ -284,6 +284,7 @@ class ClusterReads:
         if self.permute_labels:
             # Randomly permute the input labels, has no effect in single file mode
             full_matrix['input'] = shuffle(full_matrix['input'].values)
+            full_matrix = full_matrix.sort_values(by='input')
 
         # Get data without labels for clustering
         data_to_cluster = np.array(full_matrix)[:, :-1]
