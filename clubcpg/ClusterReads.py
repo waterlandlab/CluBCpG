@@ -261,10 +261,14 @@ class ClusterReads:
 
         # If two files label each A and B, otherwise use file_name as label
         if not self.single_file_mode:
-            labels_A = ['A'] * len(matrix_A)
-            matrix_A['input'] = labels_A
-            labels_B = ['B'] * len(matrix_B)
-            matrix_B['input'] = labels_B
+            try:
+                labels_A = ['A'] * len(matrix_A)
+                matrix_A['input'] = labels_A
+                labels_B = ['B'] * len(matrix_B)
+                matrix_B['input'] = labels_B
+            except TypeError:
+                logging.debug("TypeError when adding labels at bin {}".format(bin))
+                return None
         else:
             labels_A = [os.path.basename(self.bam_a)] * len(matrix_A)
             matrix_A['input'] = labels_A
