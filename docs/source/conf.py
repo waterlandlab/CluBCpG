@@ -23,7 +23,7 @@ author = 'Anthony Scott, PhD'
 
 version = '0.1.18'
 # The full version, including alpha/beta/rc tags
-release = '0.1.18g'
+release = '0.1.18'
 
 
 # -- General configuration ---------------------------------------------------

@@ -48,7 +48,8 @@ Coming soon
 Running Tests
 ==============
 
-Included tests can be run to verify CluBCpG is correctly interacting with samtools to read form BAM files.
+Included tests can be run to verify CluBCpG is correctly interacting with samtools to read form BAM files. The source code
+can be downloaded from GitHub and the following can be run:
 
 .. code-block:: bash
 

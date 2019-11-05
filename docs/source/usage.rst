@@ -94,6 +94,15 @@ Use ``clubcpg-coverage`` to calculate the number of reads fully covering all bin
         If you running CluBCpG on two BAM files, this step only needs to be performed on the first BAM file.
 
 
+    b) A typical command may look like this:
+
+    .. code-block:: bash
+
+        # optimal values for the --read flags will need to be determined for each sequencing experiment
+        clubcpg-coverage -a /path/to/file.bam -n 24 -chr chr19 --read1_5 4 --read1_3 2 --read2_5 11 --read2_3 5
+
+
+
 .. _typical_filter_label:
 
 Filter output
