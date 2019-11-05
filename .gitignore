@@ -161,7 +161,6 @@ fabric.properties
 .vscode
 
 # dont commit data
-*.csv
 *.gz
 *.txt
 *.h5
