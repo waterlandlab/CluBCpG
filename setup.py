@@ -16,7 +16,7 @@ setup(name="clubcpg",
 
       install_requires=[
           'pysam', 
-          'numpy',
+          'numpy==1.16.4',
           'scikit-learn==0.21.2',
           'joblib',
           'scipy', 
