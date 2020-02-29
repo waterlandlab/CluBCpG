@@ -2,6 +2,8 @@ import pysam
 import pandas as pd
 import sys
 from collections import defaultdict
+import logging
+import re
 
 
 class BamFileReadParser:
@@ -12,7 +14,7 @@ class BamFileReadParser:
         >>> from clubcpg.ParseBam import BamFileReadParser
         >>> parser = BamFileReadParser("/path/to/data.BAM", quality_score=20, read1_5=3, read1_3=4, read2_5=7, read2_3=1)
         >>> reads = parser.parse_reads("chr7", 10000, 101000)
-        >>> reads = parser.correct_cpg_positions(reads) # This step is optional
+        >>> reads = parser.correct_cpg_positions(reads) # This step is optional, but highly recommended
         >>> matrix = parser.create_matrix(reads)
 
 
@@ -54,7 +56,7 @@ class BamFileReadParser:
             raise FileNotFoundError("BAM file index is not found. Please create it using samtools index")
 
     # From open bam file, get locaiton of first read from the provided chromosome
-    def get_location_of_first_read(self, chromosome: str):
+    def get_location_of_first_read(self, chromosome):
 
         # Get reference lenghts
         ref_lens = dict(zip(self.OpenBamFile.references, self.OpenBamFile.lengths))
@@ -78,37 +80,56 @@ class BamFileReadParser:
             if read.mapping_quality >= self.mapping_quality:
                 reads.append(read)
 
+        ## CIGAR FILTERING BY C. COARFA
         read_cpgs = []
+        self.skipped_reads = set()
 
+        read_index = -1
+        self.query_count_hash = {}
         for read in reads:
-            reduced_read = []
-            # Join EVERY XM tag with its aligned_pair location
-            for pair, tag in zip(read.get_aligned_pairs(), read.get_tag('XM')):
-                if pair[1]:
-                    if read.flag == 83 or read.flag == 163 or read.flag == 16:
-                        reduced_read.append((pair[1] - 1, tag))
+            read_index +=1
+
+            if not (read.query_name in self.query_count_hash):
+                self.query_count_hash[read.query_name]=0
+            
+            self.query_count_hash[read.query_name] += 1
+            if (self.query_count_hash[read.query_name]>2):
+                logging.info("Found read with more than 2 mappings: %s --> %s\n"%(read.query_name, self.query_count_hash[read.query_name]))
+            
+            # need to check for regular expression though
+            no_indel_mapping = re.match("^\d+M$", read.cigarstring)
+            if (no_indel_mapping):
+
+                reduced_read = []
+                # Join EVERY XM tag with its aligned_pair location
+                for pair, tag in zip(read.get_aligned_pairs(), read.get_tag('XM')):
+                    if pair[1]:
+                        if read.flag == 83 or read.flag == 163 or read.flag == 16:
+                            reduced_read.append((pair[1] - 1, tag))
+                        else:
+                            reduced_read.append((pair[1], tag))
                     else:
-                        reduced_read.append((pair[1], tag))
-                else:
-                    continue
-
-            # if MBIAS was set, slice the joined list
-            if self.mbias_filtering:
-                if read.is_read1:
-                    mbias_5_prime = self.read1_5
-                    # note taking the NEGATIVE of the value for the 3-prime
-                    mbias_3_prime = -self.read1_3
-                    if mbias_3_prime == 0:
-                        mbias_3_prime = None
-                    reduced_read = reduced_read[mbias_5_prime:mbias_3_prime]
-                if read.is_read2:
-                    mbias_5_prime = self.read2_5
-                    mbias_3_prime = -self.read2_3
-                    if mbias_3_prime == 0:
-                        mbias_3_prime = None
-                    reduced_read = reduced_read[mbias_5_prime:mbias_3_prime]
-
-            read_cpgs.append(reduced_read)
+                        continue
+    
+                # if MBIAS was set, slice the joined list
+                if self.mbias_filtering:
+                    if read.is_read1:
+                        mbias_5_prime = self.read1_5
+                        # note taking the NEGATIVE of the value for the 3-prime
+                        mbias_3_prime = -self.read1_3
+                        if mbias_3_prime == 0:
+                            mbias_3_prime = None
+                        reduced_read = reduced_read[mbias_5_prime:mbias_3_prime]
+                    if read.is_read2:
+                        mbias_5_prime = self.read2_5
+                        mbias_3_prime = -self.read2_3
+                        if mbias_3_prime == 0:
+                            mbias_3_prime = None
+                        reduced_read = reduced_read[mbias_5_prime:mbias_3_prime]
+                    
+                read_cpgs.append(reduced_read)
+            else:
+                self.skipped_reads.add(read.query_name)
 
         self.full_reads = reads
         self.read_cpgs = read_cpgs
@@ -123,13 +144,19 @@ class BamFileReadParser:
 
         # Filter the list for positions between start-stop and CpG (Z/z) tags
         output = []
+        read_cpg_index = -1
+        
+        found_cpg_count = 0
+        
         for read_cpg in read_cpgs:
+            read_cpg_index +=1
             temp = []
             for pos, tag in read_cpg:
-                if pos and pos >= start and pos <= stop and (tag == 'Z' or tag == 'z'):
+                if pos and (pos > start) and (pos <= stop) and ((tag == 'Z') or (tag == 'z')):
                     temp.append((pos, tag))
+                    found_cpg_count += 1
+                    
             output.append(temp)
-
         return output
 
     def create_matrix(self, read_cpgs):
@@ -143,16 +170,40 @@ class BamFileReadParser:
         :rtype: pd.DataFrame
 
         """
-
         series = []
+        data_index = -1
         for data in read_cpgs:
+            data_index += 1
             positions = []
             statues = []
+            num_positions = 0
+            dup_flag = False
+            positions_set = set()
             for pos, status in data:
+                num_positions += 1
+                if (pos in positions_set):
+                    dup_flag = True
+                positions_set.add(pos)
+                
                 positions.append(pos)
                 statues.append(status)
-            series.append(pd.Series(statues, positions))
-        matrix = pd.concat(series, axis=1, ignore_index=True)
+            
+
+            if (dup_flag):
+                if (self.DEBUG_DUP_CPG):
+                    logging.info("duplicate CpG in the same read found\n")
+            else:
+                if (num_positions>0):
+                    series.append(pd.Series(statues, positions))
+
+        assert(len(series)>0)
+        
+        try:
+            matrix = pd.concat(series, axis=1, ignore_index=True)
+        except BaseException as e:
+            pass
+            # logging.info("Exception to concat: %s\n"%str(e))
+
         matrix = matrix.replace('Z', 1)
         matrix = matrix.replace('z', 0)
 
@@ -175,7 +226,14 @@ class BamFileReadParser:
             combined.append((read, state))
 
         # Get names of all the reads present
-        query_names = [x.query_name for x in full_reads]
+        # query_names = [x.query_name for x in full_reads]
+        query_names = []
+        for x in full_reads:
+            if (not (x.query_name in self.skipped_reads)) and (self.query_count_hash[x.query_name]<=2):
+                query_names.append(x.query_name)
+            else:
+                if (self.DEBUG_SKIP_CIGAR):
+                    logging.info("skipping indel read pair %s\n"%x.query_name)
 
         # Match paired reads by query_name
         tally = defaultdict(list)
