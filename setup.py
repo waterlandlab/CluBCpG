@@ -15,12 +15,12 @@ setup(name="clubcpg",
       packages=['clubcpg', 'clubcpg_prelim'],
 
       install_requires=[
-          'pysam', 
+          'pysam==0.15.2',
           'numpy==1.16.4',
           'scikit-learn==0.21.2',
           'joblib',
           'scipy', 
-          'pandas', 
+          'pandas==0.25.0',
           'fastcluster', 
           'pebble', 
           'tqdm'
