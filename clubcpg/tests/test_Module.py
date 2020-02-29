@@ -76,7 +76,7 @@ class TestParseBam(unittest.TestCase):
         self.assertEqual(len(reads), 118, "Reads could not be read from BAM file")
         matrix = self.parserA.create_matrix(reads)
         self.assertIsInstance(matrix, pd.DataFrame, "Reads failing to convert to data frame")
-        self.assertEqual(matrix.shape, (118, 4), "Dataframe fails to be expected shape")
+        self.assertEqual(matrix.shape, (113, 4), "Dataframe fails to be expected shape")
 
 
 class TestCoverageCalculation(unittest.TestCase):

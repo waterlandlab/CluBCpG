@@ -4,7 +4,7 @@ with open("README.md", "rt") as f:
     long_description = f.read()
 
 setup(name="clubcpg",
-      version="0.1.22",
+      version="0.2.0",
       description="CluBCpG is a software package built to analyze whole genome bisulfite sequencing (WGBS) data",
       long_description=long_description,
       long_description_content_type="text/markdown",
@@ -15,12 +15,12 @@ setup(name="clubcpg",
       packages=['clubcpg', 'clubcpg_prelim'],
 
       install_requires=[
-          'pysam', 
-          'numpy',
+          'pysam==0.15.2',
+          'numpy==1.16.4',
           'scikit-learn==0.21.2',
           'joblib',
           'scipy', 
-          'pandas', 
+          'pandas==0.25.0',
           'fastcluster', 
           'pebble', 
           'tqdm'

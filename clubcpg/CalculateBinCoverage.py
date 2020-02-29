@@ -12,12 +12,11 @@ class CalculateCompleteBins:
     """
     Class to calculate the number of reads covering all CpGs
     """
-
-    def __init__(self, bam_file: str, bin_size: int, output_directory: str, number_of_processors=1, mbias_read1_5=None, mbias_read1_3=None,
-                 mbias_read2_5= None, mbias_read2_3=None, no_overlap=True):
+    def __init__(self,
+                 bam_file, bin_size, output_directory, number_of_processors=1, mbias_read1_5=None, mbias_read1_3=None, mbias_read2_5= None, mbias_read2_3=None, no_overlap=True):
         """
         This class is initialized with a path to a bam file and a bin size
-
+    
         :param bam_file: One of the BAM files for analysis to be performed
         :param bin_size: Size of the bins for the analysis, integer
         :number_of_processors: How many CPUs to use for parallel computation, default=1
@@ -28,7 +27,7 @@ class CalculateCompleteBins:
         self.output_directory = output_directory
         self.bins_no_reads = 0
         self.bins_yes_reads = 0
-
+    
         self.mbias_read1_5 = mbias_read1_5
         self.mbias_read1_3 = mbias_read1_3
         self.mbias_read2_5 = mbias_read2_5
@@ -51,10 +50,8 @@ class CalculateCompleteBins:
         try:
             reads = parser.parse_reads(chromosome, bin_location-self.bin_size, bin_location)
             matrix = parser.create_matrix(reads)
-
-        except ValueError:
+        except BaseException as e:
             # No reads are within this window, do nothing
-            # logging.info("No reads found for bin {}".format(bin))
             self.bins_no_reads += 1
             return None
         except:
@@ -63,14 +60,11 @@ class CalculateCompleteBins:
 
         # drop rows of ALL NaN
         matrix = matrix.dropna(how="all")
-
         # convert to data_frame of 1s and 0s, drop rows with NaN
         matrix = matrix.dropna()
-
         # if matrix is empty, attempt to create it with correction before giving up
         if len(matrix) == 0:
             original_matrix = matrix.copy()
-            # logging.info("Attempting correction of CpG positions in bin {}".format(bin))
             reads = parser.correct_cpg_positions(reads)
             try:
                 matrix = parser.create_matrix(reads)
@@ -114,7 +108,7 @@ class CalculateCompleteBins:
 
         return new_dict
 
-    def generate_bins_list(self, chromosome_len_dict: dict):
+    def generate_bins_list(self, chromosome_len_dict):
         """
         Get a dict of lists of all bins according to desired bin size for all chromosomes in the passed dict
 
@@ -145,7 +139,6 @@ class CalculateCompleteBins:
                 time.sleep(update_interval)
 
         # Get and clean dict of chromosome lenghts, convert to list of bins
-        print("Getting Chromosome lengths from bam files...", flush=True)
         chromosome_lengths = self.get_chromosome_lengths()
         chromosome_lengths = self.remove_scaffolds(chromosome_lengths)
 
@@ -155,17 +148,12 @@ class CalculateCompleteBins:
             new[individual_chrom] = chromosome_lengths[individual_chrom]
             chromosome_lengths = new
 
-        print("Generating bins for the entire genome...", flush=True)
         bins_to_analyze = self.generate_bins_list(chromosome_lengths)
 
         # Set up for multiprocessing
-        print("Beginning analysis of bins using {} processors.".format(self.number_of_processors), flush=True)
-        print("This will take awhile.....", flush=True)
-
         # Loop over bin dict and pool.map them individually
         final_results = []
         for key in bins_to_analyze.keys():
-            print("Analyzing chromosome {}".format(key), flush=True)
             pool = Pool(processes=self.number_of_processors)
             results = pool.map_async(self.calculate_bin_coverage, bins_to_analyze[key])
 
@@ -175,11 +163,8 @@ class CalculateCompleteBins:
             results = results.get()
 
             final_results.extend(results)
-            print("Finished chromosome {}".format(key), flush=True)
 
         logging.info("Analysis complete")
-
-        print("Complete.", flush=True)
 
         # Write to output file
         output_file = os.path.join(self.output_directory, "CompleteBins.{}.{}.csv".format(os.path.basename(self.input_bam_file), individual_chrom))
