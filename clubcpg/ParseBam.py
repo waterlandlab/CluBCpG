@@ -195,13 +195,10 @@ class BamFileReadParser:
                 if num_positions > 0:
                     series.append(pd.Series(statues, positions))
 
-        assert(len(series)>0)
-        
         try:
             matrix = pd.concat(series, axis=1, ignore_index=True)
         except BaseException as e:
-            pass
-            # logging.info("Exception to concat: %s\n"%str(e))
+            raise ValueError("Empty matrix")
 
         matrix = matrix.replace('Z', 1)
         matrix = matrix.replace('z', 0)
