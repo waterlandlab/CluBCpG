@@ -4,7 +4,7 @@ with open("README.md", "rt") as f:
     long_description = f.read()
 
 setup(name="clubcpg",
-      version="0.2.1",
+      version="0.2.2",
       description="CluBCpG is a software package built to analyze whole genome bisulfite sequencing (WGBS) data",
       long_description=long_description,
       long_description_content_type="text/markdown",

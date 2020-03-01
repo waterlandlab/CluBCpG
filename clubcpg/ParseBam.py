@@ -1,6 +1,5 @@
 import pysam
 import pandas as pd
-import sys
 from collections import defaultdict
 import logging
 import re
@@ -139,8 +138,9 @@ class BamFileReadParser:
             try:
                 read_cpgs = self.fix_read_overlap(reads, read_cpgs)
             except AttributeError:
-                print("Could not determine read 1 or 2. {}:{}-{}".format(chromosome, start, stop))
-                sys.stdout.flush()
+                pass
+                # print("Could not determine read 1 or 2. {}:{}-{}".format(chromosome, start, stop))
+                # sys.stdout.flush()
 
         # Filter the list for positions between start-stop and CpG (Z/z) tags
         output = []
@@ -181,7 +181,7 @@ class BamFileReadParser:
             positions_set = set()
             for pos, status in data:
                 num_positions += 1
-                if (pos in positions_set):
+                if pos in positions_set:
                     dup_flag = True
                 positions_set.add(pos)
                 
@@ -189,11 +189,10 @@ class BamFileReadParser:
                 statues.append(status)
             
 
-            if (dup_flag):
-                if (self.DEBUG_DUP_CPG):
-                    logging.info("duplicate CpG in the same read found\n")
+            if dup_flag:
+                pass
             else:
-                if (num_positions>0):
+                if num_positions > 0:
                     series.append(pd.Series(statues, positions))
 
         assert(len(series)>0)
@@ -231,9 +230,6 @@ class BamFileReadParser:
         for x in full_reads:
             if (not (x.query_name in self.skipped_reads)) and (self.query_count_hash[x.query_name]<=2):
                 query_names.append(x.query_name)
-            else:
-                if (self.DEBUG_SKIP_CIGAR):
-                    logging.info("skipping indel read pair %s\n"%x.query_name)
 
         # Match paired reads by query_name
         tally = defaultdict(list)
