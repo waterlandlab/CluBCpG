@@ -132,7 +132,7 @@ class PReLIM():
 			X_train,
 			y_train,
 			n_estimators = [10, 50, 100, 500, 1000],
-			cores = -1,
+			cores = 1,
 			max_depths = [1, 5, 10, 20, 30],
 			model_file=None,
 			verbose=False
