@@ -525,7 +525,7 @@ class ClusterReadsWithImputation(ClusterReads):
 
         # CLUSTER ALL OTHER BINS LIKE NORMAL WITHOUT IMPUTATION
         print("Performing clustering on the rest of the bins with no imputaiton...", flush=True)
-        unimputable_coverage = coverage_data[coverage_data['cpgs'] > 6]
+        unimputable_coverage = coverage_data[coverage_data['cpgs'] >= 6]
 
         unimputable_temp = tempfile.NamedTemporaryFile(mode="w+t")
         unimputable_file_name = unimputable_temp.name
