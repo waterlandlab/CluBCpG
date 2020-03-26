@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.com/waterlandlab/CluBCpG.svg?branch=master)](https://travis-ci.com/waterlandlab/CluBCpG)
 [![Documentation Status](https://readthedocs.org/projects/clubcpg/badge/?version=latest)](https://clubcpg.readthedocs.io/en/latest/?badge=latest)
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/waterlandlab/CluBCpG.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/waterlandlab/CluBCpG/context:python)
+[![DOI](https://zenodo.org/badge/179135025.svg)](https://zenodo.org/badge/latestdoi/179135025)
 
 
 ## What is CluBCpG?
