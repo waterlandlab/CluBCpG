@@ -92,8 +92,8 @@ class BamFileReadParser:
                 self.query_count_hash[read.query_name]=0
             
             self.query_count_hash[read.query_name] += 1
-            if (self.query_count_hash[read.query_name]>2):
-                logging.info("Found read with more than 2 mappings: %s --> %s\n"%(read.query_name, self.query_count_hash[read.query_name]))
+            # if (self.query_count_hash[read.query_name]>2):
+            #     logging.info("Found read with more than 2 mappings: %s --> %s\n"%(read.query_name, self.query_count_hash[read.query_name]))
             
             # need to check for regular expression though
             no_indel_mapping = re.match("^\d+M$", read.cigarstring)
