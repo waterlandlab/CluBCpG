@@ -16,10 +16,10 @@ setup(name="clubcpg",
 
       install_requires=[
           'pysam==0.15.2',
-          'numpy==1.16.4',
+          'numpy==1.16.5',
           'scikit-learn==0.21.2',
           'joblib',
-          'scipy', 
+          'scipy==1.4.1', 
           'pandas==0.25.0',
           'fastcluster', 
           'pebble', 
